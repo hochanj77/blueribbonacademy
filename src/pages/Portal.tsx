@@ -315,7 +315,7 @@ export default function Portal() {
                     <Input
                       id="signin-identifier"
                       type="text"
-                      placeholder="e.g. EP101 or john@email.com"
+                      placeholder="Enter your email or Student ID"
                       className="pl-10"
                       value={loginIdentifier}
                       onChange={(e) => setLoginIdentifier(e.target.value)}
@@ -384,7 +384,7 @@ export default function Portal() {
                   <Input
                     id="activate-student-id"
                     type="text"
-                    placeholder="e.g. JJ100"
+                    placeholder="Enter your Student ID"
                     value={activateStudentId}
                     onChange={(e) => setActivateStudentId(e.target.value)}
                     required
@@ -565,7 +565,7 @@ export default function Portal() {
                     <Input
                       id="parent-student-id"
                       type="text"
-                      placeholder="e.g. JJ100"
+                      placeholder="Enter Student ID"
                       value={parentStudentId}
                       onChange={(e) => setParentStudentId(e.target.value)}
                       required
