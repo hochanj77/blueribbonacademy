@@ -40,16 +40,6 @@ export default function Index() {
   const hero = { ...heroDefaults, ...pageContent?.hero };
   const cta = { ...ctaDefaults, ...pageContent?.cta_section };
 
-  // Redirect logged-in users to their dashboard
-  useEffect(() => {
-    if (!loading && !isAdminLoading && user) {
-      if (isAdmin) {
-        navigate('/admin', { replace: true });
-      } else if (isStudent) {
-        navigate('/dashboard', { replace: true });
-      }
-    }
-  }, [user, loading, isAdmin, isStudent, isAdminLoading, navigate]);
 
   const { data: announcements = [] } = useQuery({
     queryKey: ['published-announcements'],
