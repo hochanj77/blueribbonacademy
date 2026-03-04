@@ -31,6 +31,18 @@ interface Announcement {
   created_at: string;
 }
 
+interface ResourceItem {
+  id: string;
+  title: string;
+  description: string | null;
+  file_path: string;
+  file_name: string;
+  file_type: string | null;
+  created_at: string;
+}
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+
 const SEASON_ORDER: Record<string, number> = { spring: 0, summer: 1, fall: 2, winter: 3 };
 
 function parseSemester(s: string): { year: number; season: number } {
@@ -127,6 +139,19 @@ const StudentDashboard = () => {
   // Fetch catalog info from CMS
   const { data: catalogData } = useSiteContent('global', 'catalog');
   const catalog = catalogData?.content || {};
+
+  // Fetch uploaded resources
+  const { data: resources = [] } = useQuery({
+    queryKey: ['student_resources'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('resources')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data as ResourceItem[];
+    },
+  });
 
   if (loading || isAdminLoading) {
     return (
@@ -338,6 +363,30 @@ const StudentDashboard = () => {
                     </div>
                   </Link>
                 )}
+
+                {/* Uploaded Resources */}
+                {resources.map((r) => (
+                  <a
+                    key={r.id}
+                    href={`${SUPABASE_URL}/storage/v1/object/public/resources/${r.file_path}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted transition-colors group"
+                  >
+                    <div className="p-2 rounded-lg bg-accent/10">
+                      <FileText className="h-4 w-4 text-accent" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm text-secondary group-hover:text-accent transition-colors">
+                        {r.title}
+                      </p>
+                      {r.description && (
+                        <p className="text-xs text-muted-foreground truncate">{r.description}</p>
+                      )}
+                    </div>
+                    <Download className="h-4 w-4 text-muted-foreground" />
+                  </a>
+                ))}
 
                 {/* SAT Platform Link */}
                 <a
