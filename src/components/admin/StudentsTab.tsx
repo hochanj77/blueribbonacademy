@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Plus, Search, Trash2, FileText, Download, Loader2, Upload, FileSpreadsheet, CheckCircle2, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
@@ -74,6 +75,8 @@ const StudentsTab = () => {
   const [importState, setImportState] = useState<'idle' | 'preview' | 'importing'>('idle');
   const [parsedRows, setParsedRows] = useState<ParsedStudentRow[]>([]);
   const [importErrors, setImportErrors] = useState<string[]>([]);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isBulkDeleteOpen, setIsBulkDeleteOpen] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -113,17 +116,49 @@ const StudentsTab = () => {
     },
   });
 
-  const filteredStudents = students.filter((student) => {
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (ids: string[]) => {
+      const { error } = await supabase.from('students').delete().in('id', ids);
+      if (error) throw error;
+    },
+    onSuccess: (_, ids) => {
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+      toast.success(`${ids.length} student(s) deleted`);
+      setSelectedIds(new Set());
+      setIsBulkDeleteOpen(false);
+    },
+    onError: () => {
+      toast.error('Failed to delete students');
+    },
+  });
+
+  const filteredStudents = useMemo(() => students.filter((student) => {
     const matchesSearch =
       `${student.first_name} ${student.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
       student.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       student.school?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       student.student_number?.toLowerCase().includes(searchTerm.toLowerCase());
-
     const matchesStatus = statusFilter === 'all' || student.status === statusFilter;
-
     return matchesSearch && matchesStatus;
-  });
+  }), [students, searchTerm, statusFilter]);
+
+  const toggleSelect = useCallback((id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+
+  const toggleSelectAll = useCallback(() => {
+    if (selectedIds.size === filteredStudents.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredStudents.map(s => s.id)));
+    }
+  }, [selectedIds.size, filteredStudents]);
+
 
   const handleExportExcel = () => {
     const exportData = filteredStudents.map((s) => ({
@@ -540,6 +575,46 @@ const StudentsTab = () => {
             </Select>
           </div>
 
+          {/* Bulk action bar */}
+          {selectedIds.size > 0 && (
+            <div className="flex items-center gap-3 mb-4 p-3 rounded-md bg-muted border">
+              <span className="text-sm font-medium">
+                {selectedIds.size} student{selectedIds.size !== 1 ? 's' : ''} selected
+              </span>
+              <AlertDialog open={isBulkDeleteOpen} onOpenChange={setIsBulkDeleteOpen}>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" size="sm" className="gap-2">
+                    <Trash2 className="h-4 w-4" />
+                    Delete Selected
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete {selectedIds.size} Student{selectedIds.size !== 1 ? 's' : ''}?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will permanently delete {selectedIds.size} student record{selectedIds.size !== 1 ? 's' : ''} and all associated data. This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => bulkDeleteMutation.mutate(Array.from(selectedIds))}
+                      disabled={bulkDeleteMutation.isPending}
+                    >
+                      {bulkDeleteMutation.isPending ? (
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      ) : null}
+                      Delete {selectedIds.size} Student{selectedIds.size !== 1 ? 's' : ''}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+              <Button variant="ghost" size="sm" onClick={() => setSelectedIds(new Set())}>
+                Clear Selection
+              </Button>
+            </div>
+          )}
+
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
@@ -549,6 +624,12 @@ const StudentsTab = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-[40px]">
+                      <Checkbox
+                        checked={filteredStudents.length > 0 && selectedIds.size === filteredStudents.length}
+                        onCheckedChange={toggleSelectAll}
+                      />
+                    </TableHead>
                     <TableHead>Student ID</TableHead>
                     <TableHead>Name</TableHead>
                     <TableHead>Email</TableHead>
@@ -561,13 +642,19 @@ const StudentsTab = () => {
                 <TableBody>
                   {filteredStudents.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                         No students found
                       </TableCell>
                     </TableRow>
                   ) : (
                     filteredStudents.map((student) => (
-                      <TableRow key={student.id}>
+                      <TableRow key={student.id} className={selectedIds.has(student.id) ? 'bg-muted/50' : ''}>
+                        <TableCell>
+                          <Checkbox
+                            checked={selectedIds.has(student.id)}
+                            onCheckedChange={() => toggleSelect(student.id)}
+                          />
+                        </TableCell>
                         <TableCell className="font-mono text-sm">
                           {student.student_number || '-'}
                         </TableCell>
