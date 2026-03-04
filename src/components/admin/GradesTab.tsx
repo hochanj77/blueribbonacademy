@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -10,9 +10,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Search, Upload, FileSpreadsheet, Loader2, Trash2, AlertCircle, CheckCircle2, Pencil } from 'lucide-react';
+import { Search, Upload, FileSpreadsheet, Loader2, Trash2, AlertCircle, CheckCircle2, Pencil, ChevronRight, X, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, isValid } from 'date-fns';
 
@@ -58,6 +59,29 @@ interface ParsedRow {
   error?: string;
 }
 
+interface StudentSummary {
+  student_id: string;
+  student_name: string;
+  student_number: string | null;
+  classCount: number;
+  semesters: string[];
+  latestSemester: string;
+  grades: StudentGrade[];
+}
+
+const SEASON_ORDER: Record<string, number> = { spring: 0, summer: 1, fall: 2, winter: 3 };
+
+function parseSemesterSort(s: string): number {
+  const parts = s.trim().split(/\s+/);
+  const season = (parts[0] || '').toLowerCase();
+  const year = parseInt(parts[1] || '0', 10);
+  return (isNaN(year) ? 0 : year) * 10 + (SEASON_ORDER[season] ?? -1);
+}
+
+function sortSemestersDesc(semesters: string[]): string[] {
+  return [...semesters].sort((a, b) => parseSemesterSort(b) - parseSemesterSort(a));
+}
+
 const semesterOptions = [
   'Fall 2024', 'Winter 2024', 'Spring 2025', 'Summer 2025',
   'Fall 2025', 'Winter 2025', 'Spring 2026', 'Summer 2026',
@@ -71,11 +95,7 @@ const GradesTab = () => {
   const [importState, setImportState] = useState<'idle' | 'preview' | 'importing'>('idle');
   const [parsedRows, setParsedRows] = useState<ParsedRow[]>([]);
   const [importErrors, setImportErrors] = useState<string[]>([]);
-  const [editingGrade, setEditingGrade] = useState<StudentGrade | null>(null);
-  const [editForm, setEditForm] = useState({
-    class_name: '', semester: '', attitude: '', homework: '',
-    participation: '', test_quiz: '', comments: '',
-  });
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
 
   const { data: students = [] } = useQuery({
     queryKey: ['students_with_numbers'],
@@ -106,56 +126,56 @@ const GradesTab = () => {
     },
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase.from('student_grades').delete().eq('id', id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['student_grades'] });
-      toast.success('Grade record deleted');
-    },
-    onError: () => toast.error('Failed to delete grade record'),
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: async ({ id, updates }: { id: string; updates: Record<string, string | null> }) => {
-      const { error } = await supabase.from('student_grades').update(updates).eq('id', id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['student_grades'] });
-      toast.success('Grade updated');
-      setEditingGrade(null);
-    },
-    onError: () => toast.error('Failed to update grade'),
-  });
-
-  const openEdit = (g: StudentGrade) => {
-    setEditingGrade(g);
-    setEditForm({
-      class_name: g.class_name, semester: g.semester,
-      attitude: g.attitude || '', homework: g.homework || '',
-      participation: g.participation || '', test_quiz: g.test_quiz || '',
-      comments: g.comments || '',
+  // Build student summaries
+  const studentSummaries = useMemo(() => {
+    const map = new Map<string, StudentSummary>();
+    grades.forEach((g) => {
+      const key = g.student_id;
+      if (!map.has(key)) {
+        map.set(key, {
+          student_id: key,
+          student_name: g.students ? `${g.students.first_name} ${g.students.last_name}` : 'Unknown',
+          student_number: g.students?.student_number || null,
+          classCount: 0,
+          semesters: [],
+          latestSemester: '',
+          grades: [],
+        });
+      }
+      const s = map.get(key)!;
+      s.grades.push(g);
+      if (!s.semesters.includes(g.semester)) {
+        s.semesters.push(g.semester);
+      }
+      // Count unique classes
+      const uniqueClasses = new Set(s.grades.map(gr => gr.class_name));
+      s.classCount = uniqueClasses.size;
     });
-  };
 
-  const saveEdit = () => {
-    if (!editingGrade) return;
-    updateMutation.mutate({
-      id: editingGrade.id,
-      updates: {
-        class_name: editForm.class_name,
-        semester: editForm.semester,
-        attitude: editForm.attitude || null,
-        homework: editForm.homework || null,
-        participation: editForm.participation || null,
-        test_quiz: editForm.test_quiz || null,
-        comments: editForm.comments || null,
-      },
+    // Set latest semester per student
+    map.forEach((s) => {
+      const sorted = sortSemestersDesc(s.semesters);
+      s.latestSemester = sorted[0] || '';
     });
-  };
+
+    return Array.from(map.values());
+  }, [grades]);
+
+  // Filter summaries by search
+  const filteredSummaries = useMemo(() => {
+    const term = searchTerm.toLowerCase();
+    if (!term) return studentSummaries;
+    return studentSummaries.filter((s) =>
+      s.student_name.toLowerCase().includes(term) ||
+      (s.student_number || '').toLowerCase().includes(term)
+    );
+  }, [studentSummaries, searchTerm]);
+
+  // Selected student detail
+  const selectedStudent = useMemo(() => {
+    if (!selectedStudentId) return null;
+    return studentSummaries.find(s => s.student_id === selectedStudentId) || null;
+  }, [selectedStudentId, studentSummaries]);
 
   const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -210,7 +230,6 @@ const GradesTab = () => {
             const studentIdRaw = String(row[studentIdCol] || '').trim();
             const firstName = firstNameCol ? String(row[firstNameCol] || '').trim() : '';
             const lastName = lastNameCol ? String(row[lastNameCol] || '').trim() : '';
-
             const matchedStudent = students.find((s) => s.student_number === studentIdRaw);
 
             let nameMismatch = false;
@@ -295,18 +314,6 @@ const GradesTab = () => {
       setImportState('preview');
     }
   };
-
-  const filteredGrades = grades.filter((g) => {
-    const studentName = g.students
-      ? `${g.students.first_name} ${g.students.last_name}`.toLowerCase()
-      : '';
-    const term = searchTerm.toLowerCase();
-    return (
-      studentName.includes(term) ||
-      g.class_name.toLowerCase().includes(term) ||
-      g.semester.toLowerCase().includes(term)
-    );
-  });
 
   const matchedCount = parsedRows.filter((r) => r.matched_student).length;
   const mismatchCount = parsedRows.filter((r) => r.name_mismatch).length;
@@ -462,17 +469,20 @@ const GradesTab = () => {
         </CardContent>
       </Card>
 
-      {/* Grades List */}
+      {/* Student Summary Table */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Student Report Cards</CardTitle>
+          <Badge variant="outline" className="text-sm">
+            {studentSummaries.length} student{studentSummaries.length !== 1 ? 's' : ''} · {grades.length} record{grades.length !== 1 ? 's' : ''}
+          </Badge>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
             <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search by student, class, or semester..."
+                placeholder="Search by student name or ID..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -500,49 +510,40 @@ const GradesTab = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Student</TableHead>
-                    <TableHead>ID</TableHead>
-                    <TableHead>Class</TableHead>
-                    <TableHead>Semester</TableHead>
-                    <TableHead>Attitude</TableHead>
-                    <TableHead>Homework</TableHead>
-                    <TableHead>Participation</TableHead>
-                    <TableHead>Test/Quiz</TableHead>
-                    <TableHead>Comments</TableHead>
-                    <TableHead>Imported</TableHead>
+                    <TableHead>Student ID</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead className="text-center">Classes</TableHead>
+                    <TableHead className="text-center">Semesters</TableHead>
+                    <TableHead>Latest Semester</TableHead>
+                    <TableHead className="text-center">Records</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredGrades.length === 0 ? (
+                  {filteredSummaries.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={11} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                         No report cards found. Import an Excel file to get started.
                       </TableCell>
                     </TableRow>
                   ) : (
-                    filteredGrades.map((g) => (
-                      <TableRow key={g.id}>
-                        <TableCell className="font-medium">
-                          {g.students ? `${g.students.first_name} ${g.students.last_name}` : 'Unknown'}
+                    filteredSummaries.map((s) => (
+                      <TableRow
+                        key={s.student_id}
+                        className="cursor-pointer hover:bg-muted/50"
+                        onClick={() => setSelectedStudentId(s.student_id)}
+                      >
+                        <TableCell className="font-mono text-xs">{s.student_number || '—'}</TableCell>
+                        <TableCell className="font-medium">{s.student_name}</TableCell>
+                        <TableCell className="text-center">{s.classCount}</TableCell>
+                        <TableCell className="text-center">{s.semesters.length}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline">{s.latestSemester}</Badge>
                         </TableCell>
-                        <TableCell className="font-mono text-xs">{g.students?.student_number || '—'}</TableCell>
-                        <TableCell>{g.class_name}</TableCell>
-                        <TableCell>{g.semester}</TableCell>
-                        <TableCell>{g.attitude ? <Badge variant="outline">{g.attitude}</Badge> : '—'}</TableCell>
-                        <TableCell>{g.homework ? <Badge variant="outline">{g.homework}</Badge> : '—'}</TableCell>
-                        <TableCell>{g.participation ? <Badge variant="outline">{g.participation}</Badge> : '—'}</TableCell>
-                        <TableCell>{g.test_quiz ? <Badge variant="outline">{g.test_quiz}</Badge> : '—'}</TableCell>
-                        <TableCell className="text-sm text-muted-foreground max-w-[150px] truncate">{g.comments || '—'}</TableCell>
-                        <TableCell className="text-sm">
-                          {g.created_at && isValid(new Date(g.created_at)) ? format(new Date(g.created_at), 'MMM d, yyyy') : '—'}
-                        </TableCell>
-                        <TableCell className="text-right space-x-1">
-                          <Button variant="ghost" size="icon" onClick={() => openEdit(g)}>
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="icon" onClick={() => deleteMutation.mutate(g.id)}>
-                            <Trash2 className="h-4 w-4" />
+                        <TableCell className="text-center">{s.grades.length}</TableCell>
+                        <TableCell className="text-right">
+                          <Button variant="ghost" size="sm" className="gap-1">
+                            View <ChevronRight className="h-4 w-4" />
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -554,11 +555,177 @@ const GradesTab = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Student Detail Sheet */}
+      <Sheet open={!!selectedStudent} onOpenChange={(open) => !open && setSelectedStudentId(null)}>
+        <SheetContent className="sm:max-w-2xl w-full overflow-y-auto">
+          {selectedStudent && (
+            <StudentGradeDetail
+              summary={selectedStudent}
+              onClose={() => setSelectedStudentId(null)}
+            />
+          )}
+        </SheetContent>
+      </Sheet>
+    </div>
+  );
+};
+
+// ── Student Grade Detail (Sheet content) ─────────────────────────────
+
+interface StudentGradeDetailProps {
+  summary: StudentSummary;
+  onClose: () => void;
+}
+
+const StudentGradeDetail = ({ summary, onClose }: StudentGradeDetailProps) => {
+  const queryClient = useQueryClient();
+  const [editingGrade, setEditingGrade] = useState<StudentGrade | null>(null);
+  const [editForm, setEditForm] = useState({
+    class_name: '', semester: '', attitude: '', homework: '',
+    participation: '', test_quiz: '', comments: '',
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('student_grades').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['student_grades'] });
+      toast.success('Grade record deleted');
+    },
+    onError: () => toast.error('Failed to delete grade record'),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: Record<string, string | null> }) => {
+      const { error } = await supabase.from('student_grades').update(updates).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['student_grades'] });
+      toast.success('Grade updated');
+      setEditingGrade(null);
+    },
+    onError: () => toast.error('Failed to update grade'),
+  });
+
+  const openEdit = (g: StudentGrade) => {
+    setEditingGrade(g);
+    setEditForm({
+      class_name: g.class_name, semester: g.semester,
+      attitude: g.attitude || '', homework: g.homework || '',
+      participation: g.participation || '', test_quiz: g.test_quiz || '',
+      comments: g.comments || '',
+    });
+  };
+
+  const saveEdit = () => {
+    if (!editingGrade) return;
+    updateMutation.mutate({
+      id: editingGrade.id,
+      updates: {
+        class_name: editForm.class_name,
+        semester: editForm.semester,
+        attitude: editForm.attitude || null,
+        homework: editForm.homework || null,
+        participation: editForm.participation || null,
+        test_quiz: editForm.test_quiz || null,
+        comments: editForm.comments || null,
+      },
+    });
+  };
+
+  // Group grades by semester, most recent first
+  const gradesBySemester = useMemo(() => {
+    const map: Record<string, StudentGrade[]> = {};
+    summary.grades.forEach((g) => {
+      if (!map[g.semester]) map[g.semester] = [];
+      map[g.semester].push(g);
+    });
+    const sortedKeys = sortSemestersDesc(Object.keys(map));
+    return sortedKeys.map((sem) => ({ semester: sem, grades: map[sem] }));
+  }, [summary.grades]);
+
+  return (
+    <>
+      <SheetHeader>
+        <SheetTitle className="flex items-center gap-3">
+          <span className="text-xl">{summary.student_name}</span>
+          {summary.student_number && (
+            <Badge variant="outline" className="font-mono text-xs">{summary.student_number}</Badge>
+          )}
+        </SheetTitle>
+        <div className="flex gap-2 mt-1">
+          <Badge variant="secondary">{summary.classCount} class{summary.classCount !== 1 ? 'es' : ''}</Badge>
+          <Badge variant="secondary">{summary.semesters.length} semester{summary.semesters.length !== 1 ? 's' : ''}</Badge>
+          <Badge variant="secondary">{summary.grades.length} record{summary.grades.length !== 1 ? 's' : ''}</Badge>
+        </div>
+      </SheetHeader>
+
+      <div className="mt-6 space-y-6">
+        {gradesBySemester.map(({ semester, grades: semGrades }) => (
+          <div key={semester}>
+            <h3 className="font-semibold text-secondary mb-3 flex items-center gap-2">
+              <Badge>{semester}</Badge>
+              <span className="text-xs text-muted-foreground font-normal">
+                {semGrades.length} record{semGrades.length !== 1 ? 's' : ''}
+              </span>
+            </h3>
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Class</TableHead>
+                    <TableHead>Attitude</TableHead>
+                    <TableHead>Homework</TableHead>
+                    <TableHead>Participation</TableHead>
+                    <TableHead>Test/Quiz</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {semGrades.map((g) => (
+                    <TableRow key={g.id}>
+                      <TableCell className="font-medium">{g.class_name}</TableCell>
+                      <TableCell>{g.attitude ? <Badge variant="outline">{g.attitude}</Badge> : '—'}</TableCell>
+                      <TableCell>{g.homework ? <Badge variant="outline">{g.homework}</Badge> : '—'}</TableCell>
+                      <TableCell>{g.participation ? <Badge variant="outline">{g.participation}</Badge> : '—'}</TableCell>
+                      <TableCell>{g.test_quiz ? <Badge variant="outline">{g.test_quiz}</Badge> : '—'}</TableCell>
+                      <TableCell className="text-right space-x-1">
+                        <Button variant="ghost" size="icon" onClick={() => openEdit(g)}>
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" onClick={() => deleteMutation.mutate(g.id)}>
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+            {/* Full comments below table */}
+            {semGrades.some(g => g.comments) && (
+              <div className="mt-2 space-y-1.5">
+                {semGrades.filter(g => g.comments).map((g) => (
+                  <div key={`comment-${g.id}`} className="text-sm px-3 py-2 rounded-md bg-muted">
+                    <span className="font-medium text-secondary">{g.class_name}:</span>{' '}
+                    <span className="text-muted-foreground">{g.comments}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
       {/* Edit Dialog */}
       <Dialog open={!!editingGrade} onOpenChange={(open) => !open && setEditingGrade(null)}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Edit Grade — {editingGrade?.students ? `${editingGrade.students.first_name} ${editingGrade.students.last_name}` : ''}</DialogTitle>
+            <DialogTitle>Edit Grade — {summary.student_name}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-2">
             <div className="grid grid-cols-2 gap-4">
@@ -610,9 +777,8 @@ const GradesTab = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 };
 
 export default GradesTab;
-
