@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 
@@ -27,7 +27,6 @@ const locationOptions = [
 ];
 
 export default function CatalogRequest() {
-  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [formData, setFormData] = useState({
@@ -47,20 +46,12 @@ export default function CatalogRequest() {
     e.preventDefault();
 
     if (!formData.studentName.trim() || !formData.email.trim()) {
-      toast({
-        title: "Required fields missing",
-        description: "Please fill in the student name and email.",
-        variant: "destructive",
-      });
+      toast.error("Please fill in the student name and email.");
       return;
     }
 
     if (!acceptedTerms) {
-      toast({
-        title: "Terms required",
-        description: "Please accept the terms & conditions.",
-        variant: "destructive",
-      });
+      toast.error("Please accept the terms & conditions.");
       return;
     }
 
@@ -78,18 +69,11 @@ export default function CatalogRequest() {
     setIsSubmitting(false);
 
     if (error) {
-      toast({
-        title: "Something went wrong",
-        description: "Please try again later.",
-        variant: "destructive",
-      });
+      toast.error("Something went wrong. Please try again later.");
       return;
     }
 
-    toast({
-      title: "Request submitted!",
-      description: "We'll send the course catalog to your email shortly.",
-    });
+    toast.success("Request submitted! We'll send the course catalog to your email shortly.");
 
     setFormData({
       studentName: "",

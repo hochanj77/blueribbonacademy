@@ -82,10 +82,21 @@ function sortSemestersDesc(semesters: string[]): string[] {
   return [...semesters].sort((a, b) => parseSemesterSort(b) - parseSemesterSort(a));
 }
 
-const semesterOptions = [
-  'Fall 2024', 'Winter 2024', 'Spring 2025', 'Summer 2025',
-  'Fall 2025', 'Winter 2025', 'Spring 2026', 'Summer 2026',
-];
+function generateSemesterOptions(): string[] {
+  const seasons = ['Spring', 'Summer', 'Fall', 'Winter'];
+  const startYear = 2024;
+  const now = new Date();
+  const endYear = now.getFullYear() + 1;
+  const options: string[] = [];
+  for (let year = startYear; year <= endYear; year++) {
+    for (const season of seasons) {
+      options.push(`${season} ${year}`);
+    }
+  }
+  return options;
+}
+
+const semesterOptions = generateSemesterOptions();
 
 const GradesTab = () => {
   const { user } = useAuth();
@@ -287,7 +298,41 @@ const GradesTab = () => {
     const batchId = crypto.randomUUID();
 
     try {
-      const inserts = validRows.map((r) => ({
+      // Check for duplicates
+      const checkKeys = validRows.map(r => ({
+        student_id: r.matched_student!.id,
+        class_name: r.class_name,
+        semester: r.semester,
+      }));
+
+      // Query existing grades for these students
+      const studentIds = [...new Set(checkKeys.map(k => k.student_id))];
+      const { data: existingGrades } = await supabase
+        .from('student_grades')
+        .select('student_id, class_name, semester')
+        .in('student_id', studentIds);
+
+      const existingSet = new Set(
+        (existingGrades || []).map(g => `${g.student_id}|${g.class_name}|${g.semester}`)
+      );
+
+      const newRows = validRows.filter(r => {
+        const key = `${r.matched_student!.id}|${r.class_name}|${r.semester}`;
+        return !existingSet.has(key);
+      });
+
+      const dupCount = validRows.length - newRows.length;
+      if (dupCount > 0) {
+        toast.warning(`${dupCount} duplicate record(s) detected and skipped (same student, class, and semester).`);
+      }
+
+      if (newRows.length === 0) {
+        toast.error('All rows are duplicates. No new records to import.');
+        setImportState('preview');
+        return;
+      }
+
+      const inserts = newRows.map((r) => ({
         student_id: r.matched_student!.id,
         class_name: r.class_name,
         semester: r.semester,
@@ -303,7 +348,7 @@ const GradesTab = () => {
       const { error } = await supabase.from('student_grades').insert(inserts);
       if (error) throw error;
 
-      toast.success(`Imported ${validRows.length} report card records`);
+      toast.success(`Imported ${newRows.length} report card record(s)${dupCount > 0 ? ` (${dupCount} duplicates skipped)` : ''}`);
       queryClient.invalidateQueries({ queryKey: ['student_grades'] });
       setImportState('idle');
       setParsedRows([]);

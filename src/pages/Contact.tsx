@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { useSiteContent } from "@/hooks/useSiteContent";
 
 const gradeOptions = [
@@ -43,7 +43,6 @@ const contactDefaults = {
 };
 
 export default function Contact() {
-  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -87,10 +86,7 @@ export default function Contact() {
 
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    toast({
-      title: "Message Sent!",
-      description: "We'll get back to you within 24 hours.",
-    });
+    toast.success("Message sent! We'll get back to you within 24 hours.");
 
     setFormData({
       name: "",
