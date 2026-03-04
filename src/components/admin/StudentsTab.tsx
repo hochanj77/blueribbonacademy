@@ -235,13 +235,6 @@ const StudentsTab = () => {
               );
             }
 
-            // If no match by ID, try matching by email
-            if (!matchedStudent && email) {
-              matchedStudent = students.find(
-                (s) => s.email?.toLowerCase() === email.toLowerCase()
-              );
-            }
-
             if (matchedStudent) {
               importType = 'update';
             } else {
@@ -442,7 +435,6 @@ const StudentsTab = () => {
                       <TableHead className="w-[80px]">Status</TableHead>
                       <TableHead>Student ID</TableHead>
                       <TableHead>Name</TableHead>
-                      <TableHead>Email</TableHead>
                       <TableHead>Grade</TableHead>
                       <TableHead>School</TableHead>
                     </TableRow>
@@ -466,7 +458,6 @@ const StudentsTab = () => {
                           {row.matched_student?.student_number || row.student_id_raw || '—'}
                         </TableCell>
                         <TableCell className="text-sm">{row.first_name} {row.last_name}</TableCell>
-                        <TableCell className="text-sm">{row.email || '—'}</TableCell>
                         <TableCell className="text-sm">{row.grade_level || '—'}</TableCell>
                         <TableCell className="text-sm">{row.school || '—'}</TableCell>
                       </TableRow>
