@@ -50,20 +50,12 @@ Deno.serve(async (req) => {
       );
     }
 
-    if (!student) {
+    if (!student || student.user_id) {
       return new Response(
         JSON.stringify({
-          error:
-            "No pending student found with that Student ID and last name. Please check your information or contact PrepHaus administration.",
+          error: "Unable to activate. Please check your information or contact PrepHaus administration.",
         }),
-        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    if (student.user_id) {
-      return new Response(
-        JSON.stringify({ error: "This account has already been activated. Please sign in." }),
-        { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 

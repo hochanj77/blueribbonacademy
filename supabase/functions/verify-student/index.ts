@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ found: true, student_id: student.id }),
+      JSON.stringify({ found: true }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch {
