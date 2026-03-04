@@ -11,7 +11,7 @@ import Courses from "./pages/Courses";
 import Contact from "./pages/Contact";
 import Social from "./pages/Social";
 import Consulting from "./pages/Consulting";
-import Auth from "./pages/Auth";
+
 import Admin from "./pages/Admin";
 import Portal from "./pages/Portal";
 import StudentDashboard from "./pages/StudentDashboard";
@@ -44,7 +44,7 @@ const App = () => (
               <Route path="/contact" element={<Contact />} />
               <Route path="/social" element={<Social />} />
               <Route path="/consulting" element={<Consulting />} />
-              <Route path="/auth" element={<Auth />} />
+              <Route path="/auth" element={<Navigate to="/portal" replace />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/catalog" element={<CatalogRequest />} />
               {/* Redirect old parent-portal URL */}

@@ -13,7 +13,7 @@ const Admin = () => {
 
   useEffect(() => {
     if (!loading && !user) {
-      navigate('/auth');
+      navigate('/portal');
     }
   }, [user, loading, navigate]);
 
