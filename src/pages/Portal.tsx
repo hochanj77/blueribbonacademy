@@ -163,7 +163,16 @@ export default function Portal() {
     );
   }
 
-  // User is logged in but has no role
+  // User is logged in — redirect based on role
+  if (user && (isAdmin || isStudent || isParent)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // User is logged in but has no linked student/parent profile and is not admin
   if (user && !isAdmin && !isStudent && !isParent) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted px-4">
