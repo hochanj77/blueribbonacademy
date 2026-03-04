@@ -66,10 +66,26 @@ export default function Portal() {
           body: { student_number: loginIdentifier.trim(), password },
         });
 
-        if (fnError || data?.error) {
-          const msg = data?.error || "Invalid credentials.";
+        if (fnError) {
+          // Parse error message from the response
+          let msg = "Invalid credentials.";
+          try {
+            if (fnError instanceof Error && 'context' in fnError) {
+              const resp = (fnError as any).context;
+              if (resp instanceof Response) {
+                const body = await resp.json();
+                msg = body?.error || msg;
+              }
+            }
+          } catch {}
           setError(msg);
           toast({ variant: "destructive", title: "Sign In Failed", description: msg });
+          return;
+        }
+
+        if (data?.error) {
+          setError(data.error);
+          toast({ variant: "destructive", title: "Sign In Failed", description: data.error });
           return;
         }
 
