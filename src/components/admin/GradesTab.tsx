@@ -9,7 +9,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Search, Upload, FileSpreadsheet, Loader2, Trash2, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Search, Upload, FileSpreadsheet, Loader2, Trash2, AlertCircle, CheckCircle2, Pencil } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, isValid } from 'date-fns';
 
@@ -68,6 +71,11 @@ const GradesTab = () => {
   const [importState, setImportState] = useState<'idle' | 'preview' | 'importing'>('idle');
   const [parsedRows, setParsedRows] = useState<ParsedRow[]>([]);
   const [importErrors, setImportErrors] = useState<string[]>([]);
+  const [editingGrade, setEditingGrade] = useState<StudentGrade | null>(null);
+  const [editForm, setEditForm] = useState({
+    class_name: '', semester: '', attitude: '', homework: '',
+    participation: '', test_quiz: '', comments: '',
+  });
 
   const { data: students = [] } = useQuery({
     queryKey: ['students_with_numbers'],
@@ -109,6 +117,45 @@ const GradesTab = () => {
     },
     onError: () => toast.error('Failed to delete grade record'),
   });
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: Record<string, string | null> }) => {
+      const { error } = await supabase.from('student_grades').update(updates).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['student_grades'] });
+      toast.success('Grade updated');
+      setEditingGrade(null);
+    },
+    onError: () => toast.error('Failed to update grade'),
+  });
+
+  const openEdit = (g: StudentGrade) => {
+    setEditingGrade(g);
+    setEditForm({
+      class_name: g.class_name, semester: g.semester,
+      attitude: g.attitude || '', homework: g.homework || '',
+      participation: g.participation || '', test_quiz: g.test_quiz || '',
+      comments: g.comments || '',
+    });
+  };
+
+  const saveEdit = () => {
+    if (!editingGrade) return;
+    updateMutation.mutate({
+      id: editingGrade.id,
+      updates: {
+        class_name: editForm.class_name,
+        semester: editForm.semester,
+        attitude: editForm.attitude || null,
+        homework: editForm.homework || null,
+        participation: editForm.participation || null,
+        test_quiz: editForm.test_quiz || null,
+        comments: editForm.comments || null,
+      },
+    });
+  };
 
   const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -490,7 +537,10 @@ const GradesTab = () => {
                         <TableCell className="text-sm">
                           {g.created_at && isValid(new Date(g.created_at)) ? format(new Date(g.created_at), 'MMM d, yyyy') : '—'}
                         </TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="text-right space-x-1">
+                          <Button variant="ghost" size="icon" onClick={() => openEdit(g)}>
+                            <Pencil className="h-4 w-4" />
+                          </Button>
                           <Button variant="ghost" size="icon" onClick={() => deleteMutation.mutate(g.id)}>
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -504,6 +554,62 @@ const GradesTab = () => {
           )}
         </CardContent>
       </Card>
+      {/* Edit Dialog */}
+      <Dialog open={!!editingGrade} onOpenChange={(open) => !open && setEditingGrade(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Grade — {editingGrade?.students ? `${editingGrade.students.first_name} ${editingGrade.students.last_name}` : ''}</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-2">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Class</Label>
+                <Input value={editForm.class_name} onChange={(e) => setEditForm(f => ({ ...f, class_name: e.target.value }))} />
+              </div>
+              <div className="space-y-2">
+                <Label>Semester</Label>
+                <Select value={editForm.semester} onValueChange={(v) => setEditForm(f => ({ ...f, semester: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {semesterOptions.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Attitude</Label>
+                <Input value={editForm.attitude} onChange={(e) => setEditForm(f => ({ ...f, attitude: e.target.value }))} />
+              </div>
+              <div className="space-y-2">
+                <Label>Homework</Label>
+                <Input value={editForm.homework} onChange={(e) => setEditForm(f => ({ ...f, homework: e.target.value }))} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Participation</Label>
+                <Input value={editForm.participation} onChange={(e) => setEditForm(f => ({ ...f, participation: e.target.value }))} />
+              </div>
+              <div className="space-y-2">
+                <Label>Test/Quiz</Label>
+                <Input value={editForm.test_quiz} onChange={(e) => setEditForm(f => ({ ...f, test_quiz: e.target.value }))} />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Comments</Label>
+              <Textarea value={editForm.comments} onChange={(e) => setEditForm(f => ({ ...f, comments: e.target.value }))} rows={3} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditingGrade(null)}>Cancel</Button>
+            <Button onClick={saveEdit} disabled={updateMutation.isPending}>
+              {updateMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
