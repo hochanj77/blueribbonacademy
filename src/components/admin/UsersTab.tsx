@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Loader2, Pencil, Key, Trash2, UserPlus, Lock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface AuthUser {
   id: string;
@@ -29,6 +30,7 @@ async function adminUsersAction(action: string, payload: Record<string, unknown>
 
 export default function UsersTab() {
   const { toast } = useToast();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
   const [editUser, setEditUser] = useState<AuthUser | null>(null);
@@ -333,20 +335,22 @@ export default function UsersTab() {
                     </DialogContent>
                   </Dialog>
 
-                  {/* Delete */}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-destructive hover:text-destructive"
-                    onClick={() => {
-                      if (confirm(`Delete admin ${u.email}? This cannot be undone.`)) {
-                        deleteMutation.mutate(u.id);
-                      }
-                    }}
-                    disabled={deleteMutation.isPending}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
+                  {/* Delete - only show for non-self accounts */}
+                  {u.email !== user?.email && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-destructive hover:text-destructive"
+                      onClick={() => {
+                        if (confirm(`Delete admin ${u.email}? This cannot be undone.`)) {
+                          deleteMutation.mutate(u.id);
+                        }
+                      }}
+                      disabled={deleteMutation.isPending}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
                 </div>
               </div>
             </CardContent>
