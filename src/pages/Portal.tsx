@@ -186,21 +186,21 @@ export default function Portal() {
 
     setIsSubmitting(true);
     try {
-      // Verify the student exists and is active
-      const { data: matchedStudent, error: matchErr } = await supabase
-        .from("students")
-        .select("id")
-        .ilike("last_name", parentStudentLastName.trim())
-        .eq("student_number", parentStudentId.trim().toUpperCase())
-        .eq("status", "active")
-        .eq("account_type", "student")
-        .maybeSingle();
+      // Verify the student exists and is active via edge function (bypasses RLS for unauthenticated users)
+      const { data: verifyData, error: verifyErr } = await supabase.functions.invoke("verify-student", {
+        body: {
+          student_number: parentStudentId.trim(),
+          last_name: parentStudentLastName.trim(),
+        },
+      });
 
-      if (matchErr || !matchedStudent) {
+      if (verifyErr || !verifyData?.found) {
         setError("No active student found with that last name and Student ID. Your child must activate their account first.");
         setIsSubmitting(false);
         return;
       }
+
+      const matchedStudentId = verifyData.student_id;
 
       const redirectUrl = `${window.location.origin}/portal`;
       const { error } = await supabase.auth.signUp({
@@ -223,7 +223,7 @@ export default function Portal() {
             email: parentEmail,
             user_id: session.user.id,
             account_type: "parent",
-            linked_student_id: matchedStudent.id,
+            linked_student_id: matchedStudentId,
             status: "active",
           });
         }
