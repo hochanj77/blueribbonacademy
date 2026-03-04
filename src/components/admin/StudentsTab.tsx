@@ -293,7 +293,6 @@ const StudentsTab = () => {
         const inserts = newRows.map((r) => ({
           first_name: r.first_name,
           last_name: r.last_name,
-          email: r.email || null,
           phone: r.phone || null,
           grade_level: r.grade_level || null,
           school: r.school || null,
@@ -316,7 +315,7 @@ const StudentsTab = () => {
         const updates: Record<string, unknown> = {};
         if (r.first_name) updates.first_name = r.first_name;
         if (r.last_name) updates.last_name = r.last_name;
-        if (r.email) updates.email = r.email;
+        
         if (r.phone) updates.phone = r.phone;
         if (r.grade_level) updates.grade_level = r.grade_level;
         if (r.school) updates.school = r.school;

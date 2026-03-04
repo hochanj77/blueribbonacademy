@@ -1,0 +1,1 @@
+UPDATE public.students SET email = NULL WHERE status = 'pending' AND email IS NOT NULL AND user_id IS NULL;
