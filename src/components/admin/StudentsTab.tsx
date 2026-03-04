@@ -152,7 +152,6 @@ const StudentsTab = () => {
       {
         'First Name': 'John',
         'Last Name': 'Doe',
-        'Email': 'john@example.com',
         'Phone': '555-0100',
         'Grade Level': '10th Grade',
         'School': 'Lincoln High',
@@ -394,7 +393,7 @@ const StudentsTab = () => {
                 Download Template
               </Button>
               <span className="text-sm text-muted-foreground">
-                Columns: First Name, Last Name, Email, Phone, Grade Level, School, Parent Name, Parent Email, Parent Phone, Notes
+                Columns: First Name, Last Name, Phone, Grade Level, School, Parent Name, Parent Email, Parent Phone, Notes
               </span>
             </div>
           )}

@@ -12,11 +12,11 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { student_number, email, password } = await req.json();
+    const { student_number, last_name, email, password } = await req.json();
 
-    if (!student_number || !email || !password) {
+    if (!student_number || !last_name || !email || !password) {
       return new Response(
-        JSON.stringify({ error: "Student ID, email, and password are required." }),
+        JSON.stringify({ error: "Student ID, last name, email, and password are required." }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -32,12 +32,12 @@ Deno.serve(async (req) => {
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const adminClient = createClient(supabaseUrl, serviceRoleKey);
 
-    // Find the student record matching student_number + email + status = 'pending'
+    // Find the student record matching student_number + last_name + status = 'pending'
     const { data: student, error: studentErr } = await adminClient
       .from("students")
       .select("id, first_name, last_name, email, student_number, status, user_id")
       .eq("student_number", student_number.trim().toUpperCase())
-      .eq("email", email.trim().toLowerCase())
+      .ilike("last_name", last_name.trim())
       .eq("status", "pending")
       .eq("account_type", "student")
       .maybeSingle();
@@ -54,7 +54,7 @@ Deno.serve(async (req) => {
       return new Response(
         JSON.stringify({
           error:
-            "No pending student found with that Student ID and email. Please check your information or contact PrepHaus administration.",
+            "No pending student found with that Student ID and last name. Please check your information or contact PrepHaus administration.",
         }),
         { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
@@ -67,9 +67,11 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Create the auth user
+    const trimmedEmail = email.trim().toLowerCase();
+
+    // Create the auth user with the student-provided email
     const { data: newUser, error: createErr } = await adminClient.auth.admin.createUser({
-      email: email.trim().toLowerCase(),
+      email: trimmedEmail,
       password,
       email_confirm: true,
       user_metadata: {
@@ -94,10 +96,15 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Link user_id to student record and set status to active
+    // Link user_id to student record, save email, and set status to active
     const { error: updateErr } = await adminClient
       .from("students")
-      .update({ user_id: newUser.user.id, status: "active", active: true })
+      .update({
+        user_id: newUser.user.id,
+        status: "active",
+        active: true,
+        email: trimmedEmail,
+      })
       .eq("id", student.id);
 
     if (updateErr) {

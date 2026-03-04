@@ -21,6 +21,7 @@ export default function Portal() {
 
   // Activate Account state
   const [activateStudentId, setActivateStudentId] = useState("");
+  const [activateLastName, setActivateLastName] = useState("");
   const [activateEmail, setActivateEmail] = useState("");
   const [activatePassword, setActivatePassword] = useState("");
   const [activateConfirmPassword, setActivateConfirmPassword] = useState("");
@@ -30,7 +31,7 @@ export default function Portal() {
   const [parentLastName, setParentLastName] = useState("");
   const [parentEmail, setParentEmail] = useState("");
   const [parentPassword, setParentPassword] = useState("");
-  const [parentStudentEmail, setParentStudentEmail] = useState("");
+  const [parentStudentLastName, setParentStudentLastName] = useState("");
   const [parentStudentId, setParentStudentId] = useState("");
 
   const [error, setError] = useState<string | null>(null);
@@ -74,7 +75,7 @@ export default function Portal() {
     setError(null);
     setSuccess(null);
 
-    if (!activateStudentId.trim() || !activateEmail.trim() || !activatePassword) {
+    if (!activateStudentId.trim() || !activateLastName.trim() || !activateEmail.trim() || !activatePassword) {
       setError("Please fill in all fields.");
       return;
     }
@@ -94,6 +95,7 @@ export default function Portal() {
       const response = await supabase.functions.invoke("activate-account", {
         body: {
           student_number: activateStudentId.trim(),
+          last_name: activateLastName.trim(),
           email: activateEmail.trim(),
           password: activatePassword,
         },
@@ -107,6 +109,7 @@ export default function Portal() {
         setSuccess("Account activated! You can now sign in with your email and password.");
         toast({ title: "Account Activated", description: "You can now sign in." });
         setActivateStudentId("");
+        setActivateLastName("");
         setActivateEmail("");
         setActivatePassword("");
         setActivateConfirmPassword("");
@@ -135,8 +138,8 @@ export default function Portal() {
       setError("Password must be at least 6 characters.");
       return;
     }
-    if (!parentStudentEmail.trim() || !parentStudentId.trim()) {
-      setError("Please enter your child's email and Student ID.");
+    if (!parentStudentLastName.trim() || !parentStudentId.trim()) {
+      setError("Please enter your child's last name and Student ID.");
       return;
     }
 
@@ -146,14 +149,14 @@ export default function Portal() {
       const { data: matchedStudent, error: matchErr } = await supabase
         .from("students")
         .select("id")
-        .eq("email", parentStudentEmail.trim())
-        .eq("student_number", parentStudentId.trim())
+        .ilike("last_name", parentStudentLastName.trim())
+        .eq("student_number", parentStudentId.trim().toUpperCase())
         .eq("status", "active")
         .eq("account_type", "student")
         .maybeSingle();
 
       if (matchErr || !matchedStudent) {
-        setError("No active student found with that email and Student ID. Your child must activate their account first.");
+        setError("No active student found with that last name and Student ID. Your child must activate their account first.");
         setIsSubmitting(false);
         return;
       }
@@ -189,7 +192,7 @@ export default function Portal() {
         setParentLastName("");
         setParentEmail("");
         setParentPassword("");
-        setParentStudentEmail("");
+        setParentStudentLastName("");
         setParentStudentId("");
       }
     } catch {
@@ -331,7 +334,7 @@ export default function Portal() {
                     <p className="text-sm font-medium text-secondary">Activate Your Student Account</p>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Enter the Student ID and email provided by PrepHaus, then create your password.
+                    Enter the Student ID and last name provided by PrepHaus, then create your password.
                   </p>
                 </div>
 
@@ -348,7 +351,23 @@ export default function Portal() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="activate-email" className="text-foreground">Email</Label>
+                  <Label htmlFor="activate-last-name" className="text-foreground">Last Name</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Input
+                      id="activate-last-name"
+                      type="text"
+                      placeholder="Enter your last name"
+                      className="pl-10"
+                      value={activateLastName}
+                      onChange={(e) => setActivateLastName(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="activate-email" className="text-foreground">Your Email</Label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <Input
@@ -490,13 +509,13 @@ export default function Portal() {
                     Your child must activate their account first before you can sign up.
                   </p>
                   <div className="space-y-2">
-                    <Label htmlFor="parent-student-email" className="text-foreground">Child's Email</Label>
+                    <Label htmlFor="parent-student-last-name" className="text-foreground">Child's Last Name</Label>
                     <Input
-                      id="parent-student-email"
-                      type="email"
-                      placeholder="student@example.com"
-                      value={parentStudentEmail}
-                      onChange={(e) => setParentStudentEmail(e.target.value)}
+                      id="parent-student-last-name"
+                      type="text"
+                      placeholder="Enter child's last name"
+                      value={parentStudentLastName}
+                      onChange={(e) => setParentStudentLastName(e.target.value)}
                       required
                     />
                   </div>
