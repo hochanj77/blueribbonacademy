@@ -155,13 +155,13 @@ const StudentDashboard = () => {
   const displayOrder = sortSemestersChronologically(Object.keys(gradesBySemester));
 
   return (
-    <div className="pt-24 md:pt-28 pb-10 md:pb-16">
-      <div className="container mx-auto px-4">
-        {/* Welcome Header */}
-        <div className="mb-6 md:mb-8">
+    <div className="pb-10 md:pb-16">
+      {/* Welcome Header with colored background */}
+      <div className="bg-primary/5 border-b border-primary/10 pt-24 md:pt-28 pb-6 md:pb-8">
+        <div className="container mx-auto px-4">
           <div className="flex items-center gap-2 sm:gap-3 mb-2">
-            <div className="p-1.5 sm:p-2 rounded-full bg-accent/10">
-              <User className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
+            <div className="p-1.5 sm:p-2 rounded-full bg-primary/10">
+              <User className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             </div>
             <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-secondary">
               Welcome, {studentProfile.first_name}!
@@ -176,7 +176,9 @@ const StudentDashboard = () => {
             View your grades, resources, and announcements below.
           </p>
         </div>
+      </div>
 
+      <div className="container mx-auto px-4 mt-6 md:mt-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
           {/* Main Content — Grades */}
           <div className="lg:col-span-2 space-y-6">
