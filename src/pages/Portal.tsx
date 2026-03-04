@@ -8,12 +8,11 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Lock, User, Loader2, AlertCircle, Users, KeyRound } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 export default function Portal() {
   const navigate = useNavigate();
   const { user, loading, isAdmin, isStudent, isParent, isAdminLoading, signIn } = useAuth();
-  const { toast } = useToast();
 
   // Sign In state
   const [loginIdentifier, setLoginIdentifier] = useState("");
@@ -79,13 +78,13 @@ export default function Portal() {
             }
           } catch {}
           setError(msg);
-          toast({ variant: "destructive", title: "Sign In Failed", description: msg });
+          toast.error(msg);
           return;
         }
 
         if (data?.error) {
           setError(data.error);
-          toast({ variant: "destructive", title: "Sign In Failed", description: data.error });
+          toast.error(data.error);
           return;
         }
 
@@ -101,7 +100,7 @@ export default function Portal() {
         const { error } = await signIn(loginIdentifier.trim(), password);
         if (error) {
           setError("Invalid credentials.");
-          toast({ variant: "destructive", title: "Sign In Failed", description: "Invalid credentials." });
+          toast.error("Invalid credentials.");
         }
       }
     } catch {
@@ -145,10 +144,10 @@ export default function Portal() {
       if (response.error || response.data?.error) {
         const msg = response.data?.error || "Activation failed. Please try again.";
         setError(msg);
-        toast({ variant: "destructive", title: "Activation Failed", description: msg });
+        toast.error(msg);
       } else {
         setSuccess("Account activated! You can now sign in with your email and password.");
-        toast({ title: "Account Activated", description: "You can now sign in." });
+        toast.success("Account activated! You can now sign in.");
         setActivateStudentId("");
         setActivateLastName("");
         setActivateEmail("");
@@ -186,49 +185,24 @@ export default function Portal() {
 
     setIsSubmitting(true);
     try {
-      // Verify the student exists and is active via edge function (bypasses RLS for unauthenticated users)
-      const { data: verifyData, error: verifyErr } = await supabase.functions.invoke("verify-student", {
+      const { data, error: fnError } = await supabase.functions.invoke("parent-signup", {
         body: {
+          first_name: parentFirstName.trim(),
+          last_name: parentLastName.trim(),
+          email: parentEmail.trim(),
+          password: parentPassword,
           student_number: parentStudentId.trim(),
-          last_name: parentStudentLastName.trim(),
+          student_last_name: parentStudentLastName.trim(),
         },
       });
 
-      if (verifyErr || !verifyData?.found) {
-        setError("No active student found with that last name and Student ID. Your child must activate their account first.");
-        setIsSubmitting(false);
-        return;
-      }
-
-      const matchedStudentId = verifyData.student_id;
-
-      const redirectUrl = `${window.location.origin}/portal`;
-      const { error } = await supabase.auth.signUp({
-        email: parentEmail,
-        password: parentPassword,
-        options: { emailRedirectTo: redirectUrl },
-      });
-
-      if (error) {
-        const errorMessage = error.message.includes("User already registered")
-          ? "An account with this email already exists. Please sign in instead."
-          : error.message || "Sign up failed.";
-        setError(errorMessage);
+      if (fnError || data?.error) {
+        const msg = data?.error || "Sign up failed. Please try again.";
+        setError(msg);
+        toast.error(msg);
       } else {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-          await supabase.from("students").insert({
-            first_name: parentFirstName.trim(),
-            last_name: parentLastName.trim(),
-            email: parentEmail,
-            user_id: session.user.id,
-            account_type: "parent",
-            linked_student_id: matchedStudentId,
-            status: "active",
-          });
-        }
-        setSuccess("Account created! Please check your email to verify your account before signing in.");
-        toast({ title: "Account Created", description: "Check your email to verify." });
+        setSuccess("Account created! You can now sign in.");
+        toast.success("Account created! You can now sign in.");
         setParentFirstName("");
         setParentLastName("");
         setParentEmail("");

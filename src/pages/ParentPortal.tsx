@@ -6,12 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Lock, User, Loader2, AlertCircle } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 export default function ParentPortal() {
   const navigate = useNavigate();
   const { user, loading, isAdmin, isAdminLoading, signIn } = useAuth();
-  const { toast } = useToast();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -44,25 +43,14 @@ export default function ParentPortal() {
       if (error) {
         const errorMessage = "Invalid credentials.";
         setError(errorMessage);
-        toast({
-          variant: "destructive",
-          title: "Sign In Failed",
-          description: errorMessage,
-        });
+        toast.error("Invalid credentials.");
       } else {
-        toast({
-          title: "Signed In",
-          description: "Redirecting...",
-        });
+        toast.success("Signed in. Redirecting...");
       }
     } catch (err) {
       const errorMessage = "Sign in failed. Please check your connection and try again.";
       setError(errorMessage);
-      toast({
-        variant: "destructive",
-        title: "Connection Error",
-        description: errorMessage,
-      });
+      toast.error("Sign in failed. Please check your connection and try again.");
     } finally {
       setIsSubmitting(false);
     }

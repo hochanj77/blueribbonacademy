@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Loader2, Pencil, Key, Trash2, UserPlus, Lock } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface AuthUser {
@@ -29,7 +29,6 @@ async function adminUsersAction(action: string, payload: Record<string, unknown>
 }
 
 export default function UsersTab() {
-  const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
@@ -62,7 +61,7 @@ export default function UsersTab() {
       setIsVerified(true);
       return true;
     } catch (err: any) {
-      toast({ variant: "destructive", title: "Verification Failed", description: err.message || "Incorrect password" });
+      toast.error(err.message || "Incorrect password");
       return false;
     } finally {
       setVerifying(false);
@@ -72,41 +71,41 @@ export default function UsersTab() {
   const createMutation = useMutation({
     mutationFn: () => adminUsersAction("create", { email: newEmail, password: newPassword, role: "admin" }),
     onSuccess: () => {
-      toast({ title: "Admin Created", description: `Admin account created for ${newEmail}` });
+      toast.success(`Admin account created for ${newEmail}`);
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
       setCreateOpen(false);
       setNewEmail("");
       setNewPassword("");
     },
-    onError: (err: Error) => toast({ variant: "destructive", title: "Error", description: err.message }),
+    onError: (err: Error) => toast.error(err.message),
   });
 
   const updateEmailMutation = useMutation({
     mutationFn: (params: { user_id: string; email: string }) => adminUsersAction("update_email", params),
     onSuccess: () => {
-      toast({ title: "Email Updated" });
+      toast.success("Email updated");
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
       closeEditDialog();
     },
-    onError: (err: Error) => toast({ variant: "destructive", title: "Error", description: err.message }),
+    onError: (err: Error) => toast.error(err.message),
   });
 
   const updatePasswordMutation = useMutation({
     mutationFn: (params: { user_id: string; password: string }) => adminUsersAction("update_password", params),
     onSuccess: () => {
-      toast({ title: "Password Updated" });
+      toast.success("Password updated");
       closePasswordDialog();
     },
-    onError: (err: Error) => toast({ variant: "destructive", title: "Error", description: err.message }),
+    onError: (err: Error) => toast.error(err.message),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (user_id: string) => adminUsersAction("delete", { user_id }),
     onSuccess: () => {
-      toast({ title: "Admin Deleted" });
+      toast.success("Admin deleted");
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
     },
-    onError: (err: Error) => toast({ variant: "destructive", title: "Error", description: err.message }),
+    onError: (err: Error) => toast.error(err.message),
   });
 
   const closeEditDialog = () => {

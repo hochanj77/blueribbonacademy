@@ -116,6 +116,7 @@ const ParentDashboard = () => {
         event: '*',
         schema: 'public',
         table: 'messages',
+        filter: `recipient_id=eq.${user.id}`,
       }, () => {
         queryClient.invalidateQueries({ queryKey: ['parent_messages', user.id] });
       })

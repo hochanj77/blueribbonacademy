@@ -1,7 +1,9 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+const allowedOrigin = Deno.env.get("CORS_ORIGIN") || "https://prephaus.lovable.app";
+
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Origin": allowedOrigin,
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
@@ -55,7 +57,6 @@ Deno.serve(async (req) => {
 
     // LIST admin users only
     if (action === "list") {
-      // Get all admin role entries
       const { data: adminRoles } = await adminClient
         .from("user_roles")
         .select("user_id")
@@ -86,7 +87,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    // VERIFY PASSWORD - re-authenticate calling admin before sensitive actions
+    // VERIFY PASSWORD
     if (action === "verify_password") {
       const { password } = body;
       if (!password || !caller.email) {
@@ -146,7 +147,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    // UPDATE email (requires prior verify_password call from client)
+    // UPDATE email
     if (action === "update_email") {
       const { user_id, email } = body;
       if (!user_id || !email) {
@@ -164,7 +165,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    // UPDATE password (requires prior verify_password call from client)
+    // UPDATE password
     if (action === "update_password") {
       const { user_id, password } = body;
       if (!user_id || !password) {
