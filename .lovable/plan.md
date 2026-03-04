@@ -1,65 +1,50 @@
 
 
-## Plan: Excel Import + Student Activation Workflow
+# Additional Security Fixes
 
-This is a significant workflow overhaul with three main parts: (1) Excel import for students, (2) a new "Activate Account" flow replacing the current student Sign Up, and (3) status tracking with Pending/Active/Inactive states.
+Three items to add to the existing plan.
 
-### Current State
-- Students can self-register via Sign Up tab on /portal (creates both auth account + student record)
-- Students table has an `active` boolean (true/false) — no "pending" concept
-- Grades tab already has a robust Excel import pattern to replicate
-- `generate_student_number` trigger auto-assigns Student IDs on insert
+---
 
-### What Changes
+## 1. Generic errors in activate-account
 
-#### 1. Database: Add `status` column to students table
-- Add a `status` text column: `'pending'` | `'active'` | `'inactive'` (default: `'pending'`)
-- Keep the `active` boolean for backward compatibility but derive it from status
-- Add a migration to set existing students with `user_id IS NOT NULL` to `'active'`, others to `'pending'`
+In `supabase/functions/activate-account/index.ts`, merge the two distinct error branches (lines 53-68) into one generic message. Both the "no pending student found" (404) and "already activated" (409) cases will return the same response:
 
-#### 2. Admin: Excel Import in StudentsTab
-- Replicate the GradesTab import pattern (file upload → parse → preview → confirm)
-- Column mapping: Student ID (optional for new), First Name, Last Name, Email, Phone, Grade Level, School, Parent Name, Parent Email, Parent Phone, Notes
-- Preview shows each row as "New" or "Update" (matched by student_number) or "Error"
-- New students inserted with `status = 'pending'`, trigger generates student_number
-- Existing students updated with changed fields
-- Add "Download Template" button for a blank Excel with correct headers
+> `"Unable to activate. Please check your information or contact PrepHaus administration."`
 
-#### 3. Admin: Status filter + badges
-- Replace the Active/Inactive badge with Pending (yellow) / Active (green) / Inactive (gray)
-- Add filter dropdown above students table: All / Pending / Active / Inactive
-- Status column sortable/filterable
+Both return status 400. This prevents attackers from probing which Student IDs exist or are already activated.
 
-#### 4. Portal: Replace Student Sign Up with "Activate Account"
-- Change the portal tabs from "Sign In / Sign Up" to three tabs: "Sign In", "Activate Account", "Parent Sign Up"
-- **Activate Account tab**: Student enters Student ID + email + creates password
-  - System verifies a student record exists with that student_number + email + status = 'pending'
-  - Creates auth account (via signUp), links `user_id` to the student record, sets status to `'active'`
-  - No more free student self-registration — students must be pre-created by admin
-- **Parent Sign Up** tab: Same as current parent flow but checks student status = 'active'
-- **Sign In** tab: Unchanged
+## 2. Remove student_id from verify-student response
 
-#### 5. Auth Context Update
-- Update `checkRoles` to check `status` field instead of just `active` boolean
-- Ensure `isStudent` is only true when status = `'active'`
-
-### Technical Details
-
-**Database migration:**
-```sql
-ALTER TABLE public.students ADD COLUMN status text NOT NULL DEFAULT 'pending';
-UPDATE public.students SET status = 'active' WHERE user_id IS NOT NULL;
-UPDATE public.students SET status = 'inactive' WHERE active = false;
-UPDATE public.students SET status = 'pending' WHERE user_id IS NULL AND active = true;
+In `supabase/functions/verify-student/index.ts` line 52, change:
+```
+{ found: true, student_id: student.id }
+```
+to:
+```
+{ found: true }
 ```
 
-**Files to edit:**
-- `src/components/admin/StudentsTab.tsx` — Add import UI, status filter, status badges, download template
-- `src/pages/Portal.tsx` — Replace student Sign Up with Activate Account tab; keep Parent Sign Up
-- `src/contexts/AuthContext.tsx` — Check `status = 'active'` instead of just `active = true`
-- `src/components/admin/StudentDetails.tsx` — Show status badge, allow manual status change
+The new `parent-signup` edge function (from the existing plan) handles the lookup server-side, so the client never needs the UUID.
 
-**Edge function needed:** An edge function to handle account activation, since the student record already exists and we need to create an auth user then update the student record's `user_id` and `status` atomically. This prevents race conditions and ensures the student_number + email match is verified server-side.
+## 3. Rate limiting on login-with-student-id
 
-**No changes to:** GradesTab, parent workflow (only minor: check `status = 'active'` instead of `active = true`)
+In `supabase/functions/login-with-student-id/index.ts`, add in-memory rate limiting at the top of the function:
+
+- A `Map<string, { count: number, resetAt: number }>` keyed by client IP (from `req.headers.get("x-forwarded-for")` or `"unknown"`)
+- Allow 5 attempts per 60-second window per IP
+- On exceeding the limit, return 429 with `"Too many login attempts. Please try again later."`
+- Clean up expired entries on each request to prevent memory leaks
+
+This is basic but effective for edge function deployments. It resets on cold starts, which is acceptable — it still prevents sustained brute-force attacks.
+
+---
+
+## Files Modified
+
+| File | Change |
+|------|--------|
+| `supabase/functions/activate-account/index.ts` | Merge error messages to generic |
+| `supabase/functions/verify-student/index.ts` | Remove `student_id` from response |
+| `supabase/functions/login-with-student-id/index.ts` | Add IP-based rate limiting |
 
