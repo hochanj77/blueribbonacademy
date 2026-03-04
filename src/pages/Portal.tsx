@@ -299,7 +299,16 @@ export default function Portal() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="signin-password" className="text-foreground">Password</Label>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="signin-password" className="text-foreground">Password</Label>
+                    <button
+                      type="button"
+                      className="text-xs text-accent hover:underline"
+                      onClick={() => setShowForgotPassword(true)}
+                    >
+                      Forgot password?
+                    </button>
+                  </div>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <Input
@@ -313,6 +322,40 @@ export default function Portal() {
                     />
                   </div>
                 </div>
+
+                {showForgotPassword && (
+                  <div className="p-4 rounded-lg border border-border bg-muted/50 space-y-3">
+                    <p className="text-sm font-medium text-secondary">Reset Your Password</p>
+                    <p className="text-xs text-muted-foreground">
+                      Enter your email address and we'll send you a link to reset your password.
+                    </p>
+                    <Input
+                      type="email"
+                      placeholder="Enter your email"
+                      value={resetEmail}
+                      onChange={(e) => setResetEmail(e.target.value)}
+                    />
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant="accent"
+                        size="sm"
+                        disabled={isSubmitting || !resetEmail}
+                        onClick={handleForgotPassword}
+                      >
+                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send Reset Link"}
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowForgotPassword(false)}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                )}
 
                 <Button variant="accent" size="lg" className="w-full" type="submit" disabled={isSubmitting}>
                   {isSubmitting ? (
