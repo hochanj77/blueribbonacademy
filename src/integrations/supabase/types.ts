@@ -480,6 +480,7 @@ export type Database = {
           parent_phone: string | null
           phone: string | null
           school: string | null
+          status: string
           student_number: string | null
           tutor_id: string | null
           updated_at: string | null
@@ -502,6 +503,7 @@ export type Database = {
           parent_phone?: string | null
           phone?: string | null
           school?: string | null
+          status?: string
           student_number?: string | null
           tutor_id?: string | null
           updated_at?: string | null
@@ -524,6 +526,7 @@ export type Database = {
           parent_phone?: string | null
           phone?: string | null
           school?: string | null
+          status?: string
           student_number?: string | null
           tutor_id?: string | null
           updated_at?: string | null

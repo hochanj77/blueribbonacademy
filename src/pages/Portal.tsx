@@ -7,35 +7,41 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Lock, User, Loader2, AlertCircle, Users } from "lucide-react";
+import { Lock, User, Loader2, AlertCircle, Users, KeyRound } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Portal() {
   const navigate = useNavigate();
-  const { user, loading, isAdmin, isStudent, isParent, isAdminLoading, signIn, signUp } = useAuth();
+  const { user, loading, isAdmin, isStudent, isParent, isAdminLoading, signIn } = useAuth();
   const { toast } = useToast();
 
+  // Sign In state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [accountType, setAccountType] = useState<"student" | "parent">("student");
-  const [studentEmail, setStudentEmail] = useState("");
-  const [studentId, setStudentId] = useState("");
+
+  // Activate Account state
+  const [activateStudentId, setActivateStudentId] = useState("");
+  const [activateEmail, setActivateEmail] = useState("");
+  const [activatePassword, setActivatePassword] = useState("");
+  const [activateConfirmPassword, setActivateConfirmPassword] = useState("");
+
+  // Parent Sign Up state
+  const [parentFirstName, setParentFirstName] = useState("");
+  const [parentLastName, setParentLastName] = useState("");
+  const [parentEmail, setParentEmail] = useState("");
+  const [parentPassword, setParentPassword] = useState("");
+  const [parentStudentEmail, setParentStudentEmail] = useState("");
+  const [parentStudentId, setParentStudentId] = useState("");
+
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Route logged-in users to the right place
   useEffect(() => {
     if (!loading && !isAdminLoading && user) {
-      if (isAdmin) {
-        navigate("/admin");
-      } else if (isStudent) {
-        navigate("/dashboard");
-      } else if (isParent) {
-        navigate("/parent-dashboard");
-      }
+      if (isAdmin) navigate("/admin");
+      else if (isStudent) navigate("/dashboard");
+      else if (isParent) navigate("/parent-dashboard");
     }
   }, [user, loading, isAdmin, isStudent, isParent, isAdminLoading, navigate]);
 
@@ -56,100 +62,138 @@ export default function Portal() {
         setError("Invalid credentials.");
         toast({ variant: "destructive", title: "Sign In Failed", description: "Invalid credentials." });
       }
-    } catch (err) {
-      const errorMessage = "Sign in failed. Please check your connection and try again.";
-      setError(errorMessage);
-      toast({ variant: "destructive", title: "Connection Error", description: errorMessage });
+    } catch {
+      setError("Sign in failed. Please check your connection and try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleSignUp = async (e: React.FormEvent) => {
+  const handleActivateAccount = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
 
-    if (!firstName.trim() || !lastName.trim()) {
-      setError("Please enter your first and last name.");
+    if (!activateStudentId.trim() || !activateEmail.trim() || !activatePassword) {
+      setError("Please fill in all fields.");
       return;
     }
-    if (!email || !password) {
-      setError("Please enter both email and password.");
-      return;
-    }
-    if (password.length < 6) {
+
+    if (activatePassword.length < 6) {
       setError("Password must be at least 6 characters.");
       return;
     }
 
-    // Parent-specific validation
-    if (accountType === "parent") {
-      if (!studentEmail.trim() || !studentId.trim()) {
-        setError("Please enter your child's email and Student ID to link your account.");
-        return;
-      }
+    if (activatePassword !== activateConfirmPassword) {
+      setError("Passwords do not match.");
+      return;
     }
 
     setIsSubmitting(true);
     try {
-      // If parent, verify the student exists before creating the account
-      let linkedStudentId: string | null = null;
-      if (accountType === "parent") {
-        const { data: matchedStudent, error: matchErr } = await supabase
-          .from("students")
-          .select("id")
-          .eq("email", studentEmail.trim())
-          .eq("student_number", studentId.trim())
-          .eq("active", true)
-          .maybeSingle();
+      const response = await supabase.functions.invoke("activate-account", {
+        body: {
+          student_number: activateStudentId.trim(),
+          email: activateEmail.trim(),
+          password: activatePassword,
+        },
+      });
 
-        if (matchErr || !matchedStudent) {
-          setError("No active student found with that email and Student ID. Please check and try again.");
-          setIsSubmitting(false);
-          return;
-        }
-        linkedStudentId = matchedStudent.id;
+      if (response.error || response.data?.error) {
+        const msg = response.data?.error || "Activation failed. Please try again.";
+        setError(msg);
+        toast({ variant: "destructive", title: "Activation Failed", description: msg });
+      } else {
+        setSuccess("Account activated! You can now sign in with your email and password.");
+        toast({ title: "Account Activated", description: "You can now sign in." });
+        setActivateStudentId("");
+        setActivateEmail("");
+        setActivatePassword("");
+        setActivateConfirmPassword("");
+      }
+    } catch {
+      setError("Activation failed. Please check your connection and try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleParentSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setSuccess(null);
+
+    if (!parentFirstName.trim() || !parentLastName.trim()) {
+      setError("Please enter your first and last name.");
+      return;
+    }
+    if (!parentEmail || !parentPassword) {
+      setError("Please enter your email and password.");
+      return;
+    }
+    if (parentPassword.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
+    if (!parentStudentEmail.trim() || !parentStudentId.trim()) {
+      setError("Please enter your child's email and Student ID.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      // Verify the student exists and is active
+      const { data: matchedStudent, error: matchErr } = await supabase
+        .from("students")
+        .select("id")
+        .eq("email", parentStudentEmail.trim())
+        .eq("student_number", parentStudentId.trim())
+        .eq("status", "active")
+        .eq("account_type", "student")
+        .maybeSingle();
+
+      if (matchErr || !matchedStudent) {
+        setError("No active student found with that email and Student ID. Your child must activate their account first.");
+        setIsSubmitting(false);
+        return;
       }
 
-      const { error } = await signUp(email, password);
+      const redirectUrl = `${window.location.origin}/portal`;
+      const { error } = await supabase.auth.signUp({
+        email: parentEmail,
+        password: parentPassword,
+        options: { emailRedirectTo: redirectUrl },
+      });
 
       if (error) {
-        let errorMessage: string;
-        if (error.message.includes('User already registered')) {
-          errorMessage = 'An account with this email already exists. Please sign in instead.';
-        } else {
-          errorMessage = error.message || 'Sign up failed. Please try again.';
-        }
+        const errorMessage = error.message.includes("User already registered")
+          ? "An account with this email already exists. Please sign in instead."
+          : error.message || "Sign up failed.";
         setError(errorMessage);
-        toast({ variant: "destructive", title: "Sign Up Failed", description: errorMessage });
       } else {
-        // Create the record after signup
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
-          await supabase.from('students').insert({
-            first_name: firstName.trim(),
-            last_name: lastName.trim(),
-            email: email,
+          await supabase.from("students").insert({
+            first_name: parentFirstName.trim(),
+            last_name: parentLastName.trim(),
+            email: parentEmail,
             user_id: session.user.id,
-            account_type: accountType,
-            linked_student_id: linkedStudentId,
+            account_type: "parent",
+            linked_student_id: matchedStudent.id,
+            status: "active",
           });
         }
-        const successMessage = 'Account created! Please check your email to verify your account before signing in.';
-        setSuccess(successMessage);
-        toast({ title: "Account Created", description: successMessage });
-        setEmail('');
-        setPassword('');
-        setFirstName('');
-        setLastName('');
-        setStudentEmail('');
-        setStudentId('');
+        setSuccess("Account created! Please check your email to verify your account before signing in.");
+        toast({ title: "Account Created", description: "Check your email to verify." });
+        setParentFirstName("");
+        setParentLastName("");
+        setParentEmail("");
+        setParentPassword("");
+        setParentStudentEmail("");
+        setParentStudentId("");
       }
-    } catch (err) {
-      const errorMessage = "Sign up failed. Please check your connection and try again.";
-      setError(errorMessage);
-      toast({ variant: "destructive", title: "Sign Up Failed", description: errorMessage });
+    } catch {
+      setError("Sign up failed. Please check your connection and try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -163,7 +207,6 @@ export default function Portal() {
     );
   }
 
-  // User is logged in — redirect based on role
   if (user && (isAdmin || isStudent || isParent)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted">
@@ -172,7 +215,6 @@ export default function Portal() {
     );
   }
 
-  // User is logged in but has no linked student/parent profile and is not admin
   if (user && !isAdmin && !isStudent && !isParent) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted px-4">
@@ -181,7 +223,7 @@ export default function Portal() {
             <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h2 className="text-xl font-bold text-secondary mb-2">Account Not Linked</h2>
             <p className="text-muted-foreground mb-4">
-              Your account hasn't been linked to a student profile yet. Please contact PrepHaus administration to set up your access.
+              Your account hasn't been linked to a student profile yet. Please contact PrepHaus administration.
             </p>
             <Button variant="outline" onClick={() => navigate("/contact")}>
               Contact Us
@@ -205,12 +247,14 @@ export default function Portal() {
             </p>
           </div>
 
-          <Tabs defaultValue="signin" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
+          <Tabs defaultValue="signin" className="w-full" onValueChange={() => { setError(null); setSuccess(null); }}>
+            <TabsList className="grid w-full grid-cols-3 mb-6">
               <TabsTrigger value="signin">Sign In</TabsTrigger>
-              <TabsTrigger value="signup">Sign Up</TabsTrigger>
+              <TabsTrigger value="activate">Activate</TabsTrigger>
+              <TabsTrigger value="parent">Parent</TabsTrigger>
             </TabsList>
 
+            {/* Sign In Tab */}
             <TabsContent value="signin">
               <form onSubmit={handleSignIn} className="space-y-6">
                 {error && (
@@ -265,8 +309,9 @@ export default function Portal() {
               </form>
             </TabsContent>
 
-            <TabsContent value="signup">
-              <form onSubmit={handleSignUp} className="space-y-5">
+            {/* Activate Account Tab */}
+            <TabsContent value="activate">
+              <form onSubmit={handleActivateAccount} className="space-y-5">
                 {error && (
                   <Alert variant="destructive">
                     <AlertCircle className="h-4 w-4" />
@@ -280,125 +325,193 @@ export default function Portal() {
                   </Alert>
                 )}
 
-                {/* Account Type Toggle */}
-                <div className="space-y-2">
-                  <Label className="text-foreground">I am a...</Label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setAccountType("student")}
-                      className={`flex items-center justify-center gap-2 p-3 rounded-lg border-2 transition-all text-sm font-medium ${
-                        accountType === "student"
-                          ? "border-accent bg-accent/10 text-accent"
-                          : "border-border bg-background text-muted-foreground hover:border-muted-foreground"
-                      }`}
-                    >
-                      <User className="h-4 w-4" />
-                      Student
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setAccountType("parent")}
-                      className={`flex items-center justify-center gap-2 p-3 rounded-lg border-2 transition-all text-sm font-medium ${
-                        accountType === "parent"
-                          ? "border-accent bg-accent/10 text-accent"
-                          : "border-border bg-background text-muted-foreground hover:border-muted-foreground"
-                      }`}
-                    >
-                      <Users className="h-4 w-4" />
-                      Parent
-                    </button>
+                <div className="p-4 rounded-lg border border-border bg-muted/50">
+                  <div className="flex items-center gap-2 mb-2">
+                    <KeyRound className="h-4 w-4 text-accent" />
+                    <p className="text-sm font-medium text-secondary">Activate Your Student Account</p>
                   </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-first-name" className="text-foreground">First Name</Label>
-                    <Input
-                      id="signup-first-name"
-                      type="text"
-                      placeholder="First name"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-last-name" className="text-foreground">Last Name</Label>
-                    <Input
-                      id="signup-last-name"
-                      type="text"
-                      placeholder="Last name"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                      required
-                    />
-                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Enter the Student ID and email provided by PrepHaus, then create your password.
+                  </p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="signup-email" className="text-foreground">Email</Label>
+                  <Label htmlFor="activate-student-id" className="text-foreground">Student ID</Label>
+                  <Input
+                    id="activate-student-id"
+                    type="text"
+                    placeholder="e.g. JJ100"
+                    value={activateStudentId}
+                    onChange={(e) => setActivateStudentId(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="activate-email" className="text-foreground">Email</Label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <Input
-                      id="signup-email"
+                      id="activate-email"
                       type="email"
                       placeholder="Enter your email"
                       className="pl-10"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      value={activateEmail}
+                      onChange={(e) => setActivateEmail(e.target.value)}
                       required
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="signup-password" className="text-foreground">Password</Label>
+                  <Label htmlFor="activate-password" className="text-foreground">Create Password</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <Input
-                      id="signup-password"
+                      id="activate-password"
                       type="password"
                       placeholder="Create a password (min 6 chars)"
                       className="pl-10"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      value={activatePassword}
+                      onChange={(e) => setActivatePassword(e.target.value)}
                       required
                     />
                   </div>
                 </div>
 
-                {/* Parent linking fields */}
-                {accountType === "parent" && (
-                  <div className="space-y-4 p-4 rounded-lg border border-border bg-muted/50">
-                    <p className="text-sm font-medium text-secondary">Link to your child's account</p>
-                    <p className="text-xs text-muted-foreground">
-                      Enter your child's email and Student ID to connect your account to their profile.
-                    </p>
-                    <div className="space-y-2">
-                      <Label htmlFor="student-email" className="text-foreground">Child's Email</Label>
-                      <Input
-                        id="student-email"
-                        type="email"
-                        placeholder="student@example.com"
-                        value={studentEmail}
-                        onChange={(e) => setStudentEmail(e.target.value)}
-                        required={accountType === "parent"}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="student-id" className="text-foreground">Child's Student ID</Label>
-                      <Input
-                        id="student-id"
-                        type="text"
-                        placeholder="e.g. JJ100"
-                        value={studentId}
-                        onChange={(e) => setStudentId(e.target.value)}
-                        required={accountType === "parent"}
-                      />
-                    </div>
+                <div className="space-y-2">
+                  <Label htmlFor="activate-confirm-password" className="text-foreground">Confirm Password</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Input
+                      id="activate-confirm-password"
+                      type="password"
+                      placeholder="Confirm your password"
+                      className="pl-10"
+                      value={activateConfirmPassword}
+                      onChange={(e) => setActivateConfirmPassword(e.target.value)}
+                      required
+                    />
                   </div>
+                </div>
+
+                <Button variant="accent" size="lg" className="w-full" type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Activating...
+                    </>
+                  ) : (
+                    "Activate Account"
+                  )}
+                </Button>
+              </form>
+            </TabsContent>
+
+            {/* Parent Sign Up Tab */}
+            <TabsContent value="parent">
+              <form onSubmit={handleParentSignUp} className="space-y-5">
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
                 )}
+
+                {success && (
+                  <Alert className="border-accent bg-accent/10">
+                    <AlertDescription className="text-foreground">{success}</AlertDescription>
+                  </Alert>
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="parent-first-name" className="text-foreground">First Name</Label>
+                    <Input
+                      id="parent-first-name"
+                      type="text"
+                      placeholder="First name"
+                      value={parentFirstName}
+                      onChange={(e) => setParentFirstName(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="parent-last-name" className="text-foreground">Last Name</Label>
+                    <Input
+                      id="parent-last-name"
+                      type="text"
+                      placeholder="Last name"
+                      value={parentLastName}
+                      onChange={(e) => setParentLastName(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="parent-email" className="text-foreground">Your Email</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Input
+                      id="parent-email"
+                      type="email"
+                      placeholder="Enter your email"
+                      className="pl-10"
+                      value={parentEmail}
+                      onChange={(e) => setParentEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="parent-password" className="text-foreground">Password</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Input
+                      id="parent-password"
+                      type="password"
+                      placeholder="Create a password (min 6 chars)"
+                      className="pl-10"
+                      value={parentPassword}
+                      onChange={(e) => setParentPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-4 p-4 rounded-lg border border-border bg-muted/50">
+                  <div className="flex items-center gap-2">
+                    <Users className="h-4 w-4 text-accent" />
+                    <p className="text-sm font-medium text-secondary">Link to your child's account</p>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Your child must activate their account first before you can sign up.
+                  </p>
+                  <div className="space-y-2">
+                    <Label htmlFor="parent-student-email" className="text-foreground">Child's Email</Label>
+                    <Input
+                      id="parent-student-email"
+                      type="email"
+                      placeholder="student@example.com"
+                      value={parentStudentEmail}
+                      onChange={(e) => setParentStudentEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="parent-student-id" className="text-foreground">Child's Student ID</Label>
+                    <Input
+                      id="parent-student-id"
+                      type="text"
+                      placeholder="e.g. JJ100"
+                      value={parentStudentId}
+                      onChange={(e) => setParentStudentId(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
 
                 <Button variant="accent" size="lg" className="w-full" type="submit" disabled={isSubmitting}>
                   {isSubmitting ? (
@@ -407,7 +520,7 @@ export default function Portal() {
                       Creating account...
                     </>
                   ) : (
-                    "Create Account"
+                    "Create Parent Account"
                   )}
                 </Button>
               </form>

@@ -174,11 +174,15 @@ const StudentInfoCard = ({ student }: { student: Student }) => {
             <span className="text-muted-foreground">School:</span>
             <span>{student.school || '-'}</span>
           </div>
-          <div className="flex justify-between">
+         <div className="flex justify-between">
             <span className="text-muted-foreground">Status:</span>
-            <Badge variant={student.active ? 'default' : 'secondary'}>
-              {student.active ? 'Active' : 'Inactive'}
-            </Badge>
+            {(student as any).status === 'active' ? (
+              <Badge className="bg-green-500 hover:bg-green-500/80 text-primary-foreground border-transparent">Active</Badge>
+            ) : (student as any).status === 'pending' ? (
+              <Badge className="bg-yellow-500 hover:bg-yellow-500/80 text-primary-foreground border-transparent">Pending</Badge>
+            ) : (
+              <Badge variant="secondary">Inactive</Badge>
+            )}
           </div>
         </CardContent>
       </Card>

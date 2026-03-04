@@ -68,9 +68,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Check if this user is linked to a student record
       const { data: studentData, error: studentError } = await supabase
         .from('students')
-        .select('id, first_name, last_name, student_number, account_type, linked_student_id')
+        .select('id, first_name, last_name, student_number, account_type, linked_student_id, status')
         .eq('user_id', userId)
-        .eq('active', true)
         .maybeSingle();
 
       if (studentError) {
@@ -81,8 +80,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setLinkedStudentProfile(null);
       } else if (studentData) {
         const isParentAccount = studentData.account_type === 'parent';
-        setIsParent(isParentAccount);
-        setIsStudent(!isParentAccount);
+        const isActiveStudent = studentData.status === 'active' || (studentData.status == null && studentData.account_type === 'parent');
+        setIsParent(isParentAccount && isActiveStudent);
+        setIsStudent(!isParentAccount && isActiveStudent);
         setStudentProfile({
           id: studentData.id,
           first_name: studentData.first_name,
