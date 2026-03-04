@@ -16,7 +16,7 @@ export default function Portal() {
   const { toast } = useToast();
 
   // Sign In state
-  const [email, setEmail] = useState("");
+  const [loginIdentifier, setLoginIdentifier] = useState("");
   const [password, setPassword] = useState("");
 
   // Activate Account state
@@ -51,17 +51,42 @@ export default function Portal() {
     setError(null);
     setSuccess(null);
 
-    if (!email || !password) {
-      setError("Please enter both email and password.");
+    if (!loginIdentifier || !password) {
+      setError("Please enter your Email or Student ID and password.");
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const { error } = await signIn(email, password);
-      if (error) {
-        setError("Invalid credentials.");
-        toast({ variant: "destructive", title: "Sign In Failed", description: "Invalid credentials." });
+      const isStudentId = /^[A-Za-z]{2}\d+$/.test(loginIdentifier.trim());
+
+      if (isStudentId) {
+        // Sign in via edge function that looks up email by student number
+        const { data, error: fnError } = await supabase.functions.invoke("login-with-student-id", {
+          body: { student_number: loginIdentifier.trim(), password },
+        });
+
+        if (fnError || data?.error) {
+          const msg = data?.error || "Invalid credentials.";
+          setError(msg);
+          toast({ variant: "destructive", title: "Sign In Failed", description: msg });
+          return;
+        }
+
+        // Set the session from the edge function response
+        if (data?.session) {
+          await supabase.auth.setSession({
+            access_token: data.session.access_token,
+            refresh_token: data.session.refresh_token,
+          });
+        }
+      } else {
+        // Regular email sign in
+        const { error } = await signIn(loginIdentifier.trim(), password);
+        if (error) {
+          setError("Invalid credentials.");
+          toast({ variant: "destructive", title: "Sign In Failed", description: "Invalid credentials." });
+        }
       }
     } catch {
       setError("Sign in failed. Please check your connection and try again.");
@@ -268,16 +293,16 @@ export default function Portal() {
                 )}
 
                 <div className="space-y-2">
-                  <Label htmlFor="signin-email" className="text-foreground">Email</Label>
+                  <Label htmlFor="signin-identifier" className="text-foreground">Email or Student ID</Label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <Input
-                      id="signin-email"
-                      type="email"
-                      placeholder="Enter your email"
+                      id="signin-identifier"
+                      type="text"
+                      placeholder="e.g. EP101 or john@email.com"
                       className="pl-10"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      value={loginIdentifier}
+                      onChange={(e) => setLoginIdentifier(e.target.value)}
                       required
                     />
                   </div>
