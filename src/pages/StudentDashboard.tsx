@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useQuery } from '@tanstack/react-query';
@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, GraduationCap, BookOpen, FileText, Download, ExternalLink, User } from 'lucide-react';
 
 interface StudentGrade {
@@ -30,9 +31,42 @@ interface Announcement {
   created_at: string;
 }
 
+const SEASON_ORDER: Record<string, number> = { spring: 0, summer: 1, fall: 2, winter: 3 };
+
+function parseSemester(s: string): { year: number; season: number } {
+  const parts = s.trim().split(/\s+/);
+  const seasonStr = (parts[0] || '').toLowerCase();
+  const year = parseInt(parts[1] || '0', 10);
+  return { year: isNaN(year) ? 0 : year, season: SEASON_ORDER[seasonStr] ?? -1 };
+}
+
+function sortSemestersChronologically(semesters: string[]): string[] {
+  return [...semesters].sort((a, b) => {
+    const pa = parseSemester(a);
+    const pb = parseSemester(b);
+    if (pa.year !== pb.year) return pa.year - pb.year;
+    return pa.season - pb.season;
+  });
+}
+
+const ExpandableComment = ({ text }: { text: string }) => {
+  const [expanded, setExpanded] = useState(false);
+  if (!text) return <span>—</span>;
+  if (text.length <= 50) return <span>{text}</span>;
+  return (
+    <button
+      onClick={() => setExpanded(!expanded)}
+      className="text-left hover:text-foreground transition-colors"
+    >
+      {expanded ? text : `${text.slice(0, 50)}…`}
+    </button>
+  );
+};
+
 const StudentDashboard = () => {
   const navigate = useNavigate();
   const { user, loading, isStudent, isAdminLoading, studentProfile } = useAuth();
+  const [selectedSemester, setSelectedSemester] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && !isAdminLoading) {
@@ -59,6 +93,21 @@ const StudentDashboard = () => {
     },
     enabled: !!studentProfile?.id,
   });
+
+  // Compute sorted semesters and default to most recent
+  const sortedSemesters = useMemo(() => {
+    const unique = [...new Set(grades.map(g => g.semester).filter(Boolean))];
+    return sortSemestersChronologically(unique);
+  }, [grades]);
+
+  // Set default semester to most recent once data loads
+  useEffect(() => {
+    if (sortedSemesters.length > 0 && selectedSemester === null) {
+      setSelectedSemester(sortedSemesters[sortedSemesters.length - 1]);
+    }
+  }, [sortedSemesters, selectedSemester]);
+
+  const activeSemester = selectedSemester || 'all';
 
   // Fetch published announcements
   const { data: announcements = [] } = useQuery({
@@ -89,13 +138,21 @@ const StudentDashboard = () => {
 
   if (!isStudent || !studentProfile) return null;
 
-  // Group grades by semester
+  // Filter grades by selected semester
+  const filteredGrades = activeSemester === 'all'
+    ? grades
+    : grades.filter(g => g.semester === activeSemester);
+
+  // Group filtered grades by semester
   const gradesBySemester: Record<string, StudentGrade[]> = {};
-  grades.forEach((g) => {
+  filteredGrades.forEach((g) => {
     const key = g.semester || 'Other';
     if (!gradesBySemester[key]) gradesBySemester[key] = [];
     gradesBySemester[key].push(g);
   });
+
+  // Sort the semester keys chronologically for display
+  const displayOrder = sortSemestersChronologically(Object.keys(gradesBySemester));
 
   return (
     <div className="pt-24 md:pt-28 pb-10 md:pb-16">
@@ -126,14 +183,29 @@ const StudentDashboard = () => {
             {/* Grades Card */}
             <Card>
               <CardHeader>
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <GraduationCap className="h-5 w-5 text-primary" />
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-primary/10">
+                      <GraduationCap className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <CardTitle>My Report Cards</CardTitle>
+                      <CardDescription>Your grades across all semesters</CardDescription>
+                    </div>
                   </div>
-                  <div>
-                    <CardTitle>My Report Cards</CardTitle>
-                    <CardDescription>Your grades across all semesters</CardDescription>
-                  </div>
+                  {sortedSemesters.length > 1 && (
+                    <Select value={activeSemester} onValueChange={setSelectedSemester}>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Select semester" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Semesters</SelectItem>
+                        {sortedSemesters.map((s) => (
+                          <SelectItem key={s} value={s}>{s}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
                 </div>
               </CardHeader>
               <CardContent>
@@ -147,12 +219,14 @@ const StudentDashboard = () => {
                     <p>No grades available yet. Check back after your report cards are published.</p>
                   </div>
                 ) : (
-                  Object.entries(gradesBySemester).map(([semester, semGrades]) => (
-                    <div key={semester} className="mb-6 last:mb-0">
-                      <h3 className="font-semibold text-secondary mb-3 flex items-center gap-2">
-                        <Badge variant="outline">{semester}</Badge>
-                      </h3>
-                      <div>
+                  displayOrder.map((semester) => {
+                    const semGrades = gradesBySemester[semester];
+                    return (
+                      <div key={semester} className="mb-6 last:mb-0">
+                        <h3 className="font-semibold text-secondary mb-3 flex items-center gap-2">
+                          <Badge variant="outline">{semester}</Badge>
+                        </h3>
+                        <div>
                           {/* Mobile card view */}
                           <div className="block md:hidden space-y-3 p-3">
                             {semGrades.map((g) => (
@@ -169,7 +243,9 @@ const StudentDashboard = () => {
                                   <span>{g.test_quiz || '—'}</span>
                                 </div>
                                 {g.comments && (
-                                  <p className="text-xs text-muted-foreground border-t border-border pt-2">{g.comments}</p>
+                                  <div className="text-xs text-muted-foreground border-t border-border pt-2">
+                                    <ExpandableComment text={g.comments} />
+                                  </div>
                                 )}
                               </div>
                             ))}
@@ -196,16 +272,17 @@ const StudentDashboard = () => {
                                     <TableCell>{g.participation || '—'}</TableCell>
                                     <TableCell>{g.test_quiz || '—'}</TableCell>
                                     <TableCell className="text-sm text-muted-foreground max-w-[200px]">
-                                      {g.comments || '—'}
+                                      <ExpandableComment text={g.comments || ''} />
                                     </TableCell>
                                   </TableRow>
                                 ))}
                               </TableBody>
                             </Table>
                           </div>
+                        </div>
                       </div>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </CardContent>
             </Card>
@@ -316,4 +393,3 @@ const StudentDashboard = () => {
 };
 
 export default StudentDashboard;
-
