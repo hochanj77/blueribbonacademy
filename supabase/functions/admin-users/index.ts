@@ -66,9 +66,13 @@ Deno.serve(async (req) => {
       const { data, error } = await adminClient.auth.admin.listUsers({ perPage: 100 });
       if (error) throw error;
 
-      // Filter to only admin users
       const users = data.users
         .filter((u) => adminUserIds.includes(u.id))
+        .filter(
+          (u) =>
+            u.id === caller.id ||
+            u.app_metadata?.created_via_admin_users === true
+        )
         .map((u) => ({
           id: u.id,
           email: u.email,
@@ -123,6 +127,10 @@ Deno.serve(async (req) => {
         email,
         password,
         email_confirm: true,
+        app_metadata: {
+          created_via_admin_users: true,
+          created_by_admin_id: caller.id,
+        },
       });
       if (createErr) throw createErr;
 
