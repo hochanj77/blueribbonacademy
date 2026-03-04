@@ -1,9 +1,10 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useSiteContent } from '@/hooks/useSiteContent';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -36,6 +37,24 @@ interface Message {
   created_at: string;
 }
 
+const SEASON_ORDER: Record<string, number> = { spring: 0, summer: 1, fall: 2, winter: 3 };
+
+function parseSemester(s: string): { year: number; season: number } {
+  const parts = s.trim().split(/\s+/);
+  const seasonStr = (parts[0] || '').toLowerCase();
+  const year = parseInt(parts[1] || '0', 10);
+  return { year: isNaN(year) ? 0 : year, season: SEASON_ORDER[seasonStr] ?? -1 };
+}
+
+function sortSemestersChronologically(semesters: string[]): string[] {
+  return [...semesters].sort((a, b) => {
+    const pa = parseSemester(a);
+    const pb = parseSemester(b);
+    if (pa.year !== pb.year) return pa.year - pb.year;
+    return pa.season - pb.season;
+  });
+}
+
 const ParentDashboard = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -44,6 +63,7 @@ const ParentDashboard = () => {
   const [newSubject, setNewSubject] = useState('');
   const [newMessage, setNewMessage] = useState('');
   const [sending, setSending] = useState(false);
+  const [selectedSemester, setSelectedSemester] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -132,6 +152,30 @@ const ParentDashboard = () => {
   const { data: catalogData } = useSiteContent('global', 'catalog');
   const catalog = catalogData?.content || {};
 
+  // Compute sorted semesters and default to most recent
+  const sortedSemesters = useMemo(() => {
+    const unique = [...new Set(grades.map(g => g.semester).filter(Boolean))];
+    return sortSemestersChronologically(unique);
+  }, [grades]);
+
+  useEffect(() => {
+    if (sortedSemesters.length > 0 && selectedSemester === null) {
+      setSelectedSemester(sortedSemesters[sortedSemesters.length - 1]);
+    }
+  }, [sortedSemesters, selectedSemester]);
+
+  const activeSemester = selectedSemester || 'all';
+
+  const gradesBySemester: Record<string, StudentGrade[]> = {};
+  const filteredGrades = activeSemester === 'all' ? grades : grades.filter(g => g.semester === activeSemester);
+  filteredGrades.forEach((g) => {
+    const key = g.semester || 'Other';
+    if (!gradesBySemester[key]) gradesBySemester[key] = [];
+    gradesBySemester[key].push(g);
+  });
+
+  const sortedSemesterKeys = sortSemestersChronologically(Object.keys(gradesBySemester));
+
   if (loading || isAdminLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -141,14 +185,6 @@ const ParentDashboard = () => {
   }
 
   if (!isParent || !studentProfile) return null;
-
-  // Group grades by semester
-  const gradesBySemester: Record<string, StudentGrade[]> = {};
-  grades.forEach((g) => {
-    const key = g.semester || 'Other';
-    if (!gradesBySemester[key]) gradesBySemester[key] = [];
-    gradesBySemester[key].push(g);
-  });
 
   return (
     <div className="pt-24 md:pt-28 pb-10 md:pb-16">
@@ -259,18 +295,33 @@ const ParentDashboard = () => {
             <div className="lg:col-span-2 space-y-6">
               <Card>
                 <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-primary/10">
-                      <GraduationCap className="h-5 w-5 text-primary" />
+                  <div className="flex items-center justify-between flex-wrap gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-primary/10">
+                        <GraduationCap className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <CardTitle>
+                          {linkedStudentProfile
+                            ? `${linkedStudentProfile.first_name}'s Report Cards`
+                            : 'Report Cards'}
+                        </CardTitle>
+                        <CardDescription>Grades across all semesters</CardDescription>
+                      </div>
                     </div>
-                    <div>
-                      <CardTitle>
-                        {linkedStudentProfile
-                          ? `${linkedStudentProfile.first_name}'s Report Cards`
-                          : 'Report Cards'}
-                      </CardTitle>
-                      <CardDescription>Grades across all semesters</CardDescription>
-                    </div>
+                    {sortedSemesters.length > 0 && (
+                      <Select value={activeSemester} onValueChange={setSelectedSemester}>
+                        <SelectTrigger className="w-[180px]">
+                          <SelectValue placeholder="Filter semester" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Semesters</SelectItem>
+                          {sortedSemesters.map(s => (
+                            <SelectItem key={s} value={s}>{s}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -289,7 +340,9 @@ const ParentDashboard = () => {
                       <p>No grades available yet.</p>
                     </div>
                   ) : (
-                    Object.entries(gradesBySemester).map(([semester, semGrades]) => (
+                    sortedSemesterKeys.map((semester) => {
+                      const semGrades = gradesBySemester[semester];
+                      return (
                       <div key={semester} className="mb-6 last:mb-0">
                         <h3 className="font-semibold text-secondary mb-3 flex items-center gap-2">
                           <Badge variant="outline">{semester}</Badge>
@@ -337,7 +390,8 @@ const ParentDashboard = () => {
                           </Table>
                         </div>
                       </div>
-                    ))
+                      );
+                    })
                   )}
                 </CardContent>
               </Card>
