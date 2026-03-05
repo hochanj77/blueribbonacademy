@@ -4,13 +4,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { useSiteContent } from "@/hooks/useSiteContent";
@@ -186,21 +179,19 @@ export default function Contact() {
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="grade">Student Grade Level</Label>
-                      <Select
+                      <select
+                        id="grade"
                         value={formData.grade}
-                        onValueChange={(value) => setFormData({ ...formData, grade: value })}
+                        onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
+                        className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                       >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select grade" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {gradeOptions.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                        <option value="">Select grade</option>
+                        {gradeOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
 
