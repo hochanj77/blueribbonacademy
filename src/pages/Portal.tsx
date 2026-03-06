@@ -7,12 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Lock, User, Loader2, AlertCircle, Users, KeyRound } from "lucide-react";
+import { Lock, User, Loader2, AlertCircle, KeyRound } from "lucide-react";
 import { toast } from "sonner";
 
 export default function Portal() {
   const navigate = useNavigate();
-  const { user, loading, isAdmin, isStudent, isParent, isAdminLoading, signIn } = useAuth();
+  const { user, loading, isAdmin, isStudent, isAdminLoading, signIn } = useAuth();
 
   // Sign In state
   const [loginIdentifier, setLoginIdentifier] = useState("");
@@ -24,14 +24,6 @@ export default function Portal() {
   const [activateEmail, setActivateEmail] = useState("");
   const [activatePassword, setActivatePassword] = useState("");
   const [activateConfirmPassword, setActivateConfirmPassword] = useState("");
-
-  // Parent Sign Up state
-  const [parentFirstName, setParentFirstName] = useState("");
-  const [parentLastName, setParentLastName] = useState("");
-  const [parentEmail, setParentEmail] = useState("");
-  const [parentPassword, setParentPassword] = useState("");
-  const [parentStudentLastName, setParentStudentLastName] = useState("");
-  const [parentStudentId, setParentStudentId] = useState("");
 
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -65,9 +57,8 @@ export default function Portal() {
     if (!loading && !isAdminLoading && user) {
       if (isAdmin) navigate("/admin");
       else if (isStudent) navigate("/dashboard");
-      else if (isParent) navigate("/parent-dashboard");
     }
-  }, [user, loading, isAdmin, isStudent, isParent, isAdminLoading, navigate]);
+  }, [user, loading, isAdmin, isStudent, isAdminLoading, navigate]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,13 +75,11 @@ export default function Portal() {
       const isStudentId = /^[A-Za-z]{2}\d+$/.test(loginIdentifier.trim());
 
       if (isStudentId) {
-        // Sign in via edge function that looks up email by student number
         const { data, error: fnError } = await supabase.functions.invoke("login-with-student-id", {
           body: { student_number: loginIdentifier.trim(), password },
         });
 
         if (fnError) {
-          // Parse error message from the response
           let msg = "Invalid credentials.";
           try {
             if (fnError instanceof Error && 'context' in fnError) {
@@ -112,7 +101,6 @@ export default function Portal() {
           return;
         }
 
-        // Set the session from the edge function response
         if (data?.session) {
           await supabase.auth.setSession({
             access_token: data.session.access_token,
@@ -120,7 +108,6 @@ export default function Portal() {
           });
         }
       } else {
-        // Regular email sign in
         const { error } = await signIn(loginIdentifier.trim(), password);
         if (error) {
           setError("Invalid credentials.");
@@ -185,62 +172,6 @@ export default function Portal() {
     }
   };
 
-  const handleParentSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setSuccess(null);
-
-    if (!parentFirstName.trim() || !parentLastName.trim()) {
-      setError("Please enter your first and last name.");
-      return;
-    }
-    if (!parentEmail || !parentPassword) {
-      setError("Please enter your email and password.");
-      return;
-    }
-    if (parentPassword.length < 6) {
-      setError("Password must be at least 6 characters.");
-      return;
-    }
-    if (!parentStudentLastName.trim() || !parentStudentId.trim()) {
-      setError("Please enter your child's last name and Student ID.");
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const { data, error: fnError } = await supabase.functions.invoke("parent-signup", {
-        body: {
-          first_name: parentFirstName.trim(),
-          last_name: parentLastName.trim(),
-          email: parentEmail.trim(),
-          password: parentPassword,
-          student_number: parentStudentId.trim(),
-          student_last_name: parentStudentLastName.trim(),
-        },
-      });
-
-      if (fnError || data?.error) {
-        const msg = data?.error || "Sign up failed. Please try again.";
-        setError(msg);
-        toast.error(msg);
-      } else {
-        setSuccess("Account created! You can now sign in.");
-        toast.success("Account created! You can now sign in.");
-        setParentFirstName("");
-        setParentLastName("");
-        setParentEmail("");
-        setParentPassword("");
-        setParentStudentLastName("");
-        setParentStudentId("");
-      }
-    } catch {
-      setError("Sign up failed. Please check your connection and try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   if (loading || isAdminLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted">
@@ -249,7 +180,7 @@ export default function Portal() {
     );
   }
 
-  if (user && (isAdmin || isStudent || isParent)) {
+  if (user && (isAdmin || isStudent)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -257,7 +188,7 @@ export default function Portal() {
     );
   }
 
-  if (user && !isAdmin && !isStudent && !isParent) {
+  if (user && !isAdmin && !isStudent) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted px-4">
         <div className="w-full max-w-md">
@@ -290,10 +221,9 @@ export default function Portal() {
           </div>
 
           <Tabs defaultValue="signin" className="w-full" onValueChange={() => { setError(null); setSuccess(null); }}>
-            <TabsList className="grid w-full grid-cols-3 mb-6">
+            <TabsList className="grid w-full grid-cols-2 mb-6">
               <TabsTrigger value="signin">Sign In</TabsTrigger>
               <TabsTrigger value="activate">Activate</TabsTrigger>
-              <TabsTrigger value="parent">Parent</TabsTrigger>
             </TabsList>
 
             {/* Sign In Tab */}
@@ -504,124 +434,6 @@ export default function Portal() {
                     </>
                   ) : (
                     "Activate Account"
-                  )}
-                </Button>
-              </form>
-            </TabsContent>
-
-            {/* Parent Sign Up Tab */}
-            <TabsContent value="parent">
-              <form onSubmit={handleParentSignUp} className="space-y-5">
-                {error && (
-                  <Alert variant="destructive">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-                )}
-
-                {success && (
-                  <Alert className="border-accent bg-accent/10">
-                    <AlertDescription className="text-foreground">{success}</AlertDescription>
-                  </Alert>
-                )}
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="parent-first-name" className="text-foreground">First Name</Label>
-                    <Input
-                      id="parent-first-name"
-                      type="text"
-                      placeholder="First name"
-                      value={parentFirstName}
-                      onChange={(e) => setParentFirstName(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="parent-last-name" className="text-foreground">Last Name</Label>
-                    <Input
-                      id="parent-last-name"
-                      type="text"
-                      placeholder="Last name"
-                      value={parentLastName}
-                      onChange={(e) => setParentLastName(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="parent-email" className="text-foreground">Your Email</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                    <Input
-                      id="parent-email"
-                      type="email"
-                      placeholder="Enter your email"
-                      className="pl-10"
-                      value={parentEmail}
-                      onChange={(e) => setParentEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="parent-password" className="text-foreground">Password</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                    <Input
-                      id="parent-password"
-                      type="password"
-                      placeholder="Create a password (min 6 chars)"
-                      className="pl-10"
-                      value={parentPassword}
-                      onChange={(e) => setParentPassword(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-4 p-4 rounded-lg border border-border bg-muted/50">
-                  <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-accent" />
-                    <p className="text-sm font-medium text-secondary">Link to your child's account</p>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Your child must activate their account first before you can sign up.
-                  </p>
-                  <div className="space-y-2">
-                    <Label htmlFor="parent-student-last-name" className="text-foreground">Child's Last Name</Label>
-                    <Input
-                      id="parent-student-last-name"
-                      type="text"
-                      placeholder="Enter child's last name"
-                      value={parentStudentLastName}
-                      onChange={(e) => setParentStudentLastName(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="parent-student-id" className="text-foreground">Child's Student ID</Label>
-                    <Input
-                      id="parent-student-id"
-                      type="text"
-                      placeholder="Enter Student ID"
-                      value={parentStudentId}
-                      onChange={(e) => setParentStudentId(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <Button variant="accent" size="lg" className="w-full" type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Creating account...
-                    </>
-                  ) : (
-                    "Create Parent Account"
                   )}
                 </Button>
               </form>

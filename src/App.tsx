@@ -16,7 +16,6 @@ import Consulting from "./pages/Consulting";
 import Admin from "./pages/Admin";
 import Portal from "./pages/Portal";
 import StudentDashboard from "./pages/StudentDashboard";
-import ParentDashboard from "./pages/ParentDashboard";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import CatalogRequest from "./pages/CatalogRequest";
@@ -43,7 +42,6 @@ const App = () => (
                 <Route path="/courses" element={<Courses />} />
                 <Route path="/portal" element={<Portal />} />
                 <Route path="/dashboard" element={<StudentDashboard />} />
-                <Route path="/parent-dashboard" element={<ParentDashboard />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/social" element={<Social />} />
                 <Route path="/consulting" element={<Consulting />} />
@@ -51,8 +49,9 @@ const App = () => (
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/catalog" element={<CatalogRequest />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
-                {/* Redirect old parent-portal URL */}
+                {/* Redirect old parent URLs */}
                 <Route path="/parent-portal" element={<Navigate to="/portal" replace />} />
+                <Route path="/parent-dashboard" element={<Navigate to="/portal" replace />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
@@ -65,4 +64,3 @@ const App = () => (
 );
 
 export default App;
-
