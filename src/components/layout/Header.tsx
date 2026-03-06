@@ -19,7 +19,7 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
-  const { user, isAdmin, isStudent, isParent, signOut } = useAuth();
+  const { user, isAdmin, isStudent, signOut } = useAuth();
 
   const navigate = useNavigate();
 
@@ -114,14 +114,6 @@ export function Header() {
                 </Button>
               </Link>
             )}
-            {user && isParent && !isAdmin && (
-              <Link to="/parent-dashboard">
-                <Button variant="outline" size="default" className="gap-2">
-                  <LayoutDashboard className="h-4 w-4" />
-                  Parent Dashboard
-                </Button>
-              </Link>
-            )}
             {!user && (
               <Link to="/portal">
                 <Button variant="accent" size="default">
@@ -195,14 +187,6 @@ export function Header() {
                     <Button variant="outline" className="w-full gap-2">
                       <LayoutDashboard className="h-4 w-4" />
                       My Dashboard
-                    </Button>
-                  </Link>
-                )}
-                {user && isParent && !isAdmin && (
-                  <Link to="/parent-dashboard">
-                    <Button variant="outline" className="w-full gap-2">
-                      <LayoutDashboard className="h-4 w-4" />
-                      Parent Dashboard
                     </Button>
                   </Link>
                 )}
