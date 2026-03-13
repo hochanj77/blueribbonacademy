@@ -43,7 +43,8 @@ interface StudentDetailsProps {
 const StudentDetails = ({ student, onClose }: StudentDetailsProps) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-
+  const [editedStudent, setEditedStudent] = useState<Partial<Student & { notes: string | null; status: string }>>({});
+  const [isEditing, setIsEditing] = useState(false);
   const { data: progressNotes = [], isLoading: notesLoading } = useQuery({
     queryKey: ['progress-notes', student.id],
     queryFn: async () => {
