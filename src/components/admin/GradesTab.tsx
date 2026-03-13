@@ -230,6 +230,7 @@ const GradesTab = () => {
     bulkDeleteMutation.mutate(Array.from(selectedForDelete));
   };
 
+  const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
