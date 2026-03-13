@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Megaphone, CalendarDays } from "lucide-react";
@@ -8,7 +7,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import heroImage from "@/assets/ivy-league-campus.jpg";
 import { usePageContent } from "@/hooks/useSiteContent";
-import { useAuth } from "@/contexts/AuthContext";
 
 const heroDefaults = {
   headline: "Where Academic Potential Finds a Home.",
