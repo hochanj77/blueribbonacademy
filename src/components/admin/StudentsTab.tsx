@@ -102,11 +102,20 @@ const StudentsTab = () => {
     },
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase.from('students').delete().eq('id', id);
+  const deleteStudentWithRelations = async (studentId: string) => {
+    // Delete all related records first
+    const tables = ['student_grades', 'attendance', 'progress_notes', 'report_cards', 'student_enrollments'] as const;
+    for (const table of tables) {
+      const { error } = await supabase.from(table).delete().eq('student_id', studentId);
       if (error) throw error;
-    },
+    }
+    // Then delete the student
+    const { error } = await supabase.from('students').delete().eq('id', studentId);
+    if (error) throw error;
+  };
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteStudentWithRelations,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['students'] });
       toast.success('Student deleted successfully');
@@ -118,8 +127,9 @@ const StudentsTab = () => {
 
   const bulkDeleteMutation = useMutation({
     mutationFn: async (ids: string[]) => {
-      const { error } = await supabase.from('students').delete().in('id', ids);
-      if (error) throw error;
+      for (const id of ids) {
+        await deleteStudentWithRelations(id);
+      }
     },
     onSuccess: (_, ids) => {
       queryClient.invalidateQueries({ queryKey: ['students'] });
