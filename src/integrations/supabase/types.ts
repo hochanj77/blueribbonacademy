@@ -188,6 +188,42 @@ export type Database = {
           },
         ]
       }
+      contact_submissions: {
+        Row: {
+          created_at: string | null
+          email: string
+          grade: string | null
+          id: string
+          message: string
+          name: string
+          phone: string | null
+          subjects: string[] | null
+          wants_catalog: boolean | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          grade?: string | null
+          id?: string
+          message: string
+          name: string
+          phone?: string | null
+          subjects?: string[] | null
+          wants_catalog?: boolean | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          grade?: string | null
+          id?: string
+          message?: string
+          name?: string
+          phone?: string | null
+          subjects?: string[] | null
+          wants_catalog?: boolean | null
+        }
+        Relationships: []
+      }
       courses: {
         Row: {
           active: boolean | null
