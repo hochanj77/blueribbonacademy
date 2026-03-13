@@ -61,19 +61,6 @@ const StudentDetails = ({ student, onClose }: StudentDetailsProps) => {
     },
   });
 
-  const { data: attendance = [], isLoading: attendanceLoading } = useQuery({
-    queryKey: ['attendance', student.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('attendance')
-        .select('*')
-        .eq('student_id', student.id)
-        .order('date', { ascending: false });
-      if (error) throw error;
-      return data as Attendance[];
-    },
-  });
-
   return (
     <>
       <DialogHeader>
@@ -85,21 +72,11 @@ const StudentDetails = ({ student, onClose }: StudentDetailsProps) => {
       <Tabs defaultValue="info" className="mt-4">
         <TabsList>
           <TabsTrigger value="info">Info</TabsTrigger>
-          <TabsTrigger value="attendance">Attendance</TabsTrigger>
           <TabsTrigger value="notes">Progress Notes</TabsTrigger>
-          <TabsTrigger value="reports">Report Cards</TabsTrigger>
         </TabsList>
 
         <TabsContent value="info" className="mt-4">
           <StudentInfoCard student={student} />
-        </TabsContent>
-
-        <TabsContent value="attendance" className="mt-4">
-          <AttendanceSection
-            studentId={student.id}
-            attendance={attendance}
-            isLoading={attendanceLoading}
-          />
         </TabsContent>
 
         <TabsContent value="notes" className="mt-4">
@@ -109,14 +86,9 @@ const StudentDetails = ({ student, onClose }: StudentDetailsProps) => {
             isLoading={notesLoading}
           />
         </TabsContent>
-
-        <TabsContent value="reports" className="mt-4">
-          <ReportCardsSection
-            studentId={student.id}
-            reports={reportCards}
-            isLoading={reportsLoading}
-          />
-        </TabsContent>
+      </Tabs>
+    </>
+  );
       </Tabs>
     </>
   );
