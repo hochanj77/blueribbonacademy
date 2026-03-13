@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Loader2, Trash2 } from 'lucide-react';
+import { Plus, Loader2, Trash2, Pencil, Save, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
@@ -43,7 +43,8 @@ interface StudentDetailsProps {
 const StudentDetails = ({ student, onClose }: StudentDetailsProps) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-
+  const [editedStudent, setEditedStudent] = useState<Partial<Student & { notes: string | null; status: string }>>({});
+  const [isEditing, setIsEditing] = useState(false);
   const { data: progressNotes = [], isLoading: notesLoading } = useQuery({
     queryKey: ['progress-notes', student.id],
     queryFn: async () => {
@@ -56,6 +57,38 @@ const StudentDetails = ({ student, onClose }: StudentDetailsProps) => {
       return data as ProgressNote[];
     },
   });
+
+  const updateStudentMutation = useMutation({
+    mutationFn: async (updates: Record<string, any>) => {
+      const { error } = await supabase
+        .from('students')
+        .update(updates)
+        .eq('id', student.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+      setIsEditing(false);
+      setEditedStudent({});
+      toast.success('Student updated');
+    },
+    onError: () => {
+      toast.error('Failed to update student');
+    },
+  });
+
+  const handleSave = () => {
+    if (Object.keys(editedStudent).length === 0) {
+      setIsEditing(false);
+      return;
+    }
+    updateStudentMutation.mutate(editedStudent);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setEditedStudent({});
+  };
 
   return (
     <>
@@ -72,7 +105,28 @@ const StudentDetails = ({ student, onClose }: StudentDetailsProps) => {
         </TabsList>
 
         <TabsContent value="info" className="mt-4">
-          <StudentInfoCard student={student} />
+          <div className="flex justify-end mb-2 gap-2">
+            {isEditing ? (
+              <>
+                <Button size="sm" variant="outline" onClick={handleCancel}>
+                  <X className="h-4 w-4 mr-1" /> Cancel
+                </Button>
+                <Button size="sm" onClick={handleSave} disabled={updateStudentMutation.isPending}>
+                  <Save className="h-4 w-4 mr-1" /> Save
+                </Button>
+              </>
+            ) : (
+              <Button size="sm" variant="outline" onClick={() => setIsEditing(true)}>
+                <Pencil className="h-4 w-4 mr-1" /> Edit
+              </Button>
+            )}
+          </div>
+          <StudentInfoCard
+            student={student}
+            isEditing={isEditing}
+            editedStudent={editedStudent}
+            setEditedStudent={setEditedStudent}
+          />
         </TabsContent>
 
         <TabsContent value="notes" className="mt-4">
@@ -87,7 +141,36 @@ const StudentDetails = ({ student, onClose }: StudentDetailsProps) => {
   );
 };
 
-const StudentInfoCard = ({ student }: { student: Student }) => {
+const StudentInfoCard = ({
+  student,
+  isEditing,
+  editedStudent,
+  setEditedStudent,
+}: {
+  student: Student;
+  isEditing: boolean;
+  editedStudent: Record<string, any>;
+  setEditedStudent: (val: any) => void;
+}) => {
+  const val = (field: keyof Student) => editedStudent[field] ?? (student as any)[field] ?? '';
+  const set = (field: string, value: string) =>
+    setEditedStudent((prev: any) => ({ ...prev, [field]: value || null }));
+
+  const renderField = (label: string, field: keyof Student) => (
+    <div className="flex justify-between items-center">
+      <span className="text-muted-foreground">{label}:</span>
+      {isEditing ? (
+        <Input
+          className="w-48 h-8 text-sm"
+          value={val(field)}
+          onChange={(e) => set(field, e.target.value)}
+        />
+      ) : (
+        <span>{(student as any)[field] || '-'}</span>
+      )}
+    </div>
+  );
+
   return (
     <div className="grid grid-cols-2 gap-6">
       <Card>
@@ -95,30 +178,32 @@ const StudentInfoCard = ({ student }: { student: Student }) => {
           <CardTitle className="text-lg">Student Information</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Email:</span>
-            <span>{student.email || '-'}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Phone:</span>
-            <span>{student.phone || '-'}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Grade:</span>
-            <span>{student.grade_level || '-'}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">School:</span>
-            <span>{student.school || '-'}</span>
-          </div>
-         <div className="flex justify-between">
+          {renderField('Email', 'email')}
+          {renderField('Phone', 'phone')}
+          {renderField('Grade', 'grade_level')}
+          {renderField('School', 'school')}
+          <div className="flex justify-between items-center">
             <span className="text-muted-foreground">Status:</span>
-            {(student as any).status === 'active' ? (
-              <Badge className="bg-green-500 hover:bg-green-500/80 text-primary-foreground border-transparent">Active</Badge>
-            ) : (student as any).status === 'pending' ? (
-              <Badge className="bg-yellow-500 hover:bg-yellow-500/80 text-primary-foreground border-transparent">Pending</Badge>
+            {isEditing ? (
+              <select
+                className="w-48 h-8 text-sm border rounded-md px-2 bg-background"
+                value={val('status' as any)}
+                onChange={(e) => set('status', e.target.value)}
+              >
+                <option value="active">Active</option>
+                <option value="pending">Pending</option>
+                <option value="inactive">Inactive</option>
+              </select>
             ) : (
-              <Badge variant="secondary">Inactive</Badge>
+              <>
+                {(student as any).status === 'active' ? (
+                  <Badge className="bg-green-500 hover:bg-green-500/80 text-primary-foreground border-transparent">Active</Badge>
+                ) : (student as any).status === 'pending' ? (
+                  <Badge className="bg-yellow-500 hover:bg-yellow-500/80 text-primary-foreground border-transparent">Pending</Badge>
+                ) : (
+                  <Badge variant="secondary">Inactive</Badge>
+                )}
+              </>
             )}
           </div>
         </CardContent>
@@ -129,31 +214,28 @@ const StudentInfoCard = ({ student }: { student: Student }) => {
           <CardTitle className="text-lg">Parent/Guardian</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Name:</span>
-            <span>{student.parent_name || '-'}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Email:</span>
-            <span>{student.parent_email || '-'}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Phone:</span>
-            <span>{student.parent_phone || '-'}</span>
-          </div>
+          {renderField('Name', 'parent_name')}
+          {renderField('Email', 'parent_email')}
+          {renderField('Phone', 'parent_phone')}
         </CardContent>
       </Card>
 
-      {student.notes && (
-        <Card className="col-span-2">
-          <CardHeader>
-            <CardTitle className="text-lg">Notes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">{student.notes}</p>
-          </CardContent>
-        </Card>
-      )}
+      <Card className="col-span-2">
+        <CardHeader>
+          <CardTitle className="text-lg">Notes</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {isEditing ? (
+            <Textarea
+              value={editedStudent.notes ?? student.notes ?? ''}
+              onChange={(e) => set('notes', e.target.value)}
+              rows={3}
+            />
+          ) : (
+            <p className="text-muted-foreground">{student.notes || 'No notes'}</p>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
