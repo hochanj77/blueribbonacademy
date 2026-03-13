@@ -296,7 +296,7 @@ const ResourcesList = () => {
   });
 
   const getFileUrl = (filePath: string) =>
-    `${SUPABASE_URL}/storage/v1/object/public/resources/${filePath}`;
+    supabase.storage.from('resources').getPublicUrl(filePath).data.publicUrl;
 
   const formatSize = (bytes: number | null) => {
     if (!bytes) return '';

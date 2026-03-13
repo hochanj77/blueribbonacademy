@@ -32,8 +32,6 @@ function SmartLink({ to, children, ...props }: { to: string; children: React.Rea
 }
 
 export default function Index() {
-  const navigate = useNavigate();
-  const { user, isAdmin, isStudent, loading, isAdminLoading } = useAuth();
   const { data: pageContent } = usePageContent("home");
   const hero = { ...heroDefaults, ...pageContent?.hero };
   const cta = { ...ctaDefaults, ...pageContent?.cta_section };

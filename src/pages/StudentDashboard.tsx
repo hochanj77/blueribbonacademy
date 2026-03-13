@@ -368,7 +368,7 @@ const StudentDashboard = () => {
                 {resources.map((r) => (
                   <a
                     key={r.id}
-                    href={`${SUPABASE_URL}/storage/v1/object/public/resources/${r.file_path}`}
+                    href={supabase.storage.from('resources').getPublicUrl(r.file_path).data.publicUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted transition-colors group"

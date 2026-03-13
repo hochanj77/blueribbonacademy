@@ -84,7 +84,7 @@ function sortSemestersDesc(semesters: string[]): string[] {
 
 function generateSemesterOptions(): string[] {
   const seasons = ['Spring', 'Summer', 'Fall', 'Winter'];
-  const startYear = 2024;
+  const startYear = now.getFullYear() - 2;
   const now = new Date();
   const endYear = now.getFullYear() + 1;
   const options: string[] = [];

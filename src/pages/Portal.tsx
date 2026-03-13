@@ -402,7 +402,7 @@ export default function Portal() {
                     <Input
                       id="activate-password"
                       type="password"
-                      placeholder="Create a password (min 6 chars)"
+                      placeholder="Min 8 chars: upper, lower, number, special"
                       className="pl-10"
                       value={activatePassword}
                       onChange={(e) => setActivatePassword(e.target.value)}
