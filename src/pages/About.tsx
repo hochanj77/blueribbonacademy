@@ -92,11 +92,16 @@ const defaults = {
 };
 
 export default function About() {
-  const hero = useInView();
+  const [mounted, setMounted] = useState(false);
   const belongingView = useInView();
   const heartView = useInView();
   const excellenceView = useInView();
   const statsSection = useInView();
+
+  useEffect(() => {
+    const timer = setTimeout(() => setMounted(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   const { data: pageContent } = usePageContent("about");
   const welcome = { ...defaults.welcome, ...pageContent?.welcome };
