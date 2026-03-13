@@ -107,6 +107,7 @@ const GradesTab = () => {
   const [parsedRows, setParsedRows] = useState<ParsedRow[]>([]);
   const [importErrors, setImportErrors] = useState<string[]>([]);
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
+  const [selectedForDelete, setSelectedForDelete] = useState<Set<string>>(new Set());
 
   const { data: students = [] } = useQuery({
     queryKey: ['students_with_numbers'],
