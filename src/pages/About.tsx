@@ -117,8 +117,8 @@ export default function About() {
         <div className="container mx-auto px-4">
           <div
             className={cn(
-              "grid lg:grid-cols-2 gap-8 md:gap-12 items-center transition-all duration-700 ease-out",
-              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+              "grid lg:grid-cols-2 gap-8 md:gap-12 items-center transition-all duration-1000 ease-out",
+              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
             )}
           >
             <div>
@@ -137,11 +137,7 @@ export default function About() {
               <img
                 src={classroomImage}
                 alt="PrepHaus learning environment"
-                className={cn(
-                  "rounded-2xl shadow-2xl relative z-10 transition-all duration-1000 ease-out group-hover:scale-[1.02]",
-                  mounted ? "opacity-100 scale-100 blur-0" : "opacity-0 scale-95 blur-sm"
-                )}
-                style={{ transitionDelay: "300ms" }}
+                className="rounded-2xl shadow-2xl relative z-10 transition-transform duration-300 ease-out group-hover:scale-[1.02]"
               />
             </div>
           </div>
