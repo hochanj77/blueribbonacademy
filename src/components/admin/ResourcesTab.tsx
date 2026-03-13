@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Loader2, Upload, Trash2, FileText, File, Plus, BookOpen } from 'lucide-react';
 import { toast } from 'sonner';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+
 
 interface Resource {
   id: string;
