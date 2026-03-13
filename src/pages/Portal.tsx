@@ -131,8 +131,9 @@ export default function Portal() {
       return;
     }
 
-    if (activatePassword.length < 6) {
-      setError("Password must be at least 6 characters.");
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,}$/;
+    if (!passwordRegex.test(activatePassword)) {
+      setError("Password must be at least 8 characters with uppercase, lowercase, number, and special character.");
       return;
     }
 
