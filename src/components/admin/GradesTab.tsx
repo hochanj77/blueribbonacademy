@@ -189,7 +189,47 @@ const GradesTab = () => {
     return studentSummaries.find(s => s.student_id === selectedStudentId) || null;
   }, [selectedStudentId, studentSummaries]);
 
-  const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const toggleSelect = (studentId: string) => {
+    setSelectedForDelete(prev => {
+      const next = new Set(prev);
+      if (next.has(studentId)) next.delete(studentId);
+      else next.add(studentId);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedForDelete.size === filteredSummaries.length) {
+      setSelectedForDelete(new Set());
+    } else {
+      setSelectedForDelete(new Set(filteredSummaries.map(s => s.student_id)));
+    }
+  };
+
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (studentIds: string[]) => {
+      const { error } = await supabase
+        .from('student_grades')
+        .delete()
+        .in('student_id', studentIds);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['student_grades'] });
+      setSelectedForDelete(new Set());
+      toast.success('Selected grade records deleted');
+    },
+    onError: () => {
+      toast.error('Failed to delete grade records');
+    },
+  });
+
+  const handleBulkDelete = () => {
+    if (selectedForDelete.size === 0) return;
+    if (!confirm(`Delete ALL grade records for ${selectedForDelete.size} selected student(s)? This cannot be undone.`)) return;
+    bulkDeleteMutation.mutate(Array.from(selectedForDelete));
+  };
+
     const file = e.target.files?.[0];
     if (!file) return;
 
