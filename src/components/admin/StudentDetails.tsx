@@ -61,19 +61,6 @@ const StudentDetails = ({ student, onClose }: StudentDetailsProps) => {
     },
   });
 
-  const { data: reportCards = [], isLoading: reportsLoading } = useQuery({
-    queryKey: ['report-cards', student.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('report_cards')
-        .select('*')
-        .eq('student_id', student.id)
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-      return data as ReportCard[];
-    },
-  });
-
   const { data: attendance = [], isLoading: attendanceLoading } = useQuery({
     queryKey: ['attendance', student.id],
     queryFn: async () => {
