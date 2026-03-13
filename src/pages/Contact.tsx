@@ -7,6 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { useSiteContent } from "@/hooks/useSiteContent";
+import { supabase } from "@/integrations/supabase/client";
 
 const gradeOptions = [
   { value: "8", label: "8th Grade" },
@@ -77,20 +78,34 @@ export default function Contact() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      const { error } = await supabase.from("contact_submissions").insert({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone || null,
+        grade: formData.grade || null,
+        subjects: formData.subjects.length > 0 ? formData.subjects : null,
+        message: formData.message,
+        wants_catalog: formData.wantsCatalog,
+      });
 
-    toast.success("Message sent! We'll get back to you within 24 hours.");
+      if (error) throw error;
 
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      grade: "",
-      subjects: [],
-      message: "",
-      wantsCatalog: false,
-    });
-    setIsSubmitting(false);
+      toast.success("Message sent! We'll get back to you within 24 hours.");
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        grade: "",
+        subjects: [],
+        message: "",
+        wantsCatalog: false,
+      });
+    } catch {
+      toast.error("Failed to send message. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

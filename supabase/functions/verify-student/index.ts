@@ -1,13 +1,20 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+function getCorsHeaders(req: Request) {
+  const allowedOrigin = Deno.env.get("ALLOWED_ORIGIN") || "https://prephaus.academy";
+  const origin = req.headers.get("origin") || "";
+  return {
+    "Access-Control-Allow-Origin": origin === allowedOrigin ? origin : allowedOrigin,
+    "Access-Control-Allow-Headers":
+      "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+  };
+}
 
 Deno.serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
@@ -25,7 +32,8 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const { data: student, error } = await supabaseAdmin
+    // Perform lookup but always return the same generic response
+    await supabaseAdmin
       .from("students")
       .select("id")
       .ilike("last_name", last_name.trim())
@@ -34,28 +42,15 @@ Deno.serve(async (req) => {
       .eq("account_type", "student")
       .maybeSingle();
 
-    if (error) {
-      return new Response(
-        JSON.stringify({ error: "Verification failed." }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    if (!student) {
-      return new Response(
-        JSON.stringify({ found: false }),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
+    // Always return generic response to prevent enumeration
     return new Response(
-      JSON.stringify({ found: true }),
+      JSON.stringify({ received: true }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch {
     return new Response(
       JSON.stringify({ error: "Invalid request." }),
-      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
     );
   }
 });

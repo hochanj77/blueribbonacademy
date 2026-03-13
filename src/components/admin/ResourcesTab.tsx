@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Loader2, Upload, Trash2, FileText, File, Plus, BookOpen } from 'lucide-react';
 import { toast } from 'sonner';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+
 
 interface Resource {
   id: string;
@@ -57,7 +57,7 @@ const CatalogUploader = ({ existingContent, userId }: CatalogUploaderProps) => {
         .upload(filePath, file, { upsert: true });
       if (uploadError) throw uploadError;
 
-      const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/catalog/${filePath}`;
+      const { data: { publicUrl } } = supabase.storage.from('catalog').getPublicUrl(filePath);
       const newContent = { ...(existingContent?.content || {}), catalog_url: publicUrl };
 
       if (existingContent) {
@@ -296,7 +296,7 @@ const ResourcesList = () => {
   });
 
   const getFileUrl = (filePath: string) =>
-    `${SUPABASE_URL}/storage/v1/object/public/resources/${filePath}`;
+    supabase.storage.from('resources').getPublicUrl(filePath).data.publicUrl;
 
   const formatSize = (bytes: number | null) => {
     if (!bytes) return '';

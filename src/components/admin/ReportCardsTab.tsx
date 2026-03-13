@@ -31,15 +31,22 @@ interface ReportCard {
   students?: Student;
 }
 
-const termOptions = [
-  { value: 'Fall 2024', label: 'Fall 2024' },
-  { value: 'Winter 2024', label: 'Winter 2024' },
-  { value: 'Spring 2025', label: 'Spring 2025' },
-  { value: 'Summer 2025', label: 'Summer 2025' },
-  { value: 'Fall 2025', label: 'Fall 2025' },
-  { value: 'Winter 2025', label: 'Winter 2025' },
-  { value: 'Spring 2026', label: 'Spring 2026' },
-];
+function generateTermOptions() {
+  const seasons = ['Spring', 'Summer', 'Fall', 'Winter'];
+  const now = new Date();
+  const startYear = now.getFullYear() - 1;
+  const endYear = now.getFullYear() + 1;
+  const options: { value: string; label: string }[] = [];
+  for (let year = startYear; year <= endYear; year++) {
+    for (const season of seasons) {
+      const val = `${season} ${year}`;
+      options.push({ value: val, label: val });
+    }
+  }
+  return options;
+}
+
+const termOptions = generateTermOptions();
 
 const ReportCardsTab = () => {
   const [searchTerm, setSearchTerm] = useState('');
