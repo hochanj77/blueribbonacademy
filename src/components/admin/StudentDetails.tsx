@@ -58,6 +58,38 @@ const StudentDetails = ({ student, onClose }: StudentDetailsProps) => {
     },
   });
 
+  const updateStudentMutation = useMutation({
+    mutationFn: async (updates: Record<string, any>) => {
+      const { error } = await supabase
+        .from('students')
+        .update(updates)
+        .eq('id', student.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+      setIsEditing(false);
+      setEditedStudent({});
+      toast.success('Student updated');
+    },
+    onError: () => {
+      toast.error('Failed to update student');
+    },
+  });
+
+  const handleSave = () => {
+    if (Object.keys(editedStudent).length === 0) {
+      setIsEditing(false);
+      return;
+    }
+    updateStudentMutation.mutate(editedStudent);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setEditedStudent({});
+  };
+
   return (
     <>
       <DialogHeader>
@@ -73,7 +105,28 @@ const StudentDetails = ({ student, onClose }: StudentDetailsProps) => {
         </TabsList>
 
         <TabsContent value="info" className="mt-4">
-          <StudentInfoCard student={student} />
+          <div className="flex justify-end mb-2 gap-2">
+            {isEditing ? (
+              <>
+                <Button size="sm" variant="outline" onClick={handleCancel}>
+                  <X className="h-4 w-4 mr-1" /> Cancel
+                </Button>
+                <Button size="sm" onClick={handleSave} disabled={updateStudentMutation.isPending}>
+                  <Save className="h-4 w-4 mr-1" /> Save
+                </Button>
+              </>
+            ) : (
+              <Button size="sm" variant="outline" onClick={() => setIsEditing(true)}>
+                <Pencil className="h-4 w-4 mr-1" /> Edit
+              </Button>
+            )}
+          </div>
+          <StudentInfoCard
+            student={student}
+            isEditing={isEditing}
+            editedStudent={editedStudent}
+            setEditedStudent={setEditedStudent}
+          />
         </TabsContent>
 
         <TabsContent value="notes" className="mt-4">
