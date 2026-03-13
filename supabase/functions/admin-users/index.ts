@@ -1,12 +1,37 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
+function getCorsHeaders(req: Request) {
+  const allowedOrigin = Deno.env.get("ALLOWED_ORIGIN") || "https://prephaus.academy";
+  const origin = req.headers.get("origin") || "";
+  return {
+    "Access-Control-Allow-Origin": origin === allowedOrigin ? origin : allowedOrigin,
+    "Access-Control-Allow-Headers":
+      "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+  };
+}
+
+// Rate limiting for password verification
+const verifyRateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const VERIFY_RATE_LIMIT_MAX = 5;
+const VERIFY_RATE_LIMIT_WINDOW_MS = 60_000;
+
+function checkVerifyRateLimit(userId: string): boolean {
+  const now = Date.now();
+  for (const [key, val] of verifyRateLimitMap) {
+    if (val.resetAt <= now) verifyRateLimitMap.delete(key);
+  }
+  const entry = verifyRateLimitMap.get(userId);
+  if (!entry || entry.resetAt <= now) {
+    verifyRateLimitMap.set(userId, { count: 1, resetAt: now + VERIFY_RATE_LIMIT_WINDOW_MS });
+    return true;
+  }
+  entry.count++;
+  return entry.count <= VERIFY_RATE_LIMIT_MAX;
+}
 
 Deno.serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -62,7 +87,6 @@ Deno.serve(async (req) => {
 
       const adminUserIds = (adminRoles || []).map((r) => r.user_id);
 
-      // Paginate through all auth users to find admin accounts
       let allAuthUsers: any[] = [];
       let page = 1;
       const perPage = 100;
@@ -94,8 +118,15 @@ Deno.serve(async (req) => {
       });
     }
 
-    // VERIFY PASSWORD
+    // VERIFY PASSWORD (with rate limiting)
     if (action === "verify_password") {
+      if (!checkVerifyRateLimit(caller.id)) {
+        return new Response(
+          JSON.stringify({ error: "Too many attempts. Please try again later." }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
       const { password } = body;
       if (!password || !caller.email) {
         return new Response(JSON.stringify({ error: "Password required" }), {
@@ -241,9 +272,10 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err: unknown) {
-    return new Response(JSON.stringify({ error: err instanceof Error ? err.message : "Internal server error" }), {
+    console.error("Admin-users error:", err);
+    return new Response(JSON.stringify({ error: "An internal error occurred." }), {
       status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
     });
   }
 });

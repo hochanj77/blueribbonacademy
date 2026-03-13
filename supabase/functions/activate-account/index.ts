@@ -1,12 +1,20 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
+function getCorsHeaders(req: Request) {
+  const allowedOrigin = Deno.env.get("ALLOWED_ORIGIN") || "https://prephaus.academy";
+  const origin = req.headers.get("origin") || "";
+  return {
+    "Access-Control-Allow-Origin": origin === allowedOrigin ? origin : allowedOrigin,
+    "Access-Control-Allow-Headers":
+      "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+  };
+}
+
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,}$/;
 
 Deno.serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -21,9 +29,9 @@ Deno.serve(async (req) => {
       );
     }
 
-    if (password.length < 6) {
+    if (!PASSWORD_REGEX.test(password)) {
       return new Response(
-        JSON.stringify({ error: "Password must be at least 6 characters." }),
+        JSON.stringify({ error: "Password must be at least 8 characters with uppercase, lowercase, number, and special character." }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -59,11 +67,12 @@ Deno.serve(async (req) => {
       );
     }
 
-    const trimmedEmail = email.trim().toLowerCase();
+    // Use existing email on file if available, otherwise use client-provided email
+    const finalEmail = (student.email || email).trim().toLowerCase();
 
-    // Create the auth user with the student-provided email
+    // Create the auth user
     const { data: newUser, error: createErr } = await adminClient.auth.admin.createUser({
-      email: trimmedEmail,
+      email: finalEmail,
       password,
       email_confirm: true,
       user_metadata: {
@@ -76,9 +85,9 @@ Deno.serve(async (req) => {
       if (createErr.message?.includes("already been registered")) {
         return new Response(
           JSON.stringify({
-            error: "An account with this email already exists. Please sign in or contact admin.",
+            error: "Unable to activate. Please check your information or contact PrepHaus administration.",
           }),
-          { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
       console.error("Auth user creation error:", createErr);
@@ -95,13 +104,12 @@ Deno.serve(async (req) => {
         user_id: newUser.user.id,
         status: "active",
         active: true,
-        email: trimmedEmail,
+        email: finalEmail,
       })
       .eq("id", student.id);
 
     if (updateErr) {
       console.error("Student update error:", updateErr);
-      // Try to clean up the auth user
       await adminClient.auth.admin.deleteUser(newUser.user.id);
       return new Response(
         JSON.stringify({ error: "Failed to activate account. Please try again." }),
@@ -117,6 +125,7 @@ Deno.serve(async (req) => {
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (err) {
+    const corsHeaders = getCorsHeaders(req);
     console.error("Unexpected error:", err);
     return new Response(
       JSON.stringify({ error: "An unexpected error occurred." }),
