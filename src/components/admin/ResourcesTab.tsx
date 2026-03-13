@@ -57,7 +57,7 @@ const CatalogUploader = ({ existingContent, userId }: CatalogUploaderProps) => {
         .upload(filePath, file, { upsert: true });
       if (uploadError) throw uploadError;
 
-      const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/catalog/${filePath}`;
+      const { data: { publicUrl } } = supabase.storage.from('catalog').getPublicUrl(filePath);
       const newContent = { ...(existingContent?.content || {}), catalog_url: publicUrl };
 
       if (existingContent) {
