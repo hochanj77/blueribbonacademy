@@ -38,21 +38,6 @@ interface ProgressNote {
   tutor_id: string | null;
 }
 
-interface ReportCard {
-  id: string;
-  title: string;
-  file_path: string;
-  term: string | null;
-  year: number | null;
-  created_at: string;
-}
-
-interface Attendance {
-  id: string;
-  date: string;
-  status: 'present' | 'absent' | 'late' | 'excused';
-  notes: string | null;
-}
 
 interface StudentDetailsProps {
   student: Student;
