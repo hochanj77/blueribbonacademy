@@ -107,6 +107,7 @@ const GradesTab = () => {
   const [parsedRows, setParsedRows] = useState<ParsedRow[]>([]);
   const [importErrors, setImportErrors] = useState<string[]>([]);
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
+  const [selectedForDelete, setSelectedForDelete] = useState<Set<string>>(new Set());
 
   const { data: students = [] } = useQuery({
     queryKey: ['students_with_numbers'],
@@ -187,6 +188,47 @@ const GradesTab = () => {
     if (!selectedStudentId) return null;
     return studentSummaries.find(s => s.student_id === selectedStudentId) || null;
   }, [selectedStudentId, studentSummaries]);
+
+  const toggleSelect = (studentId: string) => {
+    setSelectedForDelete(prev => {
+      const next = new Set(prev);
+      if (next.has(studentId)) next.delete(studentId);
+      else next.add(studentId);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedForDelete.size === filteredSummaries.length) {
+      setSelectedForDelete(new Set());
+    } else {
+      setSelectedForDelete(new Set(filteredSummaries.map(s => s.student_id)));
+    }
+  };
+
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (studentIds: string[]) => {
+      const { error } = await supabase
+        .from('student_grades')
+        .delete()
+        .in('student_id', studentIds);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['student_grades'] });
+      setSelectedForDelete(new Set());
+      toast.success('Selected grade records deleted');
+    },
+    onError: () => {
+      toast.error('Failed to delete grade records');
+    },
+  });
+
+  const handleBulkDelete = () => {
+    if (selectedForDelete.size === 0) return;
+    if (!confirm(`Delete ALL grade records for ${selectedForDelete.size} selected student(s)? This cannot be undone.`)) return;
+    bulkDeleteMutation.mutate(Array.from(selectedForDelete));
+  };
 
   const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -544,6 +586,17 @@ const GradesTab = () => {
                 ))}
               </SelectContent>
             </Select>
+            {selectedForDelete.size > 0 && (
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleBulkDelete}
+                disabled={bulkDeleteMutation.isPending}
+              >
+                <Trash2 className="h-4 w-4 mr-1" />
+                Delete {selectedForDelete.size} Student{selectedForDelete.size !== 1 ? 's' : ''}'s Grades
+              </Button>
+            )}
           </div>
 
           {isLoading ? (
@@ -555,6 +608,14 @@ const GradesTab = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-10">
+                      <input
+                        type="checkbox"
+                        checked={filteredSummaries.length > 0 && selectedForDelete.size === filteredSummaries.length}
+                        onChange={toggleSelectAll}
+                        className="rounded border-border"
+                      />
+                    </TableHead>
                     <TableHead>Student ID</TableHead>
                     <TableHead>Name</TableHead>
                     <TableHead className="text-center">Classes</TableHead>
@@ -567,7 +628,7 @@ const GradesTab = () => {
                 <TableBody>
                   {filteredSummaries.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                         No report cards found. Import an Excel file to get started.
                       </TableCell>
                     </TableRow>
@@ -575,19 +636,26 @@ const GradesTab = () => {
                     filteredSummaries.map((s) => (
                       <TableRow
                         key={s.student_id}
-                        className="cursor-pointer hover:bg-muted/50"
-                        onClick={() => setSelectedStudentId(s.student_id)}
+                        className={`cursor-pointer hover:bg-muted/50 ${selectedForDelete.has(s.student_id) ? 'bg-muted/30' : ''}`}
                       >
-                        <TableCell className="font-mono text-xs">{s.student_number || '—'}</TableCell>
-                        <TableCell className="font-medium">{s.student_name}</TableCell>
-                        <TableCell className="text-center">{s.classCount}</TableCell>
-                        <TableCell className="text-center">{s.semesters.length}</TableCell>
-                        <TableCell>
+                        <TableCell onClick={(e) => e.stopPropagation()}>
+                          <input
+                            type="checkbox"
+                            checked={selectedForDelete.has(s.student_id)}
+                            onChange={() => toggleSelect(s.student_id)}
+                            className="rounded border-border"
+                          />
+                        </TableCell>
+                        <TableCell className="font-mono text-xs" onClick={() => setSelectedStudentId(s.student_id)}>{s.student_number || '—'}</TableCell>
+                        <TableCell className="font-medium" onClick={() => setSelectedStudentId(s.student_id)}>{s.student_name}</TableCell>
+                        <TableCell className="text-center" onClick={() => setSelectedStudentId(s.student_id)}>{s.classCount}</TableCell>
+                        <TableCell className="text-center" onClick={() => setSelectedStudentId(s.student_id)}>{s.semesters.length}</TableCell>
+                        <TableCell onClick={() => setSelectedStudentId(s.student_id)}>
                           <Badge variant="outline">{s.latestSemester}</Badge>
                         </TableCell>
-                        <TableCell className="text-center">{s.grades.length}</TableCell>
+                        <TableCell className="text-center" onClick={() => setSelectedStudentId(s.student_id)}>{s.grades.length}</TableCell>
                         <TableCell className="text-right">
-                          <Button variant="ghost" size="sm" className="gap-1">
+                          <Button variant="ghost" size="sm" className="gap-1" onClick={() => setSelectedStudentId(s.student_id)}>
                             View <ChevronRight className="h-4 w-4" />
                           </Button>
                         </TableCell>
