@@ -109,6 +109,12 @@ const StudentsTab = () => {
       const { error } = await supabase.from(table).delete().eq('student_id', studentId);
       if (error) throw error;
     }
+    // Nullify any linked_student_id references pointing to this student
+    const { error: unlinkError } = await supabase
+      .from('students')
+      .update({ linked_student_id: null })
+      .eq('linked_student_id', studentId);
+    if (unlinkError) throw unlinkError;
     // Then delete the student
     const { error } = await supabase.from('students').delete().eq('id', studentId);
     if (error) throw error;
