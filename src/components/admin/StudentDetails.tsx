@@ -89,9 +89,6 @@ const StudentDetails = ({ student, onClose }: StudentDetailsProps) => {
       </Tabs>
     </>
   );
-      </Tabs>
-    </>
-  );
 };
 
 const StudentInfoCard = ({ student }: { student: Student }) => {
