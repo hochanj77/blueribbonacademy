@@ -141,7 +141,36 @@ const StudentDetails = ({ student, onClose }: StudentDetailsProps) => {
   );
 };
 
-const StudentInfoCard = ({ student }: { student: Student }) => {
+const StudentInfoCard = ({
+  student,
+  isEditing,
+  editedStudent,
+  setEditedStudent,
+}: {
+  student: Student;
+  isEditing: boolean;
+  editedStudent: Record<string, any>;
+  setEditedStudent: (val: any) => void;
+}) => {
+  const val = (field: keyof Student) => editedStudent[field] ?? (student as any)[field] ?? '';
+  const set = (field: string, value: string) =>
+    setEditedStudent((prev: any) => ({ ...prev, [field]: value || null }));
+
+  const renderField = (label: string, field: keyof Student) => (
+    <div className="flex justify-between items-center">
+      <span className="text-muted-foreground">{label}:</span>
+      {isEditing ? (
+        <Input
+          className="w-48 h-8 text-sm"
+          value={val(field)}
+          onChange={(e) => set(field, e.target.value)}
+        />
+      ) : (
+        <span>{(student as any)[field] || '-'}</span>
+      )}
+    </div>
+  );
+
   return (
     <div className="grid grid-cols-2 gap-6">
       <Card>
@@ -149,30 +178,32 @@ const StudentInfoCard = ({ student }: { student: Student }) => {
           <CardTitle className="text-lg">Student Information</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Email:</span>
-            <span>{student.email || '-'}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Phone:</span>
-            <span>{student.phone || '-'}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Grade:</span>
-            <span>{student.grade_level || '-'}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">School:</span>
-            <span>{student.school || '-'}</span>
-          </div>
-         <div className="flex justify-between">
+          {renderField('Email', 'email')}
+          {renderField('Phone', 'phone')}
+          {renderField('Grade', 'grade_level')}
+          {renderField('School', 'school')}
+          <div className="flex justify-between items-center">
             <span className="text-muted-foreground">Status:</span>
-            {(student as any).status === 'active' ? (
-              <Badge className="bg-green-500 hover:bg-green-500/80 text-primary-foreground border-transparent">Active</Badge>
-            ) : (student as any).status === 'pending' ? (
-              <Badge className="bg-yellow-500 hover:bg-yellow-500/80 text-primary-foreground border-transparent">Pending</Badge>
+            {isEditing ? (
+              <select
+                className="w-48 h-8 text-sm border rounded-md px-2 bg-background"
+                value={val('status' as any)}
+                onChange={(e) => set('status', e.target.value)}
+              >
+                <option value="active">Active</option>
+                <option value="pending">Pending</option>
+                <option value="inactive">Inactive</option>
+              </select>
             ) : (
-              <Badge variant="secondary">Inactive</Badge>
+              <>
+                {(student as any).status === 'active' ? (
+                  <Badge className="bg-green-500 hover:bg-green-500/80 text-primary-foreground border-transparent">Active</Badge>
+                ) : (student as any).status === 'pending' ? (
+                  <Badge className="bg-yellow-500 hover:bg-yellow-500/80 text-primary-foreground border-transparent">Pending</Badge>
+                ) : (
+                  <Badge variant="secondary">Inactive</Badge>
+                )}
+              </>
             )}
           </div>
         </CardContent>
@@ -183,31 +214,28 @@ const StudentInfoCard = ({ student }: { student: Student }) => {
           <CardTitle className="text-lg">Parent/Guardian</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Name:</span>
-            <span>{student.parent_name || '-'}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Email:</span>
-            <span>{student.parent_email || '-'}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Phone:</span>
-            <span>{student.parent_phone || '-'}</span>
-          </div>
+          {renderField('Name', 'parent_name')}
+          {renderField('Email', 'parent_email')}
+          {renderField('Phone', 'parent_phone')}
         </CardContent>
       </Card>
 
-      {student.notes && (
-        <Card className="col-span-2">
-          <CardHeader>
-            <CardTitle className="text-lg">Notes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">{student.notes}</p>
-          </CardContent>
-        </Card>
-      )}
+      <Card className="col-span-2">
+        <CardHeader>
+          <CardTitle className="text-lg">Notes</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {isEditing ? (
+            <Textarea
+              value={editedStudent.notes ?? student.notes ?? ''}
+              onChange={(e) => set('notes', e.target.value)}
+              rows={3}
+            />
+          ) : (
+            <p className="text-muted-foreground">{student.notes || 'No notes'}</p>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
