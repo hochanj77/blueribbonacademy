@@ -34,8 +34,6 @@ interface ProgressNote {
   created_at: string;
   tutor_id: string | null;
 }
-import { useAuth } from '@/contexts/AuthContext';
-import { Badge } from '@/components/ui/badge';
 interface StudentDetailsProps {
   student: Student;
   onClose: () => void;
