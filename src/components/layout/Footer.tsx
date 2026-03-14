@@ -52,7 +52,7 @@ export function Footer() {
               />
             </Link>
             <p className="text-secondary-foreground/70 text-sm leading-relaxed">
-              Building confident, capable test-takers ready for their future through personalized SAT prep and academic support.
+              We believe all students have the right to receive a good education. We strive to help students develop character alongside academic prowess.
             </p>
             <div className="flex gap-3">
               {socialLinks.map((s) => (
