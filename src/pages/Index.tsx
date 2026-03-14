@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Megaphone, CalendarDays } from "lucide-react";
+import { Megaphone, CalendarDays, ArrowRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
@@ -36,7 +36,6 @@ export default function Index() {
   const hero = { ...heroDefaults, ...pageContent?.hero };
   const cta = { ...ctaDefaults, ...pageContent?.cta_section };
 
-
   const { data: announcements = [] } = useQuery({
     queryKey: ['published-announcements'],
     queryFn: async () => {
@@ -53,68 +52,80 @@ export default function Index() {
 
   return (
     <div className="overflow-hidden">
-      {/* Hero Section */}
+      {/* Hero Section — full viewport, cinematic */}
       <section
-        className="relative min-h-[85vh] flex items-center justify-center bg-cover bg-center bg-no-repeat"
+        className="relative min-h-screen flex items-center bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${heroImage})` }}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-secondary/90 via-secondary/75 to-secondary/50" />
+        {/* Layered gradient overlay for depth */}
+        <div className="absolute inset-0 bg-gradient-to-br from-secondary/95 via-secondary/80 to-primary/60" />
+        <div className="absolute inset-0 bg-gradient-to-t from-secondary/40 via-transparent to-transparent" />
+
+        {/* Subtle pattern overlay */}
+        <div className="absolute inset-0 opacity-[0.03]" style={{
+          backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
+          backgroundSize: '40px 40px'
+        }} />
 
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-2xl animate-fade-in-up mt-8 md:mt-12">
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-4 md:mb-6">
+          <div className="max-w-2xl animate-fade-in-up">
+            {/* Accent line */}
+            <div className="flex items-center gap-3 mb-6">
+              <div className="h-px w-12 bg-accent" />
+              <span className="text-accent text-sm font-semibold tracking-widest uppercase">Blue Ribbon Academy</span>
+            </div>
+
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-primary-foreground leading-[1.05] mb-6 tracking-tight">
               {hero.headline}
             </h1>
 
-            <p className="text-base md:text-lg text-white/90 mb-6 md:mb-8 max-w-lg">
+            <p className="text-lg md:text-xl text-primary-foreground/80 mb-10 max-w-lg leading-relaxed">
               {hero.subheading}
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mb-8 md:mb-12">
+            <div className="flex flex-col sm:flex-row gap-4">
               <SmartLink to={hero.cta_primary_link}>
-                <Button variant="hero" size="lg" className="w-full sm:w-auto">
+                <Button variant="accent" size="xl" className="w-full sm:w-auto rounded-full gap-2 group">
                   {hero.cta_primary_text}
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Button>
               </SmartLink>
               <SmartLink to={hero.cta_secondary_link}>
-                <Button variant="hero-outline" size="lg" className="w-full sm:w-auto border-secondary-foreground text-secondary-foreground hover:bg-secondary-foreground/10">
+                <Button variant="hero-outline" size="lg" className="w-full sm:w-auto rounded-full border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
                   {hero.cta_secondary_text}
                 </Button>
               </SmartLink>
             </div>
           </div>
         </div>
-      </section>
 
-      {/* Wave Divider */}
-      <div className="relative -mb-1">
-        <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto block" preserveAspectRatio="none">
-          <path d="M0,0 L0,40 Q360,80 720,40 Q1080,0 1440,40 L1440,0 Z" fill="hsl(var(--secondary))" fillOpacity="0.85" />
-          <path d="M0,40 Q360,80 720,40 Q1080,0 1440,40 L1440,80 L0,80 Z" className="fill-accent/10" />
-        </svg>
-      </div>
+        {/* Bottom fade */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
+      </section>
 
       {/* Announcements Section */}
       {announcements.length > 0 && (
-        <section className="py-12 md:py-20 bg-accent/10">
+        <section className="py-16 md:py-24 bg-background">
           <div className="container mx-auto px-4">
-            <div className="flex items-center gap-3 mb-8 md:mb-10 justify-center">
-              <div className="p-2.5 rounded-full bg-accent/20">
-                <Megaphone className="h-6 w-6 text-accent" />
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 text-accent text-sm font-semibold mb-4">
+                <Megaphone className="h-4 w-4" />
+                Announcements
               </div>
-              <h2 className="text-2xl md:text-3xl font-bold text-secondary">Latest Announcements</h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground">Latest Updates</h2>
+              <div className="section-divider mt-4" />
             </div>
-            <div className="flex flex-wrap justify-center gap-5 md:gap-6">
+            <div className="flex flex-wrap justify-center gap-6">
               {announcements.map((a, i) => (
                 <Card
                   key={a.id}
-                  className="group border border-border/50 bg-card hover:border-accent/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-accent/10 w-full md:max-w-sm lg:max-w-md"
+                  className="card-sleek w-full md:max-w-sm lg:max-w-md overflow-hidden"
                   style={{ animationDelay: `${i * 100}ms` }}
                 >
                   <CardContent className="p-6">
                     <div className="flex items-start gap-3 mb-3">
-                      <div className="h-2 w-2 rounded-full bg-accent mt-2 shrink-0 animate-pulse" />
-                      <h3 className="font-bold text-lg text-foreground group-hover:text-accent transition-colors">
+                      <div className="h-2.5 w-2.5 rounded-full bg-accent mt-1.5 shrink-0 animate-pulse" />
+                      <h3 className="font-bold text-lg text-foreground">
                         {a.title}
                       </h3>
                     </div>
@@ -137,26 +148,30 @@ export default function Index() {
         </section>
       )}
 
-
       {/* CTA Section */}
-      <section className="py-10 md:py-16 bg-background">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-2xl md:text-4xl font-bold text-secondary mb-4 md:mb-6">
+      <section className="py-16 md:py-24 bg-gradient-to-br from-secondary via-primary to-secondary relative overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute inset-0 opacity-[0.04]" style={{
+          backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
+          backgroundSize: '32px 32px'
+        }} />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-accent/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+
+        <div className="container mx-auto px-4 text-center relative z-10">
+          <h2 className="text-3xl md:text-5xl font-bold text-primary-foreground mb-6">
             {cta.headline}
           </h2>
-          <p className="text-base md:text-lg text-muted-foreground mb-6 md:mb-8 max-w-2xl mx-auto">
+          <p className="text-lg text-primary-foreground/70 mb-10 max-w-2xl mx-auto">
             {cta.subheading}
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <SmartLink to={cta.button_link}>
-              <Button variant="hero" size="xl">
-                {cta.button_text}
-              </Button>
-            </SmartLink>
-          </div>
+          <SmartLink to={cta.button_link}>
+            <Button variant="accent" size="xl" className="rounded-full gap-2 group">
+              {cta.button_text}
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Button>
+          </SmartLink>
         </div>
       </section>
     </div>
   );
 }
-

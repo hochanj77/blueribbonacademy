@@ -2,9 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-/* PrepHaus Design System - SAT Prep Academy */
+/* Blue Ribbon Academy Design System */
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&family=Inter:wght@400;500;600&display=swap');
 
 @layer base {
   :root {
@@ -12,43 +12,34 @@
     --background: 40 20% 98%;
     --foreground: 222 47% 11%;
 
-    /* Deep Navy - Primary (from logo) */
     --primary: 230 50% 25%;
     --primary-foreground: 0 0% 100%;
 
-    /* Dark Navy - Secondary/Headers */
     --secondary: 230 50% 18%;
     --secondary-foreground: 40 30% 95%;
 
-    /* Gold/Amber - Accent (Blue Ribbon award feel) */
     --accent: 42 85% 55%;
     --accent-foreground: 230 50% 18%;
 
-    /* Card & Popover */
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    /* Muted Tones - warm cream */
     --muted: 40 25% 95%;
     --muted-foreground: 230 12% 45%;
 
-    /* Warm Tone for sections */
     --warm: 40 30% 96%;
     --warm-foreground: 222 47% 11%;
 
-    /* Destructive */
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Utilities */
     --border: 40 15% 88%;
     --input: 40 15% 88%;
     --ring: 230 50% 25%;
     --radius: 0.75rem;
 
-    /* Sidebar */
     --sidebar-background: 40 20% 97%;
     --sidebar-foreground: 222 47% 11%;
     --sidebar-primary: 230 50% 25%;
@@ -58,42 +49,31 @@
     --sidebar-border: 40 15% 88%;
     --sidebar-ring: 230 50% 25%;
 
-    /* Typography */
     --font-display: 'Montserrat', sans-serif;
   }
 
   .dark {
     --background: 230 30% 6%;
     --foreground: 40 20% 95%;
-
     --primary: 230 50% 40%;
     --primary-foreground: 0 0% 100%;
-
     --secondary: 40 20% 95%;
     --secondary-foreground: 230 30% 10%;
-
     --accent: 42 85% 55%;
     --accent-foreground: 230 50% 18%;
-
     --card: 230 30% 9%;
     --card-foreground: 40 20% 95%;
-
     --popover: 230 30% 9%;
     --popover-foreground: 40 20% 95%;
-
     --muted: 230 20% 15%;
     --muted-foreground: 40 10% 60%;
-
     --warm: 230 20% 12%;
     --warm-foreground: 40 20% 95%;
-
     --destructive: 0 63% 31%;
     --destructive-foreground: 40 20% 95%;
-
     --border: 230 20% 17%;
     --input: 230 20% 17%;
     --ring: 230 50% 40%;
-
     --sidebar-background: 230 30% 6%;
     --sidebar-foreground: 40 20% 95%;
     --sidebar-primary: 230 50% 40%;
@@ -122,43 +102,57 @@
 }
 
 @layer components {
-  /* Hero overlay card styling */
   .hero-card {
     @apply bg-card/95 backdrop-blur-sm rounded-2xl shadow-2xl p-8 md:p-12 max-w-2xl mx-auto;
   }
 
-  /* Accent text for emphasis */
   .text-emphasis {
     @apply text-primary italic font-bold;
   }
 
-  /* Warm section backgrounds */
   .section-warm {
     @apply bg-warm;
   }
 
-  /* Smooth hover transitions */
   .hover-lift {
     @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
   }
 
-  /* Story link underline animation */
   .story-link {
     @apply relative inline-block;
   }
-  
+
   .story-link::after {
     content: '';
     @apply absolute w-full scale-x-0 h-0.5 bottom-0 left-0 bg-accent origin-bottom-right transition-transform duration-300;
   }
-  
+
   .story-link:hover::after {
     @apply scale-x-100 origin-bottom-left;
+  }
+
+  /* Glass morphism utility */
+  .glass {
+    @apply bg-background/60 backdrop-blur-xl border border-border/30;
+  }
+
+  /* Gradient text */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent;
+  }
+
+  /* Sleek card hover */
+  .card-sleek {
+    @apply bg-card border border-border/40 rounded-2xl transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-1 hover:border-accent/30;
+  }
+
+  /* Section divider */
+  .section-divider {
+    @apply w-16 h-1 bg-gradient-to-r from-primary to-accent rounded-full mx-auto;
   }
 }
 
 @layer utilities {
-  /* Fade in animation */
   .animate-fade-in {
     animation: fadeIn 0.6s ease-out forwards;
   }
@@ -176,34 +170,27 @@
     animation: scaleIn 0.5s ease-out forwards;
   }
 
+  .animate-slide-in-right {
+    animation: slideInRight 0.5s ease-out forwards;
+  }
+
   @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 
   @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   @keyframes scaleIn {
-    from {
-      opacity: 0;
-      transform: scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
   }
 }

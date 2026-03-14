@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { Lightbulb, Shield, Heart, Users, BookOpen, Award } from "lucide-react";
+import { Users, BookOpen, Award } from "lucide-react";
 import classroomImage from "@/assets/classroom-br.jpg";
 import { cn } from "@/lib/utils";
 import { usePageContent } from "@/hooks/useSiteContent";
@@ -42,27 +40,6 @@ function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: str
   return <span ref={ref}>{count}{suffix}</span>;
 }
 
-const values = [
-  {
-    icon: Lightbulb,
-    title: "Curiosity & Self-Belief",
-    description: "To see themselves as capable of anything.",
-    color: "from-primary/20 to-accent/20",
-  },
-  {
-    icon: Shield,
-    title: "Discipline & Resilience",
-    description: "To tackle challenges with a steady hand.",
-    color: "from-accent/20 to-primary/20",
-  },
-  {
-    icon: Heart,
-    title: "Character & Purpose",
-    description: "To ensure their success is built on a solid foundation.",
-    color: "from-primary/20 to-accent/20",
-  },
-];
-
 const stats = [
   { icon: Users, value: 5000, suffix: "+", label: "Students Mentored" },
   { icon: BookOpen, value: 20, suffix: "+", label: "Years of Experience" },
@@ -75,27 +52,10 @@ const defaults = {
     intro: "We believe all students have the right to receive a good education.",
     body: "With over 20 years of experience, we've learned that good education is impossible without sharing life together with the students. We do not perceive our students merely as attendants of our academy but more as disciples we nurture through our lives. We make sure to treat all students with much care with this mission in mind.",
   },
-  belonging: {
-    headline: "More Than Just a Classroom",
-    body: "Students in our academy spend a long time together until the final stage of their early education life. We nurture our students through challenging times and celebrate their successes. By placing trust in us, we make everything work out in the end.",
-  },
-  heart: {
-    headline: "The Heart Behind the Knowledge",
-    body: "Education is the process of reaching our dreams and not the end goal. Therefore, we strive to be more than mere vessels for transferring knowledge. We try our best to leave no regrets to help students develop character alongside academic prowess every step of the way until the student can have a secure future.",
-    values_intro: "At Blue Ribbon Academy, we work intentionally to help students develop:",
-  },
-  excellence: {
-    headline: "Built for Excellence. Anchored in Care.",
-    body: "We will continue to aid our students to yield fruitful results with all our hearts, added experience and know-hows. We are uncompromising when it comes to academic rigor, and we never sacrifice performance for comfort.",
-    quote: "We believe all students have the right to receive a good education. With over 20 years of experience, good education is impossible without sharing life together with the students.",
-  },
 };
 
 export default function About() {
   const [mounted, setMounted] = useState(false);
-  const belongingView = useInView();
-  const heartView = useInView();
-  const excellenceView = useInView();
   const statsSection = useInView();
 
   useEffect(() => {
@@ -105,39 +65,40 @@ export default function About() {
 
   const { data: pageContent } = usePageContent("about");
   const welcome = { ...defaults.welcome, ...pageContent?.welcome };
-  const belonging = { ...defaults.belonging, ...pageContent?.belonging };
-  const heart = { ...defaults.heart, ...pageContent?.heart };
-  const excellence = { ...defaults.excellence, ...pageContent?.excellence };
 
   return (
-    <div className="pt-20 md:pt-24">
-
+    <div className="pt-24 md:pt-28">
       {/* Welcome Section */}
-      <section className="py-10 md:py-16 bg-background overflow-hidden">
+      <section className="py-16 md:py-24 bg-background overflow-hidden">
         <div className="container mx-auto px-4">
           <div
             className={cn(
-              "grid lg:grid-cols-2 gap-8 md:gap-12 items-center transition-all duration-1000 ease-out",
+              "grid lg:grid-cols-2 gap-10 md:gap-16 items-center transition-all duration-1000 ease-out",
               mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
             )}
           >
             <div>
-              <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-secondary mb-4 md:mb-6 leading-tight">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="h-px w-12 bg-accent" />
+                <span className="text-accent text-sm font-semibold tracking-widest uppercase">About Us</span>
+              </div>
+              <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-foreground mb-6 leading-tight tracking-tight">
                 {welcome.headline}
               </h1>
-              <div className="space-y-4 text-muted-foreground leading-relaxed text-sm md:text-base">
-                <p className="text-base md:text-lg font-semibold text-foreground">
+              <div className="space-y-4 text-muted-foreground leading-relaxed text-base md:text-lg">
+                <p className="text-lg md:text-xl font-semibold text-foreground">
                   {welcome.intro}
                 </p>
                 <p>{welcome.body}</p>
               </div>
             </div>
             <div className="relative group">
-              <div className="absolute -inset-4 bg-gradient-to-br from-primary/20 via-accent/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute -inset-3 bg-gradient-to-br from-primary/15 via-accent/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-accent/20 rounded-2xl -z-10" />
               <img
                 src={classroomImage}
                 alt="Blue Ribbon Academy learning environment"
-                className="rounded-2xl shadow-2xl relative z-10 transition-transform duration-300 ease-out group-hover:scale-[1.02]"
+                className="rounded-2xl shadow-2xl relative z-10 transition-transform duration-500 ease-out group-hover:scale-[1.02]"
               />
             </div>
           </div>
@@ -145,9 +106,13 @@ export default function About() {
       </section>
 
       {/* Stats Bar */}
-      <section className="py-8 md:py-12 bg-secondary" ref={statsSection.ref}>
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-3 gap-4 md:gap-8">
+      <section className="py-12 md:py-16 bg-gradient-to-r from-secondary via-primary to-secondary relative overflow-hidden" ref={statsSection.ref}>
+        <div className="absolute inset-0 opacity-[0.04]" style={{
+          backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
+          backgroundSize: '32px 32px'
+        }} />
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="grid grid-cols-3 gap-6 md:gap-10">
             {stats.map((stat, i) => (
               <div
                 key={stat.label}
@@ -157,18 +122,18 @@ export default function About() {
                 )}
                 style={{ transitionDelay: `${i * 150}ms` }}
               >
-                <stat.icon className="h-6 w-6 md:h-8 md:w-8 text-accent mx-auto mb-2" />
-                <div className="text-2xl md:text-4xl font-bold text-secondary-foreground">
+                <div className="inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-primary-foreground/10 mb-3">
+                  <stat.icon className="h-6 w-6 md:h-7 md:w-7 text-accent" />
+                </div>
+                <div className="text-3xl md:text-5xl font-extrabold text-primary-foreground tracking-tight">
                   <AnimatedCounter target={stat.value} suffix={stat.suffix} />
                 </div>
-                <div className="text-xs md:text-sm text-secondary-foreground/70 mt-1">{stat.label}</div>
+                <div className="text-xs md:text-sm text-primary-foreground/60 mt-1 font-medium">{stat.label}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
-
     </div>
   );
 }
-
