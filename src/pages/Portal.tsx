@@ -197,7 +197,7 @@ export default function Portal() {
             <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h2 className="text-xl font-bold text-secondary mb-2">Account Not Linked</h2>
             <p className="text-muted-foreground mb-4">
-              Your account hasn't been linked to a student profile yet. Please contact PrepHaus administration.
+              Your account hasn't been linked to a student profile yet. Please contact Blue Ribbon Academy administration.
             </p>
             <Button variant="outline" onClick={() => navigate("/contact")}>
               Contact Us
