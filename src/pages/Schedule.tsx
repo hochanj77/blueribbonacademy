@@ -1,5 +1,8 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Clock, MapPin } from "lucide-react";
+import PageHero from "@/components/PageHero";
+import { useInView } from "@/hooks/useInView";
+import { cn } from "@/lib/utils";
 
 interface ClassEntry {
   subject: string;
@@ -66,23 +69,26 @@ function ScheduleTable({ entries }: ScheduleTableProps) {
   return (
     <>
       {/* Desktop table */}
-      <div className="hidden md:block rounded-lg border border-border overflow-hidden">
+      <div className="hidden md:block rounded-2xl border border-border/40 overflow-hidden shadow-sm">
         <Table>
           <TableHeader>
-            <TableRow className="bg-secondary">
-              <TableHead className="text-secondary-foreground font-bold">Subject</TableHead>
-              <TableHead className="text-secondary-foreground font-bold">Day</TableHead>
-              <TableHead className="text-secondary-foreground font-bold">Time</TableHead>
-              <TableHead className="text-secondary-foreground font-bold">Details</TableHead>
+            <TableRow className="bg-secondary/90 border-none">
+              <TableHead className="text-secondary-foreground font-bold text-sm py-4">Subject</TableHead>
+              <TableHead className="text-secondary-foreground font-bold text-sm py-4">Day</TableHead>
+              <TableHead className="text-secondary-foreground font-bold text-sm py-4">Time</TableHead>
+              <TableHead className="text-secondary-foreground font-bold text-sm py-4">Details</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {entries.map((e, i) => (
-              <TableRow key={i} className={i % 2 === 0 ? "bg-card" : "bg-muted/50"}>
-                <TableCell className="font-medium text-foreground">{e.subject}</TableCell>
-                <TableCell className="text-muted-foreground">{e.day}</TableCell>
-                <TableCell className="text-muted-foreground">{e.time}</TableCell>
-                <TableCell className="text-muted-foreground text-sm">{e.details}</TableCell>
+              <TableRow key={i} className={cn(
+                "transition-colors hover:bg-accent/5",
+                i % 2 === 0 ? "bg-card" : "bg-muted/30"
+              )}>
+                <TableCell className="font-semibold text-foreground py-4">{e.subject}</TableCell>
+                <TableCell className="text-muted-foreground py-4">{e.day}</TableCell>
+                <TableCell className="text-muted-foreground py-4">{e.time}</TableCell>
+                <TableCell className="text-muted-foreground text-sm py-4">{e.details}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -91,15 +97,15 @@ function ScheduleTable({ entries }: ScheduleTableProps) {
       {/* Mobile cards */}
       <div className="md:hidden space-y-3">
         {entries.map((e, i) => (
-          <div key={i} className="rounded-lg border border-border bg-card p-4 space-y-2">
-            <p className="font-semibold text-secondary">{e.subject}</p>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-              <span className="text-muted-foreground">Day</span>
-              <span>{e.day}</span>
-              <span className="text-muted-foreground">Time</span>
-              <span>{e.time}</span>
-              <span className="text-muted-foreground">Details</span>
-              <span>{e.details}</span>
+          <div key={i} className="rounded-xl border border-border/40 bg-card p-4 space-y-2 shadow-sm border-t-2 border-t-accent/60">
+            <p className="font-bold text-foreground">{e.subject}</p>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
+              <span className="text-muted-foreground font-medium">Day</span>
+              <span className="text-foreground">{e.day}</span>
+              <span className="text-muted-foreground font-medium">Time</span>
+              <span className="text-foreground">{e.time}</span>
+              <span className="text-muted-foreground font-medium">Details</span>
+              <span className="text-foreground">{e.details}</span>
             </div>
           </div>
         ))}
@@ -117,35 +123,39 @@ const sections = [
 ];
 
 export default function Schedule() {
+  const cresskillSection = useInView();
+  const fortLeeSection = useInView();
+
   return (
-    <div className="pt-20 md:pt-24">
-      {/* Hero */}
-      <section className="py-10 md:py-16 bg-muted">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center animate-fade-in-up">
-            <h1 className="text-3xl md:text-5xl font-bold text-secondary mb-4">
-              Class <span className="text-accent">Schedule</span>
-            </h1>
-            <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
-              Find the right class and time that fits your schedule. Contact us for availability.
-            </p>
-          </div>
-        </div>
-      </section>
+    <div>
+      <PageHero
+        title="Class"
+        accent="Schedule"
+        subtitle="Find the right class and time that fits your schedule. Contact us for availability."
+      />
 
       {/* Cresskill Campus */}
-      <section className="py-8 md:py-14 bg-background">
+      <section className="py-12 md:py-20 bg-background" ref={cresskillSection.ref}>
         <div className="container mx-auto px-4 space-y-10">
-          <div className="flex items-center gap-2 mb-2">
-            <MapPin className="h-5 w-5 text-accent" />
-            <h2 className="text-xl md:text-2xl font-bold text-secondary">Cresskill Campus</h2>
+          <div className={cn(
+            "flex items-center gap-3 transition-all duration-700",
+            cresskillSection.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+          )}>
+            <div className="p-2.5 rounded-xl bg-accent/10">
+              <MapPin className="h-5 w-5 text-accent" />
+            </div>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground">Cresskill Campus</h2>
           </div>
 
-          {sections.map((section) => (
-            <div key={section.title} className="space-y-3">
-              <div className="flex items-center gap-2">
+          {sections.map((section, i) => (
+            <div key={section.title} className={cn(
+              "space-y-4 transition-all duration-700",
+              cresskillSection.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+            )} style={{ transitionDelay: `${(i + 1) * 100}ms` }}>
+              <div className="flex items-center gap-2.5">
+                <div className="w-1 h-6 rounded-full bg-accent" />
                 <Clock className="h-4 w-4 text-primary" />
-                <h3 className="text-lg font-bold text-secondary">{section.title}</h3>
+                <h3 className="text-lg font-bold text-foreground">{section.title}</h3>
               </div>
               <ScheduleTable entries={section.data} />
             </div>
@@ -154,25 +164,38 @@ export default function Schedule() {
       </section>
 
       {/* Fort Lee Campus */}
-      <section className="py-8 md:py-14 bg-muted">
+      <section className="py-12 md:py-20 bg-muted" ref={fortLeeSection.ref}>
         <div className="container mx-auto px-4 space-y-10">
-          <div className="flex items-center gap-2 mb-2">
-            <MapPin className="h-5 w-5 text-accent" />
-            <h2 className="text-xl md:text-2xl font-bold text-secondary">Fort Lee Campus</h2>
+          <div className={cn(
+            "flex items-center gap-3 transition-all duration-700",
+            fortLeeSection.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+          )}>
+            <div className="p-2.5 rounded-xl bg-accent/10">
+              <MapPin className="h-5 w-5 text-accent" />
+            </div>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground">Fort Lee Campus</h2>
           </div>
 
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
+          <div className={cn(
+            "space-y-4 transition-all duration-700",
+            fortLeeSection.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+          )} style={{ transitionDelay: "100ms" }}>
+            <div className="flex items-center gap-2.5">
+              <div className="w-1 h-6 rounded-full bg-accent" />
               <Clock className="h-4 w-4 text-primary" />
-              <h3 className="text-lg font-bold text-secondary">Math</h3>
+              <h3 className="text-lg font-bold text-foreground">Math</h3>
             </div>
             <ScheduleTable entries={fortLee} />
           </div>
 
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
+          <div className={cn(
+            "space-y-4 transition-all duration-700",
+            fortLeeSection.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+          )} style={{ transitionDelay: "200ms" }}>
+            <div className="flex items-center gap-2.5">
+              <div className="w-1 h-6 rounded-full bg-accent" />
               <Clock className="h-4 w-4 text-primary" />
-              <h3 className="text-lg font-bold text-secondary">Digital SAT Prep</h3>
+              <h3 className="text-lg font-bold text-foreground">Digital SAT Prep</h3>
             </div>
             <ScheduleTable entries={fortLeeSat} />
           </div>
