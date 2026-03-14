@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, Settings, LogOut, LayoutDashboard, ChevronRight } from "lucide-react";
-import blueRibbonLogo from "@/assets/blue-ribbon-logo.jpg";
+import blueRibbonLogo from "@/assets/blue-ribbon-logo-transparent.png";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
