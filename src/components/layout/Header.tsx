@@ -11,7 +11,7 @@ const navItems = [
   { label: "About Us", href: "/about" },
   { label: "Programs", href: "/courses" },
   { label: "Social", href: "/social" },
-  { label: "SAT Platform", href: "https://prephaus.ditoed.com", external: true, authRequired: true },
+  { label: "SAT Platform", href: "https://blueribbon.ditoed.com", external: true, authRequired: true },
   { label: "Contact", href: "/contact" },
 ];
 
