@@ -71,9 +71,9 @@ const stats = [
 
 const defaults = {
   welcome: {
-    headline: "Welcome to PrepHaus: Where Potential Finds a Home",
-    intro: "PrepHaus was built on a simple belief: students learn best in community.",
-    body: "What sets PrepHaus apart is our focus on community. We believe that curiosity thrives when students feel secure. In our Haus, you aren't just a number on a diagnostic test, but an individual with a story. We've cultivated a space where students are encouraged to ask questions, take risks, support one another, and grow together. With 50+ years of combined expertise, we know that the best results come when a student feels seen and supported.",
+    headline: "Welcome to Blue Ribbon Academy",
+    intro: "We believe all students have the right to receive a good education.",
+    body: "With over 20 years of experience, we've learned that good education is impossible without sharing life together with the students. We do not perceive our students merely as attendants of our academy but more as disciples we nurture through our lives. We make sure to treat all students with much care with this mission in mind.",
   },
   belonging: {
     headline: "The Power of Belonging",
