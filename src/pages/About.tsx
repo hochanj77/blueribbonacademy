@@ -85,9 +85,9 @@ const defaults = {
     values_intro: "At Blue Ribbon Academy, we work intentionally to help students develop:",
   },
   excellence: {
-    headline: "Built for Excellence. Anchored in Community.",
-    body: "In this Haus, we never mistake warmth for weakness. We are uncompromising when it comes to academic rigor. Our standards are elite, and we never sacrifice performance for comfort. Instead, we use our community as the fuel for high achievement, believing that students reach their peak when they are challenged within a place they truly belong.",
-    quote: "We are a community growing together, leaving no regrets as we build the academic prowess and inner grit needed for a secure future. At PrepHaus, we don't just help you reach a goal; we give you the momentum to surpass it.",
+    headline: "Built for Excellence. Anchored in Care.",
+    body: "We will continue to aid our students to yield fruitful results with all our hearts, added experience and know-hows. We are uncompromising when it comes to academic rigor, and we never sacrifice performance for comfort.",
+    quote: "We believe all students have the right to receive a good education. With over 20 years of experience, good education is impossible without sharing life together with the students.",
   },
 };
 
