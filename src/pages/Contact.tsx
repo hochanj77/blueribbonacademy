@@ -28,11 +28,11 @@ const subjectOptions = [
 ];
 
 const contactDefaults = {
-  address_line1: "268 Broad Ave Floor 2",
-  address_line2: "Palisades Park, NJ 07650",
-  phone: "(201) 525-8577",
-  email: "info@prephaus.academy",
-  hours_weekday: "Mon-Fri: 1:30pm - 9:00pm",
+  address_line1: "41 Union Ave FL2",
+  address_line2: "Cresskill, NJ 07626",
+  phone: "+1.201.406.3929",
+  email: "info@blueribbon-nj.com",
+  hours_weekday: "Mon-Fri: 3:30pm - 9:00pm",
   hours_weekend: "Sat: 9:00am - 4:00pm",
 };
 
