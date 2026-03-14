@@ -3,9 +3,9 @@ import { useSiteContent } from "@/hooks/useSiteContent";
 
 const socialDefaults = {
   instagram_url: "#",
-  instagram_handle: "@prephaus",
-  google_business_url: "https://share.google/sB0wrIS3IhJoOfnOJ",
-  google_business_name: "PrepHaus Academy",
+  instagram_handle: "@blueribbonacademy",
+  google_business_url: "#",
+  google_business_name: "Blue Ribbon Academy",
 };
 
 export default function Social() {

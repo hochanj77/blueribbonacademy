@@ -347,7 +347,7 @@ export default function Portal() {
                     <p className="text-sm font-medium text-secondary">Activate Your Student Account</p>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Enter the Student ID and last name provided by PrepHaus, then create your password.
+                    Enter the Student ID and last name provided by Blue Ribbon Academy, then create your password.
                   </p>
                 </div>
 

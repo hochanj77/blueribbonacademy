@@ -402,7 +402,7 @@ const StudentDashboard = () => {
                     <p className="font-medium text-sm text-secondary group-hover:text-accent transition-colors">
                       SAT Practice Platform
                     </p>
-                    <p className="text-xs text-muted-foreground">prephaus.ditoed.com</p>
+                    <p className="text-xs text-muted-foreground">blueribbon.ditoed.com</p>
                   </div>
                   <ExternalLink className="h-4 w-4 text-muted-foreground" />
                 </a>

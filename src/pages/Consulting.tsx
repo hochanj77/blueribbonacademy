@@ -134,8 +134,8 @@
                        Book Online
                      </Button>
                    </Link>
-                   <Button variant="hero-outline" size="lg" className="w-full" asChild>
-                     <a href="tel:2015258577">
+                    <Button variant="hero-outline" size="lg" className="w-full" asChild>
+                      <a href="tel:12014063929">
                        Call +1.201.406.3929
                      </a>
                    </Button>

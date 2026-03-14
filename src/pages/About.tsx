@@ -136,7 +136,7 @@ export default function About() {
               <div className="absolute -inset-4 bg-gradient-to-br from-primary/20 via-accent/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <img
                 src={classroomImage}
-                alt="PrepHaus learning environment"
+                alt="Blue Ribbon Academy learning environment"
                 className="rounded-2xl shadow-2xl relative z-10 transition-transform duration-300 ease-out group-hover:scale-[1.02]"
               />
             </div>

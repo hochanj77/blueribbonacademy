@@ -54,8 +54,8 @@ export function Header() {
           {/* Logo */}
           <Link to="/" className="group">
             <img
-              src={prephausLogo}
-              alt="PrepHaus"
+              src={blueRibbonLogo}
+              alt="Blue Ribbon Academy"
               className="h-8 md:h-11 w-auto transition-transform group-hover:scale-105"
             />
           </Link>

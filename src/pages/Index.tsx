@@ -19,7 +19,7 @@ const heroDefaults = {
 
 const ctaDefaults = {
   headline: "Ready to Start Your Journey?",
-  subheading: "Contact us today and learn how PrepHaus can help you achieve your academic goals.",
+  subheading: "Contact us today and learn how Blue Ribbon Academy can help you achieve your academic goals.",
   button_text: "Contact Us",
   button_link: "/contact",
 };

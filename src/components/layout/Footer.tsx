@@ -110,7 +110,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-secondary-foreground/10 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-secondary-foreground/60 text-sm">
-            © {new Date().getFullYear()} PrepHaus. All rights reserved.
+            © {new Date().getFullYear()} Blue Ribbon Academy, Inc. All rights reserved.
           </p>
           <div className="flex gap-6">
             {legalLinks.map((link) => (
