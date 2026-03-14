@@ -38,7 +38,7 @@
    "A 30-45 minute conversation (phone, video, or in-person)",
    "Discussion of academic goals and college aspirations",
    "Review of any prior test scores or practice tests",
-   "Overview of PrepHaus programs and pricing",
+   "Overview of Blue Ribbon Academy programs and pricing",
    "Q&A session to address all your questions",
    "No pressure, no commitment required",
  ];
