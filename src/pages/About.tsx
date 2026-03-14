@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Lightbulb, Shield, Heart, Users, BookOpen, Award } from "lucide-react";
-import classroomImage from "@/assets/classroom.jpg";
+import classroomImage from "@/assets/classroom-br.jpg";
 import { cn } from "@/lib/utils";
 import { usePageContent } from "@/hooks/useSiteContent";
 
@@ -65,7 +65,7 @@ const values = [
 
 const stats = [
   { icon: Users, value: 5000, suffix: "+", label: "Students Mentored" },
-  { icon: BookOpen, value: 50, suffix: "+", label: "Years Combined Experience" },
+  { icon: BookOpen, value: 20, suffix: "+", label: "Years of Experience" },
   { icon: Award, value: 99, suffix: "%", label: "Student Satisfaction" },
 ];
 

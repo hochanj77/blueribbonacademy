@@ -5,7 +5,7 @@ import { Megaphone, CalendarDays } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
-import heroImage from "@/assets/ivy-league-campus.jpg";
+import heroImage from "@/assets/hero-academy.jpg";
 import { usePageContent } from "@/hooks/useSiteContent";
 
 const heroDefaults = {
