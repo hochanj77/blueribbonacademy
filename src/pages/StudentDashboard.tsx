@@ -390,7 +390,7 @@ const StudentDashboard = () => {
 
                 {/* SAT Platform Link */}
                 <a
-                  href="https://prephaus.ditoed.com"
+                  href="https://blueribbon.ditoed.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted transition-colors group"
