@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Mail, Phone, MapPin, Instagram, ExternalLink } from "lucide-react";
-import prephausLogo from "@/assets/prephaus-horizontal-logo.png";
+import blueRibbonLogo from "@/assets/blue-ribbon-logo.jpg";
 import { useSiteContent } from "@/hooks/useSiteContent";
 
 const quickLinks = [
