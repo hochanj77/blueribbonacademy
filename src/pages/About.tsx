@@ -71,23 +71,23 @@ const stats = [
 
 const defaults = {
   welcome: {
-    headline: "Welcome to PrepHaus: Where Potential Finds a Home",
-    intro: "PrepHaus was built on a simple belief: students learn best in community.",
-    body: "What sets PrepHaus apart is our focus on community. We believe that curiosity thrives when students feel secure. In our Haus, you aren't just a number on a diagnostic test, but an individual with a story. We've cultivated a space where students are encouraged to ask questions, take risks, support one another, and grow together. With 50+ years of combined expertise, we know that the best results come when a student feels seen and supported.",
+    headline: "Welcome to Blue Ribbon Academy",
+    intro: "We believe all students have the right to receive a good education.",
+    body: "With over 20 years of experience, we've learned that good education is impossible without sharing life together with the students. We do not perceive our students merely as attendants of our academy but more as disciples we nurture through our lives. We make sure to treat all students with much care with this mission in mind.",
   },
   belonging: {
-    headline: "The Power of Belonging",
-    body: "Our name is our philosophy. Derived from the German Haus, it implies far more than just a building or a classroom. It signifies home, belonging, and a shared life. We've traded the cold, assembly-line feel of traditional test prep for a warm, welcoming environment—a place where students feel at home with teachers who genuinely know them, believe in them, and challenge them to grow.",
+    headline: "More Than Just a Classroom",
+    body: "Students in our academy spend a long time together until the final stage of their early education life. We nurture our students through challenging times and celebrate their successes. By placing trust in us, we make everything work out in the end.",
   },
   heart: {
     headline: "The Heart Behind the Knowledge",
-    body: "While many see education as a transactional transfer of facts, we strive to be more than mere vessels for knowledge. We believe education is not the end goal, but the vital process that helps students reach their dreams. Our teachers are mentors who care deeply, not just for your score growth, but for your personal potential.",
-    values_intro: "At PrepHaus, we work intentionally, every step of the way, to help students develop:",
+    body: "Education is the process of reaching our dreams and not the end goal. Therefore, we strive to be more than mere vessels for transferring knowledge. We try our best to leave no regrets to help students develop character alongside academic prowess every step of the way until the student can have a secure future.",
+    values_intro: "At Blue Ribbon Academy, we work intentionally to help students develop:",
   },
   excellence: {
-    headline: "Built for Excellence. Anchored in Community.",
-    body: "In this Haus, we never mistake warmth for weakness. We are uncompromising when it comes to academic rigor. Our standards are elite, and we never sacrifice performance for comfort. Instead, we use our community as the fuel for high achievement, believing that students reach their peak when they are challenged within a place they truly belong.",
-    quote: "We are a community growing together, leaving no regrets as we build the academic prowess and inner grit needed for a secure future. At PrepHaus, we don't just help you reach a goal; we give you the momentum to surpass it.",
+    headline: "Built for Excellence. Anchored in Care.",
+    body: "We will continue to aid our students to yield fruitful results with all our hearts, added experience and know-hows. We are uncompromising when it comes to academic rigor, and we never sacrifice performance for comfort.",
+    quote: "We believe all students have the right to receive a good education. With over 20 years of experience, good education is impossible without sharing life together with the students.",
   },
 };
 
@@ -136,7 +136,7 @@ export default function About() {
               <div className="absolute -inset-4 bg-gradient-to-br from-primary/20 via-accent/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <img
                 src={classroomImage}
-                alt="PrepHaus learning environment"
+                alt="Blue Ribbon Academy learning environment"
                 className="rounded-2xl shadow-2xl relative z-10 transition-transform duration-300 ease-out group-hover:scale-[1.02]"
               />
             </div>

@@ -25,7 +25,7 @@
    {
      icon: Users,
      title: "Program Matching",
-     description: "We'll recommend the best PrepHaus program for your specific needs.",
+     description: "We'll recommend the best Blue Ribbon program for your specific needs.",
    },
    {
      icon: Calendar,
@@ -38,7 +38,7 @@
    "A 30-45 minute conversation (phone, video, or in-person)",
    "Discussion of academic goals and college aspirations",
    "Review of any prior test scores or practice tests",
-   "Overview of PrepHaus programs and pricing",
+   "Overview of Blue Ribbon Academy programs and pricing",
    "Q&A session to address all your questions",
    "No pressure, no commitment required",
  ];
@@ -134,9 +134,9 @@
                        Book Online
                      </Button>
                    </Link>
-                   <Button variant="hero-outline" size="lg" className="w-full" asChild>
-                     <a href="tel:2015258577">
-                       Call (201) 525-8577
+                    <Button variant="hero-outline" size="lg" className="w-full" asChild>
+                      <a href="tel:12014063929">
+                       Call +1.201.406.3929
                      </a>
                    </Button>
                  </div>

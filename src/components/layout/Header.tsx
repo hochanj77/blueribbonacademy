@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, Settings, LogOut, LayoutDashboard } from "lucide-react";
-import prephausLogo from "@/assets/prephaus-horizontal-logo.png";
+import blueRibbonLogo from "@/assets/blue-ribbon-logo.jpg";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
@@ -11,7 +11,7 @@ const navItems = [
   { label: "About Us", href: "/about" },
   { label: "Programs", href: "/courses" },
   { label: "Social", href: "/social" },
-  { label: "SAT Platform", href: "https://prephaus.ditoed.com", external: true, authRequired: true },
+  { label: "SAT Platform", href: "https://blueribbon.ditoed.com", external: true, authRequired: true },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -54,8 +54,8 @@ export function Header() {
           {/* Logo */}
           <Link to="/" className="group">
             <img
-              src={prephausLogo}
-              alt="PrepHaus"
+              src={blueRibbonLogo}
+              alt="Blue Ribbon Academy"
               className="h-8 md:h-11 w-auto transition-transform group-hover:scale-105"
             />
           </Link>

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Mail, Phone, MapPin, Instagram, ExternalLink } from "lucide-react";
-import prephausLogo from "@/assets/prephaus-horizontal-logo.png";
+import blueRibbonLogo from "@/assets/blue-ribbon-logo.jpg";
 import { useSiteContent } from "@/hooks/useSiteContent";
 
 const quickLinks = [
@@ -15,10 +15,10 @@ const legalLinks = [
 ];
 
 const contactDefaults = {
-  address_line1: "268 Broad Ave Floor 2",
-  address_line2: "Palisades Park, NJ 07650",
-  phone: "(201) 525-8577",
-  email: "info@prephaus.academy",
+  address_line1: "41 Union Ave FL2",
+  address_line2: "Cresskill, NJ 07626",
+  phone: "+1.201.406.3929",
+  email: "info@blueribbon-nj.com",
 };
 
 const socialDefaults = {
@@ -46,13 +46,13 @@ export function Footer() {
           <div className="space-y-4">
             <Link to="/" className="inline-block">
               <img
-                src={prephausLogo}
-                alt="PrepHaus"
-                className="h-12 w-auto brightness-0 invert"
+              src={blueRibbonLogo}
+              alt="Blue Ribbon Academy"
+              className="h-12 w-auto brightness-0 invert"
               />
             </Link>
             <p className="text-secondary-foreground/70 text-sm leading-relaxed">
-              Building confident, capable test-takers ready for their future through personalized SAT prep and academic support.
+              We believe all students have the right to receive a good education. We strive to help students develop character alongside academic prowess.
             </p>
             <div className="flex gap-3">
               {socialLinks.map((s) => (
@@ -110,7 +110,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-secondary-foreground/10 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-secondary-foreground/60 text-sm">
-            © {new Date().getFullYear()} PrepHaus. All rights reserved.
+            © {new Date().getFullYear()} Blue Ribbon Academy, Inc. All rights reserved.
           </p>
           <div className="flex gap-6">
             {legalLinks.map((link) => (
