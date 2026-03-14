@@ -9,8 +9,8 @@ import heroImage from "@/assets/ivy-league-campus.jpg";
 import { usePageContent } from "@/hooks/useSiteContent";
 
 const heroDefaults = {
-  headline: "Where Academic Potential Finds a Home.",
-  subheading: "We are a community growing together, leaving no regrets as we build the academic prowess and inner grit needed for a secure future. At PrepHaus, we don't just help you reach a goal; we give you the momentum to surpass it.",
+  headline: "Where Every Student Can Shine.",
+  subheading: "We believe all students have the right to receive a good education. With over 20 years of experience, we strive to help students develop character alongside academic prowess every step of the way.",
   cta_primary_text: "View Programs",
   cta_primary_link: "/courses",
   cta_secondary_text: "Download Course Catalog",
