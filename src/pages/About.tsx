@@ -76,8 +76,8 @@ const defaults = {
     body: "With over 20 years of experience, we've learned that good education is impossible without sharing life together with the students. We do not perceive our students merely as attendants of our academy but more as disciples we nurture through our lives. We make sure to treat all students with much care with this mission in mind.",
   },
   belonging: {
-    headline: "The Power of Belonging",
-    body: "Our name is our philosophy. Derived from the German Haus, it implies far more than just a building or a classroom. It signifies home, belonging, and a shared life. We've traded the cold, assembly-line feel of traditional test prep for a warm, welcoming environment—a place where students feel at home with teachers who genuinely know them, believe in them, and challenge them to grow.",
+    headline: "More Than Just a Classroom",
+    body: "Students in our academy spend a long time together until the final stage of their early education life. We nurture our students through challenging times and celebrate their successes. By placing trust in us, we make everything work out in the end.",
   },
   heart: {
     headline: "The Heart Behind the Knowledge",
