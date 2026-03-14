@@ -8,21 +8,21 @@
 
 @layer base {
   :root {
-    /* Core Brand Colors - Dark Blue Theme (matching logo) */
-    --background: 0 0% 100%;
+    /* Core Brand Colors - Deep Navy + Gold Accent */
+    --background: 40 20% 98%;
     --foreground: 222 47% 11%;
 
-    /* Dark Blue - Primary (from logo) */
-    --primary: 215 58% 26%;
+    /* Deep Navy - Primary (from logo) */
+    --primary: 230 50% 25%;
     --primary-foreground: 0 0% 100%;
 
     /* Dark Navy - Secondary/Headers */
-    --secondary: 215 58% 20%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 230 50% 18%;
+    --secondary-foreground: 40 30% 95%;
 
-    /* Light Sky Blue - Accent (from logo) */
-    --accent: 205 75% 75%;
-    --accent-foreground: 215 58% 20%;
+    /* Gold/Amber - Accent (Blue Ribbon award feel) */
+    --accent: 42 85% 55%;
+    --accent-foreground: 230 50% 18%;
 
     /* Card & Popover */
     --card: 0 0% 100%;
@@ -30,12 +30,12 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    /* Muted Tones */
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    /* Muted Tones - warm cream */
+    --muted: 40 25% 95%;
+    --muted-foreground: 230 12% 45%;
 
     /* Warm Tone for sections */
-    --warm: 210 40% 96%;
+    --warm: 40 30% 96%;
     --warm-foreground: 222 47% 11%;
 
     /* Destructive */
@@ -43,20 +43,20 @@
     --destructive-foreground: 0 0% 100%;
 
     /* Utilities */
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 215 58% 26%;
+    --border: 40 15% 88%;
+    --input: 40 15% 88%;
+    --ring: 230 50% 25%;
     --radius: 0.75rem;
 
     /* Sidebar */
-    --sidebar-background: 210 40% 98%;
+    --sidebar-background: 40 20% 97%;
     --sidebar-foreground: 222 47% 11%;
-    --sidebar-primary: 215 58% 26%;
+    --sidebar-primary: 230 50% 25%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 205 75% 93%;
-    --sidebar-accent-foreground: 215 58% 20%;
-    --sidebar-border: 214 32% 91%;
-    --sidebar-ring: 215 58% 26%;
+    --sidebar-accent: 42 60% 90%;
+    --sidebar-accent-foreground: 230 50% 18%;
+    --sidebar-border: 40 15% 88%;
+    --sidebar-ring: 230 50% 25%;
 
     /* Typography */
     --font-display: 'Montserrat', sans-serif;
