@@ -275,7 +275,7 @@ export default function Contact() {
                   allowFullScreen
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  title="PrepHaus Location"
+                  title="Blue Ribbon Academy Location"
                 />
               </div>
 
