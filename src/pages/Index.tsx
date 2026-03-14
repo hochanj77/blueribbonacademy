@@ -67,12 +67,13 @@ export default function Index() {
           backgroundSize: '40px 40px'
         }} />
 
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-2xl animate-fade-in-up">
+        <div className="container mx-auto px-4 relative z-10 flex flex-col items-center text-center">
+          <div className="max-w-3xl animate-fade-in-up">
             {/* Accent line */}
-            <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center justify-center gap-3 mb-6">
               <div className="h-px w-12 bg-accent" />
               <span className="text-accent text-sm font-semibold tracking-widest uppercase">Blue Ribbon Academy</span>
+              <div className="h-px w-12 bg-accent" />
             </div>
 
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-primary-foreground leading-[1.05] mb-6 tracking-tight">
