@@ -65,7 +65,7 @@ const values = [
 
 const stats = [
   { icon: Users, value: 5000, suffix: "+", label: "Students Mentored" },
-  { icon: BookOpen, value: 50, suffix: "+", label: "Years Combined Experience" },
+  { icon: BookOpen, value: 20, suffix: "+", label: "Years of Experience" },
   { icon: Award, value: 99, suffix: "%", label: "Student Satisfaction" },
 ];
 
