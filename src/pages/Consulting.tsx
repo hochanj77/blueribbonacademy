@@ -25,7 +25,7 @@
    {
      icon: Users,
      title: "Program Matching",
-     description: "We'll recommend the best PrepHaus program for your specific needs.",
+     description: "We'll recommend the best Blue Ribbon program for your specific needs.",
    },
    {
      icon: Calendar,
