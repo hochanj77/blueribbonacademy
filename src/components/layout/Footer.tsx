@@ -46,9 +46,9 @@ export function Footer() {
           <div className="space-y-4">
             <Link to="/" className="inline-block">
               <img
-                src={prephausLogo}
-                alt="PrepHaus"
-                className="h-12 w-auto brightness-0 invert"
+              src={blueRibbonLogo}
+              alt="Blue Ribbon Academy"
+              className="h-12 w-auto brightness-0 invert"
               />
             </Link>
             <p className="text-secondary-foreground/70 text-sm leading-relaxed">
