@@ -81,8 +81,8 @@ const defaults = {
   },
   heart: {
     headline: "The Heart Behind the Knowledge",
-    body: "While many see education as a transactional transfer of facts, we strive to be more than mere vessels for knowledge. We believe education is not the end goal, but the vital process that helps students reach their dreams. Our teachers are mentors who care deeply, not just for your score growth, but for your personal potential.",
-    values_intro: "At PrepHaus, we work intentionally, every step of the way, to help students develop:",
+    body: "Education is the process of reaching our dreams and not the end goal. Therefore, we strive to be more than mere vessels for transferring knowledge. We try our best to leave no regrets to help students develop character alongside academic prowess every step of the way until the student can have a secure future.",
+    values_intro: "At Blue Ribbon Academy, we work intentionally to help students develop:",
   },
   excellence: {
     headline: "Built for Excellence. Anchored in Community.",
