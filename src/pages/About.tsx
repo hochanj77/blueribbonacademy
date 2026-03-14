@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Lightbulb, Shield, Heart, Users, BookOpen, Award } from "lucide-react";
-import classroomImage from "@/assets/classroom.jpg";
+import classroomImage from "@/assets/classroom-br.jpg";
 import { cn } from "@/lib/utils";
 import { usePageContent } from "@/hooks/useSiteContent";
 
