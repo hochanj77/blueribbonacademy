@@ -24,7 +24,7 @@ const defaultContests = [
 const heroDefaults = {
   headline: "Our",
   accent: "Programs",
-  subheading: "Explore our comprehensive range of test preparation programs and academic tutoring services designed to help every student succeed.",
+  subheading: "Explore our comprehensive range of test preparation and academic tutoring services designed to help every student succeed.",
 };
 
 const ctaDefaults = {
@@ -57,7 +57,7 @@ export default function Courses() {
               <span className="text-accent text-sm font-semibold tracking-widest uppercase">Academic</span>
               <div className="h-px w-10 bg-accent" />
             </div>
-            <h2 className="text-2xl md:text-4xl font-bold text-foreground">Programs</h2>
+            <h2 className="text-2xl md:text-4xl font-bold text-foreground">Test Prep & Tutoring</h2>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-8">
             {defaultPrograms.map((program, index) => (
@@ -89,7 +89,7 @@ export default function Courses() {
               <span className="text-accent text-sm font-semibold tracking-widest uppercase">Competitive</span>
               <div className="h-px w-10 bg-accent" />
             </div>
-            <h2 className="text-2xl md:text-4xl font-bold text-foreground">Contests</h2>
+            <h2 className="text-2xl md:text-4xl font-bold text-foreground">Competition Training</h2>
           </div>
           <div className="grid md:grid-cols-3 gap-5 md:gap-8 max-w-4xl mx-auto">
             {defaultContests.map((contest, index) => (

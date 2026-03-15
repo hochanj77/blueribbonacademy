@@ -5,7 +5,7 @@ import { Megaphone, CalendarDays, ArrowRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
-import heroImage from "@/assets/hero-academy.jpg";
+
 import { usePageContent } from "@/hooks/useSiteContent";
 
 const heroDefaults = {
@@ -54,12 +54,11 @@ export default function Index() {
     <div className="overflow-hidden">
       {/* Hero Section — full viewport, cinematic */}
       <section
-        className="relative min-h-screen flex items-center bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${heroImage})` }}
+        className="relative min-h-screen flex items-center"
       >
-        {/* Layered gradient overlay for depth */}
-        <div className="absolute inset-0 bg-gradient-to-br from-secondary/95 via-secondary/80 to-primary/60" />
-        <div className="absolute inset-0 bg-gradient-to-t from-secondary/40 via-transparent to-transparent" />
+        {/* Rich gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-secondary via-primary to-secondary" />
+        <div className="absolute inset-0 bg-gradient-to-t from-secondary/60 via-transparent to-transparent" />
 
         {/* Subtle pattern overlay */}
         <div className="absolute inset-0 opacity-[0.03]" style={{
