@@ -79,7 +79,7 @@ export default function Index() {
               {hero.headline}
             </h1>
 
-            <p className="text-lg md:text-xl text-primary-foreground/80 mb-10 max-w-lg leading-relaxed">
+            <p className="text-lg md:text-xl text-primary-foreground/80 mb-10 max-w-lg mx-auto leading-relaxed">
               {hero.subheading}
             </p>
 
