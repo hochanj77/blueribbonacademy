@@ -85,7 +85,7 @@ Deno.serve(async (req) => {
       if (createErr.message?.includes("already been registered")) {
         return new Response(
           JSON.stringify({
-            error: "Unable to activate. Please check your information or contact PrepHaus administration.",
+            error: "Unable to activate. Please check your information or contact Blue Ribbon Academy administration.",
           }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );

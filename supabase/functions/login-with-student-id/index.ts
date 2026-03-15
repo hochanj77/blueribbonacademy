@@ -95,7 +95,7 @@ Deno.serve(async (req) => {
 
     if (student.status !== "active") {
       return new Response(
-        JSON.stringify({ error: "Your account is not active. Please activate your account first or contact PrepHaus administration." }),
+        JSON.stringify({ error: "Your account is not active. Please activate your account first or contact Blue Ribbon Academy administration." }),
         { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
