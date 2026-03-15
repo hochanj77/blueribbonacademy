@@ -417,7 +417,7 @@ const GradesTab = () => {
             <div>
               <CardTitle>Import Report Cards from Excel</CardTitle>
               <CardDescription>
-                Upload the PrepHaus Report Card template (.xlsx) — matched by Student ID
+                Upload the Blue Ribbon Report Card template (.xlsx) — matched by Student ID
               </CardDescription>
             </div>
           </div>

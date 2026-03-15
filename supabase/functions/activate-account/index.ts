@@ -1,7 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 function getCorsHeaders(req: Request) {
-  const allowedOrigin = Deno.env.get("ALLOWED_ORIGIN") || "https://prephaus.academy";
+  const allowedOrigin = Deno.env.get("ALLOWED_ORIGIN") || "https://blueribbon-nj.com";
   const origin = req.headers.get("origin") || "";
   return {
     "Access-Control-Allow-Origin": origin === allowedOrigin ? origin : allowedOrigin,
@@ -61,7 +61,7 @@ Deno.serve(async (req) => {
     if (!student || student.user_id) {
       return new Response(
         JSON.stringify({
-          error: "Unable to activate. Please check your information or contact PrepHaus administration.",
+          error: "Unable to activate. Please check your information or contact Blue Ribbon Academy administration.",
         }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
@@ -85,7 +85,7 @@ Deno.serve(async (req) => {
       if (createErr.message?.includes("already been registered")) {
         return new Response(
           JSON.stringify({
-            error: "Unable to activate. Please check your information or contact PrepHaus administration.",
+            error: "Unable to activate. Please check your information or contact Blue Ribbon Academy administration.",
           }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );

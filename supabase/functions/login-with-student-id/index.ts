@@ -1,7 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 function getCorsHeaders(req: Request) {
-  const allowedOrigin = Deno.env.get("ALLOWED_ORIGIN") || "https://prephaus.academy";
+  const allowedOrigin = Deno.env.get("ALLOWED_ORIGIN") || "https://blueribbon-nj.com";
   const origin = req.headers.get("origin") || "";
   return {
     "Access-Control-Allow-Origin": origin === allowedOrigin ? origin : allowedOrigin,
@@ -95,7 +95,7 @@ Deno.serve(async (req) => {
 
     if (student.status !== "active") {
       return new Response(
-        JSON.stringify({ error: "Your account is not active. Please activate your account first or contact PrepHaus administration." }),
+        JSON.stringify({ error: "Your account is not active. Please activate your account first or contact Blue Ribbon Academy administration." }),
         { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
