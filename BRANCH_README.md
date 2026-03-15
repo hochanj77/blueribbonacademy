@@ -1,4 +1,4 @@
-# PrepHaus Admin Enhancement Branch
+# Blue Ribbon Academy Admin Enhancement Branch
 
 ## What's New
 
