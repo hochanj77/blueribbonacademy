@@ -8,7 +8,7 @@
 - Student self-access policies for grades, report cards, enrollments
 
 ### Admin Dashboard — 2 New Tabs
-- **Grades Tab** — Import report cards from Excel (matched to the PrepHaus template: Student ID, First Name, Last Name, Class, Semester, Attitude, Homework, Participation, Test/Quiz, Comments)
+- **Grades Tab** — Import report cards from Excel (matched to the Blue Ribbon template: Student ID, First Name, Last Name, Class, Semester, Attitude, Homework, Participation, Test/Quiz, Comments)
 - **Website Tab** — CMS editor for:
   - Homepage hero text and CTAs
   - Programs page hero and CTA
