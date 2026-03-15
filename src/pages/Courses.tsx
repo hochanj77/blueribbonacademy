@@ -24,7 +24,7 @@ const defaultContests = [
 const heroDefaults = {
   headline: "Our",
   accent: "Programs",
-  subheading: "Explore our comprehensive range of test preparation programs and academic tutoring services designed to help every student succeed.",
+  subheading: "Explore our comprehensive range of test preparation and academic tutoring services designed to help every student succeed.",
 };
 
 const ctaDefaults = {
