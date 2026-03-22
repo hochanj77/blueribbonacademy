@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import heroBg from "@/assets/hero-bg.jpg";
-
+import universityCrests from "@/assets/university-crests.png";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Megaphone, CalendarDays, ArrowRight, Quote, ChevronLeft, ChevronRight, GraduationCap, FileText, Users, Lightbulb } from "lucide-react";
@@ -272,20 +272,21 @@ export default function Index() {
       </section>
 
       {/* University Logo Bar */}
-      <section className="py-10 md:py-14 bg-secondary overflow-hidden">
-        <p className="text-xs md:text-sm font-semibold tracking-widest uppercase text-secondary-foreground/50 mb-8 text-center">
+      <section className="py-12 md:py-16 bg-background border-b border-border/30 overflow-hidden">
+        <p className="text-xs md:text-sm font-semibold tracking-widest uppercase text-muted-foreground mb-8 text-center">
           Where Our Students Have Gone
         </p>
-        <div className="relative">
-          <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-secondary to-transparent z-10" />
-          <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-secondary to-transparent z-10" />
+        {/* Scrolling names */}
+        <div className="relative mb-10">
+          <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-background to-transparent z-10" />
+          <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-background to-transparent z-10" />
           <div className="flex animate-marquee items-center">
             {[...Array(2)].map((_, setIdx) => (
               <div key={setIdx} className="flex shrink-0 items-center">
                 {["UCLA", "Duke University", "University of Pennsylvania", "Northwestern", "Columbia University", "Johns Hopkins", "Vanderbilt University", "University of Michigan", "University of Illinois"].map((name) => (
                   <div key={`${setIdx}-${name}`} className="flex items-center gap-3 mx-8 md:mx-12">
                     <GraduationCap className="h-5 w-5 md:h-6 md:w-6 text-accent shrink-0" />
-                    <span className="text-base md:text-lg font-bold text-secondary-foreground/80 whitespace-nowrap tracking-tight">
+                    <span className="text-base md:text-lg font-bold text-foreground/70 whitespace-nowrap tracking-tight">
                       {name}
                     </span>
                   </div>
@@ -293,6 +294,14 @@ export default function Index() {
               </div>
             ))}
           </div>
+        </div>
+        {/* Logo crests */}
+        <div className="container mx-auto px-4 flex justify-center">
+          <img
+            src={universityCrests}
+            alt="University logos: UCLA, Duke, Penn, Northwestern, Columbia, Johns Hopkins, Vanderbilt, Michigan, Illinois"
+            className="max-w-full h-14 md:h-20 object-contain opacity-80"
+          />
         </div>
       </section>
 
