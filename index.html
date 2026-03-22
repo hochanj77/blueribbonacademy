@@ -25,7 +25,20 @@
   <meta name="twitter:title" content="Blue Ribbon Academy - SAT Prep &amp; Academic Tutoring">
   <meta property="og:description" content="Blue Ribbon Academy offers personalized SAT and ACT prep programs with expert tutors and 20+ years of experience. Located in Cresskill, NJ.">
   <meta name="twitter:description" content="Blue Ribbon Academy offers personalized SAT and ACT prep programs with expert tutors and 20+ years of experience. Located in Cresskill, NJ.">
-</head>
+    <!-- GitHub Pages SPA redirect handler -->
+    <script type="text/javascript">
+      (function(l) {
+        if (l.search[1] === '/') {
+          var decoded = l.search.slice(1).split('&').map(function(s) {
+            return s.replace(/~and~/g, '&')
+          }).join('?');
+          window.history.replaceState(null, null,
+            l.pathname.slice(0, -1) + decoded + l.hash
+          );
+        }
+      }(window.location))
+    </script>
+
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
