@@ -272,17 +272,24 @@ export default function Index() {
       </section>
 
       {/* University Logo Bar */}
-      <section className="py-10 md:py-14 bg-background border-b border-border/30">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-xs md:text-sm font-semibold tracking-widest uppercase text-muted-foreground/60 mb-8">
-            Where Our Students Have Gone
-          </p>
-          <div className="flex items-center justify-center">
-            <img
-              src={universityLogos}
-              alt="Universities including Illinois, Duke, Google, University of Michigan, IBM, Vanderbilt, Johns Hopkins"
-              className="max-w-full h-10 md:h-14 object-contain opacity-70 hover:opacity-100 transition-opacity duration-500"
-            />
+      <section className="py-12 md:py-16 bg-background border-b border-border/30 overflow-hidden">
+        <p className="text-xs md:text-sm font-semibold tracking-widest uppercase text-muted-foreground/60 mb-10 text-center">
+          Where Our Students Have Gone
+        </p>
+        <div className="relative">
+          {/* Fade edges */}
+          <div className="absolute left-0 top-0 bottom-0 w-24 md:w-40 bg-gradient-to-r from-background to-transparent z-10" />
+          <div className="absolute right-0 top-0 bottom-0 w-24 md:w-40 bg-gradient-to-l from-background to-transparent z-10" />
+          <div className="flex animate-marquee">
+            {[...Array(2)].map((_, setIndex) => (
+              <div key={setIndex} className="flex shrink-0 items-center gap-12 md:gap-20 px-6 md:px-10">
+                {["UCLA", "Duke University", "University of Pennsylvania", "Northwestern", "Columbia University", "Johns Hopkins University", "Vanderbilt University", "University of Michigan", "University of Illinois", "Google", "IBM"].map((name) => (
+                  <span key={`${setIndex}-${name}`} className="text-lg md:text-2xl font-bold text-muted-foreground/40 whitespace-nowrap tracking-tight select-none">
+                    {name}
+                  </span>
+                ))}
+              </div>
+            ))}
           </div>
         </div>
       </section>
