@@ -282,7 +282,7 @@ export default function Index() {
       </section>
 
       {/* University Logo Bar */}
-      <section className="py-12 md:py-16 bg-background border-b border-border/30 overflow-hidden">
+      <section className="py-12 md:py-16 bg-background overflow-hidden">
         <p className="text-xs md:text-sm font-semibold tracking-widest uppercase text-muted-foreground mb-10 text-center">
           Where Our Students Have Gone
         </p>
@@ -317,6 +317,11 @@ export default function Index() {
           </div>
         </div>
       </section>
+
+      {/* Divider */}
+      <div className="container mx-auto px-4">
+        <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+      </div>
 
       {/* Announcements */}
       {announcements.length > 0 && (
