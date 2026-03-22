@@ -12,6 +12,7 @@ import logoUmich from "@/assets/logos/umich.png";
 import logoUiuc from "@/assets/logos/uiuc.png";
 import logoHarvard from "@/assets/logos/harvard.png";
 import logoPrinceton from "@/assets/logos/princeton.png";
+import logoMit from "@/assets/logos/mit.png";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Megaphone, CalendarDays, ArrowRight, Quote, ChevronLeft, ChevronRight, GraduationCap, FileText, Users, Lightbulb } from "lucide-react";
