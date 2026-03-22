@@ -322,7 +322,7 @@ export default function Index() {
                 ].map((school) => (
                   <div key={`${setIdx}-${school.name}`} className="flex flex-col items-center gap-3 mx-8 md:mx-14">
                     <img src={school.logo} alt={school.name} className="h-12 w-12 md:h-16 md:w-16 object-contain" />
-                    <span className="text-xs md:text-sm font-semibold text-foreground/60 whitespace-nowrap tracking-tight">
+                    <span className="text-xs md:text-sm font-semibold text-primary-foreground/70 whitespace-nowrap tracking-tight">
                       {school.name}
                     </span>
                   </div>
