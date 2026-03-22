@@ -258,7 +258,7 @@ export default function Index() {
             <p className="text-sm sm:text-base md:text-lg text-primary-foreground/70 max-w-2xl mx-auto leading-relaxed px-2 sm:px-0">
               {hero.subheading}
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 pt-2 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2 justify-center px-4 sm:px-0">
               <SmartLink to={hero.cta_primary_link}>
                 <Button variant="accent" size="lg" className="w-full sm:w-auto rounded-full gap-2 group shadow-lg shadow-accent/25">
                   {hero.cta_primary_text}
