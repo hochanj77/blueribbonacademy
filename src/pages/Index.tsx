@@ -269,7 +269,7 @@ export default function Index() {
                   </Button>
                 </SmartLink>
                 <SmartLink to={hero.cta_secondary_link}>
-                  <Button variant="outline" size="lg" className="w-full sm:w-auto rounded-full border-secondary/30 text-secondary hover:bg-secondary hover:text-secondary-foreground shadow-sm">
+                  <Button variant="hero-outline" size="lg" className="w-full sm:w-auto rounded-full border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 shadow-sm">
                     {hero.cta_secondary_text}
                   </Button>
                 </SmartLink>
