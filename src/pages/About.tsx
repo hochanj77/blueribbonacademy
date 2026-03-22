@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from "react";
-import { Users, BookOpen, Award } from "lucide-react";
+import { useEffect, useState } from "react";
 import classroomImage from "@/assets/classroom-br.jpg";
 import { cn } from "@/lib/utils";
 import { usePageContent } from "@/hooks/useSiteContent";
