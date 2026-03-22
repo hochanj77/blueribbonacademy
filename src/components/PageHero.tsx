@@ -17,11 +17,6 @@ export default function PageHero({ title, accent, subtitle }: PageHeroProps) {
 
       <div className="container mx-auto px-4 relative z-10 text-center">
         <div className="max-w-3xl mx-auto animate-fade-in-up">
-          <div className="flex items-center justify-center gap-3 mb-5">
-            <div className="h-px w-12 bg-accent" />
-            <span className="text-accent text-sm font-semibold tracking-widest uppercase">Blue Ribbon Academy</span>
-            <div className="h-px w-12 bg-accent" />
-          </div>
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-primary-foreground leading-tight tracking-tight mb-4">
             {title}{accent && <>{" "}<span className="text-accent">{accent}</span></>}
           </h1>
