@@ -297,13 +297,13 @@ export default function Index() {
       </section>
 
       {/* University Logo Bar */}
-      <section className="py-12 md:py-16 bg-background overflow-hidden">
-        <p className="text-xs md:text-sm font-semibold tracking-widest uppercase text-muted-foreground mb-10 text-center">
+      <section className="py-12 md:py-16 bg-secondary overflow-hidden">
+        <p className="text-xs md:text-sm font-semibold tracking-widest uppercase text-primary-foreground/60 mb-10 text-center">
           Where Our Students Have Gone
         </p>
         <div className="relative">
-          <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-background to-transparent z-10" />
-          <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-background to-transparent z-10" />
+          <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-secondary to-transparent z-10" />
+          <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-secondary to-transparent z-10" />
           <div className="flex animate-marquee items-center">
             {[...Array(2)].map((_, setIdx) => (
               <div key={setIdx} className="flex shrink-0 items-center">
@@ -322,7 +322,7 @@ export default function Index() {
                 ].map((school) => (
                   <div key={`${setIdx}-${school.name}`} className="flex flex-col items-center gap-3 mx-8 md:mx-14">
                     <img src={school.logo} alt={school.name} className="h-12 w-12 md:h-16 md:w-16 object-contain" />
-                    <span className="text-xs md:text-sm font-semibold text-foreground/60 whitespace-nowrap tracking-tight">
+                    <span className="text-xs md:text-sm font-semibold text-primary-foreground/70 whitespace-nowrap tracking-tight">
                       {school.name}
                     </span>
                   </div>
