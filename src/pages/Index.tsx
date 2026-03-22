@@ -273,22 +273,18 @@ export default function Index() {
       </section>
 
       {/* University Logo Bar */}
-      <section className="py-12 md:py-16 bg-background border-b border-border/30 overflow-hidden">
-        <p className="text-xs md:text-sm font-semibold tracking-widest uppercase text-muted-foreground/60 mb-10 text-center">
+      <section className="py-14 md:py-20 bg-background border-b border-border/30 overflow-hidden">
+        <p className="text-xs md:text-sm font-semibold tracking-widest uppercase text-muted-foreground mb-12 text-center">
           Where Our Students Have Gone
         </p>
         <div className="relative">
-          {/* Fade edges */}
-          <div className="absolute left-0 top-0 bottom-0 w-24 md:w-40 bg-gradient-to-r from-background to-transparent z-10" />
-          <div className="absolute right-0 top-0 bottom-0 w-24 md:w-40 bg-gradient-to-l from-background to-transparent z-10" />
-          <div className="flex animate-marquee">
-            {[...Array(2)].map((_, setIndex) => (
-              <div key={setIndex} className="flex shrink-0 items-center gap-12 md:gap-20 px-6 md:px-10">
-                {["UCLA", "Duke University", "University of Pennsylvania", "Northwestern", "Columbia University", "Johns Hopkins University", "Vanderbilt University", "University of Michigan", "University of Illinois", "Google", "IBM"].map((name) => (
-                  <span key={`${setIndex}-${name}`} className="text-lg md:text-2xl font-bold text-muted-foreground/40 whitespace-nowrap tracking-tight select-none">
-                    {name}
-                  </span>
-                ))}
+          <div className="absolute left-0 top-0 bottom-0 w-24 md:w-48 bg-gradient-to-r from-background to-transparent z-10" />
+          <div className="absolute right-0 top-0 bottom-0 w-24 md:w-48 bg-gradient-to-l from-background to-transparent z-10" />
+          <div className="flex animate-marquee items-center">
+            {[...Array(2)].map((_, i) => (
+              <div key={i} className="flex shrink-0 items-center gap-4 md:gap-8">
+                <img src={logosRow1} alt="UCLA, Duke, UPenn, Northwestern, Columbia logos" className="h-16 md:h-24 w-auto object-contain" />
+                <img src={logosRow2} alt="Johns Hopkins, Vanderbilt, Michigan, Illinois, Google, IBM logos" className="h-16 md:h-24 w-auto object-contain" />
               </div>
             ))}
           </div>
