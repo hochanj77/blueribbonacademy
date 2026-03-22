@@ -63,35 +63,6 @@ export default function About() {
         </div>
       </section>
 
-      {/* Stats Bar */}
-      <section className="py-12 md:py-16 bg-gradient-to-r from-secondary via-primary to-secondary relative overflow-hidden" ref={statsSection.ref}>
-        <div className="absolute inset-0 opacity-[0.04]" style={{
-          backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
-          backgroundSize: '32px 32px'
-        }} />
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="grid grid-cols-3 gap-6 md:gap-10">
-            {stats.map((stat, i) => (
-              <div
-                key={stat.label}
-                className={cn(
-                  "text-center transition-all duration-700",
-                  statsSection.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-                )}
-                style={{ transitionDelay: `${i * 150}ms` }}
-              >
-                <div className="inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-primary-foreground/10 mb-3">
-                  <stat.icon className="h-6 w-6 md:h-7 md:w-7 text-accent" />
-                </div>
-                <div className="text-3xl md:text-5xl font-extrabold text-primary-foreground tracking-tight">
-                  <AnimatedCounter target={stat.value} suffix={stat.suffix} />
-                </div>
-                <div className="text-xs md:text-sm text-primary-foreground/60 mt-1 font-medium">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
     </div>
   );
 }
