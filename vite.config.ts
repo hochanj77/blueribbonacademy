@@ -13,7 +13,10 @@ export default defineConfig(({ mode }) => {
     env.VITE_SUPABASE_PUBLISHABLE_KEY ||
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhqZHJmaXZwb2Frd3p3bXBkcWZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxNzA0MjEsImV4cCI6MjA4NTc0NjQyMX0.v1lgAxbsIooRPaBxdFM8v-9wwpzp9yGWjuRMeLXwrDE";
 
+  const isGitHubPages = !!env.GITHUB_PAGES;
+
   return {
+    base: isGitHubPages ? "/blueribbonacademy/" : "/",
     define: {
       "import.meta.env.VITE_SUPABASE_URL": JSON.stringify(resolvedSupabaseUrl),
       "import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY": JSON.stringify(resolvedPublishableKey),
