@@ -251,7 +251,7 @@ export default function Index() {
           <div className="grid lg:grid-cols-2 gap-10 md:gap-16 items-center">
             {/* Text Content */}
             <div className="max-w-xl animate-fade-in-up space-y-6">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-accent/15 to-accent/5 text-accent text-sm font-semibold border border-accent/20 shadow-sm">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/15 text-accent text-sm font-semibold border border-accent/25 shadow-sm">
                 <GraduationCap className="h-4 w-4" />
                 20+ Years of Excellence
               </div>
