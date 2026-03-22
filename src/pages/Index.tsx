@@ -240,12 +240,17 @@ export default function Index() {
   return (
     <div className="overflow-hidden">
       {/* Hero Section */}
-      <section className="relative min-h-[75vh] flex items-center bg-background">
+      <section className="relative min-h-[75vh] flex items-center bg-background overflow-hidden">
+        {/* Background gradients */}
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-accent/8 via-accent/3 to-transparent rounded-full blur-3xl -translate-y-1/4 translate-x-1/4" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-primary/6 via-secondary/4 to-transparent rounded-full blur-3xl translate-y-1/4 -translate-x-1/4" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-accent/[0.03] to-transparent rounded-full" />
+
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-2 gap-10 md:gap-16 items-center">
             {/* Text Content */}
             <div className="max-w-xl animate-fade-in-up space-y-6">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 text-accent text-sm font-semibold">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-accent/15 to-accent/5 text-accent text-sm font-semibold border border-accent/20 shadow-sm">
                 <GraduationCap className="h-4 w-4" />
                 20+ Years of Excellence
               </div>
@@ -257,13 +262,13 @@ export default function Index() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 pt-2">
                 <SmartLink to={hero.cta_primary_link}>
-                  <Button variant="accent" size="lg" className="w-full sm:w-auto rounded-full gap-2 group">
+                  <Button variant="accent" size="lg" className="w-full sm:w-auto rounded-full gap-2 group shadow-lg shadow-accent/25">
                     {hero.cta_primary_text}
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </Button>
                 </SmartLink>
                 <SmartLink to={hero.cta_secondary_link}>
-                  <Button variant="outline" size="lg" className="w-full sm:w-auto rounded-full border-secondary/30 text-secondary hover:bg-secondary hover:text-secondary-foreground">
+                  <Button variant="outline" size="lg" className="w-full sm:w-auto rounded-full border-secondary/30 text-secondary hover:bg-secondary hover:text-secondary-foreground shadow-sm">
                     {hero.cta_secondary_text}
                   </Button>
                 </SmartLink>
@@ -272,13 +277,19 @@ export default function Index() {
 
             {/* Hero Image */}
             <div className="relative hidden lg:block animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-              <div className="absolute -inset-4 bg-gradient-to-br from-accent/10 via-primary/5 to-transparent rounded-3xl" />
-              <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-accent/15 rounded-2xl" />
-              <div className="absolute -top-4 -left-4 w-24 h-24 bg-primary/10 rounded-2xl" />
+              {/* Decorative ring */}
+              <div className="absolute -inset-6 rounded-3xl bg-gradient-to-br from-accent/20 via-primary/10 to-secondary/10 p-px">
+                <div className="w-full h-full rounded-3xl bg-background" />
+              </div>
+              {/* Accent shapes */}
+              <div className="absolute -bottom-5 -right-5 w-36 h-36 bg-gradient-to-br from-accent/20 to-accent/5 rounded-2xl -z-10" />
+              <div className="absolute -top-5 -left-5 w-28 h-28 bg-gradient-to-br from-primary/15 to-primary/5 rounded-2xl -z-10" />
+              <div className="absolute top-1/2 -right-3 w-6 h-6 bg-accent/30 rounded-full -z-10" />
+              <div className="absolute -bottom-2 left-1/4 w-4 h-4 bg-primary/20 rounded-full -z-10" />
               <img
                 src={heroBg}
                 alt="College campus"
-                className="rounded-2xl shadow-2xl relative z-10 w-full object-cover aspect-[4/3]"
+                className="rounded-2xl shadow-2xl relative z-10 w-full object-cover aspect-[4/3] ring-1 ring-border/50"
               />
             </div>
           </div>
