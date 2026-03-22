@@ -193,7 +193,7 @@ function CollegeConsultingSection() {
             <div
               key={item.title}
               className={cn(
-                "group bg-white/10 border border-white/15 rounded-2xl p-6 text-center hover:bg-white/15 hover:border-accent/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-500",
+                "group bg-white/10 border border-white/15 rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center hover:bg-white/15 hover:border-accent/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-500",
                 section.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
               )}
               style={{ transitionDelay: `${(i + 1) * 100}ms` }}
