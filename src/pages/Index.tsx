@@ -360,15 +360,15 @@ export default function Index() {
       <TestimonialCarousel />
 
       {/* CTA Section */}
-      <section className="py-16 md:py-24 bg-gradient-to-br from-secondary via-primary to-secondary relative overflow-hidden">
+      <section className="py-12 md:py-24 bg-gradient-to-br from-secondary via-primary to-secondary relative overflow-hidden">
         <div className="absolute inset-0 opacity-[0.04]" style={{
           backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
           backgroundSize: '32px 32px'
         }} />
-        <div className="absolute top-0 right-0 w-96 h-96 bg-accent/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <h2 className="text-3xl md:text-5xl font-bold text-primary-foreground mb-6">{cta.headline}</h2>
-          <p className="text-lg text-primary-foreground/70 mb-10 max-w-2xl mx-auto">{cta.subheading}</p>
+        <div className="absolute top-0 right-0 w-64 sm:w-96 h-64 sm:h-96 bg-accent/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+        <div className="container mx-auto px-4 sm:px-6 text-center relative z-10">
+          <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-primary-foreground mb-4 sm:mb-6">{cta.headline}</h2>
+          <p className="text-sm sm:text-lg text-primary-foreground/70 mb-6 sm:mb-10 max-w-2xl mx-auto">{cta.subheading}</p>
           <SmartLink to={cta.button_link}>
             <Button variant="accent" size="xl" className="rounded-full gap-2 group">
               {cta.button_text}
