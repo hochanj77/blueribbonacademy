@@ -240,40 +240,49 @@ export default function Index() {
   return (
     <div className="overflow-hidden">
       {/* Hero Section */}
-      <section className="relative min-h-[75vh] flex items-center">
-        <div className="absolute inset-0">
-          <img src={heroBg} alt="" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-secondary/80" />
-          <div className="absolute inset-0 bg-gradient-to-t from-secondary via-secondary/40 to-secondary/60" />
-        </div>
-        <div className="absolute inset-0 opacity-[0.03]" style={{
-          backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
-          backgroundSize: '40px 40px'
-        }} />
-        <div className="container mx-auto px-4 relative z-10 flex items-center">
-          <div className="max-w-2xl animate-fade-in-up space-y-6">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-primary-foreground leading-[1.1] tracking-tight">
-              {hero.headline}
-            </h1>
-            <p className="text-base md:text-lg text-primary-foreground/80 max-w-lg leading-relaxed">
-              {hero.subheading}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 pt-2">
-              <SmartLink to={hero.cta_primary_link}>
-                <Button variant="accent" size="lg" className="w-full sm:w-auto rounded-full gap-2 group">
-                  {hero.cta_primary_text}
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </Button>
-              </SmartLink>
-              <SmartLink to={hero.cta_secondary_link}>
-                <Button variant="hero-outline" size="lg" className="w-full sm:w-auto rounded-full border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
-                  {hero.cta_secondary_text}
-                </Button>
-              </SmartLink>
+      <section className="relative min-h-[75vh] flex items-center bg-background">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-10 md:gap-16 items-center">
+            {/* Text Content */}
+            <div className="max-w-xl animate-fade-in-up space-y-6">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 text-accent text-sm font-semibold">
+                <GraduationCap className="h-4 w-4" />
+                20+ Years of Excellence
+              </div>
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-foreground leading-[1.1] tracking-tight">
+                {hero.headline}
+              </h1>
+              <p className="text-base md:text-lg text-muted-foreground max-w-lg leading-relaxed">
+                {hero.subheading}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 pt-2">
+                <SmartLink to={hero.cta_primary_link}>
+                  <Button variant="accent" size="lg" className="w-full sm:w-auto rounded-full gap-2 group">
+                    {hero.cta_primary_text}
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Button>
+                </SmartLink>
+                <SmartLink to={hero.cta_secondary_link}>
+                  <Button variant="outline" size="lg" className="w-full sm:w-auto rounded-full border-secondary/30 text-secondary hover:bg-secondary hover:text-secondary-foreground">
+                    {hero.cta_secondary_text}
+                  </Button>
+                </SmartLink>
+              </div>
+            </div>
+
+            {/* Hero Image */}
+            <div className="relative hidden lg:block animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+              <div className="absolute -inset-4 bg-gradient-to-br from-accent/10 via-primary/5 to-transparent rounded-3xl" />
+              <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-accent/15 rounded-2xl" />
+              <div className="absolute -top-4 -left-4 w-24 h-24 bg-primary/10 rounded-2xl" />
+              <img
+                src={heroBg}
+                alt="College campus"
+                className="rounded-2xl shadow-2xl relative z-10 w-full object-cover aspect-[4/3]"
+              />
             </div>
           </div>
         </div>
-        
       </section>
 
       {/* University Logo Bar */}
