@@ -182,7 +182,7 @@ function CollegeConsultingSection() {
             <span className="text-accent text-sm font-semibold tracking-widest uppercase">Expert Guidance</span>
             <div className="h-px w-10 bg-accent" />
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">College Consulting</h2>
+          <h2 className="text-2xl md:text-4xl font-bold text-primary-foreground mb-4">College Consulting</h2>
           <p className="text-primary-foreground/70 max-w-2xl mx-auto">
             From freshman year strategy to senior year applications, our experienced consultants guide students every step of the way to their dream schools.
           </p>
