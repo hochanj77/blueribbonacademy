@@ -85,7 +85,7 @@ export default function CollegeConsulting() {
               <span className="text-accent text-sm font-semibold tracking-widest uppercase">Underclassmen</span>
               <div className="h-px w-12 bg-accent" />
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-secondary">Grades 9 — 11</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-secondary">Grades 9-11</h2>
             <p className="text-muted-foreground mt-3 max-w-xl mx-auto">Build a strong foundation and position yourself competitively before senior year.</p>
           </div>
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
