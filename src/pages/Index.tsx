@@ -318,6 +318,11 @@ export default function Index() {
         </div>
       </section>
 
+      {/* Divider */}
+      <div className="container mx-auto px-4">
+        <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+      </div>
+
       {/* Announcements */}
       {announcements.length > 0 && (
         <section className="py-16 md:py-24 bg-background">
