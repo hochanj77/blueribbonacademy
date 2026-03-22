@@ -72,7 +72,7 @@ export function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center">
-            <div className="flex items-center gap-1 bg-muted/50 rounded-full px-2 py-1.5">
+            <div className="flex items-center gap-3 bg-muted/50 rounded-full px-3 py-1.5">
               {navItems.filter(item => !item.authRequired || user).map((item) => {
                 const isActive = location.pathname === item.href;
                 return item.external ? (
