@@ -250,22 +250,22 @@ export default function Index() {
           backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
           backgroundSize: '40px 40px'
         }} />
-        <div className="container mx-auto px-4 relative z-10 flex flex-col items-center text-center">
-          <div className="max-w-3xl animate-fade-in-up">
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <div className="h-px w-12 bg-accent" />
+        <div className="container mx-auto px-4 relative z-10 flex items-center">
+          <div className="max-w-2xl animate-fade-in-up space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="h-px w-10 bg-accent" />
               <span className="text-accent text-sm font-semibold tracking-widest uppercase">Blue Ribbon Academy</span>
-              <div className="h-px w-12 bg-accent" />
+              <div className="h-px w-10 bg-accent" />
             </div>
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-primary-foreground leading-[1.05] mb-6 tracking-tight">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-primary-foreground leading-[1.1] tracking-tight">
               {hero.headline}
             </h1>
-            <p className="text-lg md:text-xl text-primary-foreground/80 mb-10 max-w-lg mx-auto leading-relaxed">
+            <p className="text-base md:text-lg text-primary-foreground/80 max-w-lg leading-relaxed">
               {hero.subheading}
             </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 pt-2">
               <SmartLink to={hero.cta_primary_link}>
-                <Button variant="accent" size="xl" className="w-full sm:w-auto rounded-full gap-2 group">
+                <Button variant="accent" size="lg" className="w-full sm:w-auto rounded-full gap-2 group">
                   {hero.cta_primary_text}
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Button>
