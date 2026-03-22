@@ -92,8 +92,8 @@ function TestimonialCarousel() {
   }, [isAutoPlaying, next]);
 
   return (
-    <section className="py-16 md:py-24 bg-muted" ref={section.ref}>
-      <div className="container mx-auto px-4">
+    <section className="py-12 md:py-24 bg-muted" ref={section.ref}>
+      <div className="container mx-auto px-4 sm:px-6">
         <div className={cn("text-center mb-12 transition-all duration-700", section.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6")}>
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="h-px w-10 bg-accent" />
