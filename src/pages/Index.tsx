@@ -282,7 +282,7 @@ export default function Index() {
       </section>
 
       {/* University Logo Bar */}
-      <section className="py-12 md:py-16 bg-background border-b border-border/30 overflow-hidden">
+      <section className="py-12 md:py-16 bg-background overflow-hidden">
         <p className="text-xs md:text-sm font-semibold tracking-widest uppercase text-muted-foreground mb-10 text-center">
           Where Our Students Have Gone
         </p>
