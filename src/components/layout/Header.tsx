@@ -17,6 +17,8 @@ const navItems = [
   { label: "Home", href: "/" },
   { label: "About Us", href: "/about" },
   { label: "Programs", href: "/courses" },
+  { label: "College Consulting", href: "/college-consulting" },
+  { label: "Testimonials", href: "/testimonials" },
   { label: "Schedule", href: "/schedule" },
   { label: "Social", href: "/social" },
   { label: "SAT Platform", href: "https://blueribbon.ditoed.com", external: true, authRequired: true },
