@@ -4,31 +4,6 @@ import { cn } from "@/lib/utils";
 import { usePageContent } from "@/hooks/useSiteContent";
 import { useInView } from "@/hooks/useInView";
 
-function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: string }) {
-  const [count, setCount] = useState(0);
-  const { ref, inView } = useInView();
-
-  useEffect(() => {
-    if (!inView) return;
-    let start = 0;
-    const duration = 1500;
-    const step = (timestamp: number) => {
-      if (!start) start = timestamp;
-      const progress = Math.min((timestamp - start) / duration, 1);
-      setCount(Math.floor(progress * target));
-      if (progress < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  }, [inView, target]);
-
-  return <span ref={ref}>{count}{suffix}</span>;
-}
-
-const stats = [
-  { icon: Users, value: 5000, suffix: "+", label: "Students Mentored" },
-  { icon: BookOpen, value: 20, suffix: "+", label: "Years of Experience" },
-  { icon: Award, value: 99, suffix: "%", label: "Student Satisfaction" },
-];
 
 const defaults = {
   welcome: {
