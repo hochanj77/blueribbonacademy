@@ -201,8 +201,8 @@ function CollegeConsultingSection() {
               <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-accent/15 group-hover:bg-accent/25 group-hover:scale-110 flex items-center justify-center mb-3 sm:mb-5 mx-auto transition-all duration-300">
                 <item.icon className="h-5 w-5 sm:h-7 sm:w-7 text-accent transition-colors duration-300" />
               </div>
-              <h3 className="font-bold text-primary-foreground mb-2 group-hover:text-accent transition-colors">{item.title}</h3>
-              <p className="text-primary-foreground/60 text-sm leading-relaxed">{item.desc}</p>
+              <h3 className="font-bold text-sm sm:text-base text-primary-foreground mb-1 sm:mb-2 group-hover:text-accent transition-colors">{item.title}</h3>
+              <p className="text-primary-foreground/60 text-xs sm:text-sm leading-relaxed hidden sm:block">{item.desc}</p>
             </div>
           ))}
         </div>
