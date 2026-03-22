@@ -278,20 +278,19 @@ export default function Index() {
 
             {/* Hero Image */}
             <div className="relative hidden lg:block animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-              {/* Decorative ring */}
-              <div className="absolute -inset-6 rounded-3xl bg-gradient-to-br from-accent/20 via-primary/10 to-secondary/10 p-px">
-                <div className="w-full h-full rounded-3xl bg-secondary" />
+              <div className="relative">
+                <img
+                  src={heroBg}
+                  alt="College campus"
+                  className="rounded-2xl w-full object-cover aspect-[4/3]"
+                />
+                {/* Blend edges into background */}
+                <div className="absolute inset-0 rounded-2xl shadow-[inset_0_0_40px_20px_hsl(var(--secondary))]" />
+                <div className="absolute -bottom-1 left-0 right-0 h-24 bg-gradient-to-t from-secondary to-transparent" />
+                <div className="absolute -top-1 left-0 right-0 h-16 bg-gradient-to-b from-secondary to-transparent" />
+                <div className="absolute top-0 -left-1 bottom-0 w-16 bg-gradient-to-r from-secondary to-transparent" />
+                <div className="absolute top-0 -right-1 bottom-0 w-16 bg-gradient-to-l from-secondary to-transparent" />
               </div>
-              {/* Accent shapes */}
-              <div className="absolute -bottom-5 -right-5 w-36 h-36 bg-gradient-to-br from-accent/20 to-accent/5 rounded-2xl -z-10" />
-              <div className="absolute -top-5 -left-5 w-28 h-28 bg-gradient-to-br from-primary/15 to-primary/5 rounded-2xl -z-10" />
-              <div className="absolute top-1/2 -right-3 w-6 h-6 bg-accent/30 rounded-full -z-10" />
-              <div className="absolute -bottom-2 left-1/4 w-4 h-4 bg-primary/20 rounded-full -z-10" />
-              <img
-                src={heroBg}
-                alt="College campus"
-                className="rounded-2xl shadow-2xl relative z-10 w-full object-cover aspect-[4/3] ring-1 ring-border/50"
-              />
             </div>
           </div>
         </div>
