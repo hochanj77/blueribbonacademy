@@ -241,56 +241,34 @@ export default function Index() {
   return (
     <div className="overflow-hidden">
       {/* Hero Section */}
-      <section className="relative min-h-[75vh] flex items-center bg-secondary overflow-hidden">
-        {/* Background gradients */}
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-accent/15 via-accent/5 to-transparent rounded-full blur-3xl -translate-y-1/4 translate-x-1/4" />
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-primary/10 via-primary/5 to-transparent rounded-full blur-3xl translate-y-1/4 -translate-x-1/4" />
+      <section className="relative min-h-[75vh] flex items-center overflow-hidden">
+        {/* Full background image with overlay */}
+        <div className="absolute inset-0">
+          <img src={heroBg} alt="" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-secondary/80" />
+        </div>
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
 
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-10 md:gap-16 items-center">
-            {/* Text Content */}
-            <div className="max-w-xl animate-fade-in-up space-y-6">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/15 text-accent text-sm font-semibold border border-accent/25 shadow-sm">
-                <GraduationCap className="h-4 w-4" />
-                20+ Years of Excellence
-              </div>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-primary-foreground leading-[1.1] tracking-tight">
-                {hero.headline}
-              </h1>
-              <p className="text-base md:text-lg text-primary-foreground/70 max-w-lg leading-relaxed">
-                {hero.subheading}
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 pt-2">
-                <SmartLink to={hero.cta_primary_link}>
-                  <Button variant="accent" size="lg" className="w-full sm:w-auto rounded-full gap-2 group shadow-lg shadow-accent/25">
-                    {hero.cta_primary_text}
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </Button>
-                </SmartLink>
-                <SmartLink to={hero.cta_secondary_link}>
-                  <Button variant="hero-outline" size="lg" className="w-full sm:w-auto rounded-full border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 shadow-sm">
-                    {hero.cta_secondary_text}
-                  </Button>
-                </SmartLink>
-              </div>
-            </div>
-
-            {/* Hero Image */}
-            <div className="relative hidden lg:block animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-              <div className="relative">
-                <img
-                  src={heroBg}
-                  alt="College campus"
-                  className="rounded-2xl w-full object-cover aspect-[4/3]"
-                />
-                {/* Blend edges into background */}
-                <div className="absolute inset-0 rounded-2xl shadow-[inset_0_0_40px_20px_hsl(var(--secondary))]" />
-                <div className="absolute -bottom-1 left-0 right-0 h-24 bg-gradient-to-t from-secondary to-transparent" />
-                <div className="absolute -top-1 left-0 right-0 h-16 bg-gradient-to-b from-secondary to-transparent" />
-                <div className="absolute top-0 -left-1 bottom-0 w-16 bg-gradient-to-r from-secondary to-transparent" />
-                <div className="absolute top-0 -right-1 bottom-0 w-16 bg-gradient-to-l from-secondary to-transparent" />
-              </div>
+        <div className="container mx-auto px-4 relative z-10 text-center">
+          <div className="max-w-3xl mx-auto animate-fade-in-up space-y-6">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-primary-foreground leading-[1.1] tracking-tight">
+              {hero.headline}
+            </h1>
+            <p className="text-base md:text-lg text-primary-foreground/70 max-w-2xl mx-auto leading-relaxed">
+              {hero.subheading}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 pt-2 justify-center">
+              <SmartLink to={hero.cta_primary_link}>
+                <Button variant="accent" size="lg" className="w-full sm:w-auto rounded-full gap-2 group shadow-lg shadow-accent/25">
+                  {hero.cta_primary_text}
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </Button>
+              </SmartLink>
+              <SmartLink to={hero.cta_secondary_link}>
+                <Button variant="hero-outline" size="lg" className="w-full sm:w-auto rounded-full border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 shadow-sm">
+                  {hero.cta_secondary_text}
+                </Button>
+              </SmartLink>
             </div>
           </div>
         </div>
