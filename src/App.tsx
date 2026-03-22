@@ -13,6 +13,8 @@ import Contact from "./pages/Contact";
 import Social from "./pages/Social";
 import Schedule from "./pages/Schedule";
 import Consulting from "./pages/Consulting";
+import CollegeConsulting from "./pages/CollegeConsulting";
+import Testimonials from "./pages/Testimonials";
 
 import Admin from "./pages/Admin";
 import Portal from "./pages/Portal";
@@ -47,6 +49,8 @@ const App = () => (
                 <Route path="/social" element={<Social />} />
                 <Route path="/schedule" element={<Schedule />} />
                 <Route path="/consulting" element={<Consulting />} />
+                <Route path="/college-consulting" element={<CollegeConsulting />} />
+                <Route path="/testimonials" element={<Testimonials />} />
                 <Route path="/auth" element={<Navigate to="/portal" replace />} />
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/catalog" element={<CatalogRequest />} />
