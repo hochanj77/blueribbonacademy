@@ -241,24 +241,24 @@ export default function Index() {
   return (
     <div className="overflow-hidden">
       {/* Hero Section */}
-      <section className="relative min-h-[75vh] flex items-center bg-background overflow-hidden">
+      <section className="relative min-h-[75vh] flex items-center bg-secondary overflow-hidden">
         {/* Background gradients */}
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-accent/8 via-accent/3 to-transparent rounded-full blur-3xl -translate-y-1/4 translate-x-1/4" />
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-primary/6 via-secondary/4 to-transparent rounded-full blur-3xl translate-y-1/4 -translate-x-1/4" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-accent/[0.03] to-transparent rounded-full" />
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-accent/15 via-accent/5 to-transparent rounded-full blur-3xl -translate-y-1/4 translate-x-1/4" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-primary/10 via-primary/5 to-transparent rounded-full blur-3xl translate-y-1/4 -translate-x-1/4" />
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-2 gap-10 md:gap-16 items-center">
             {/* Text Content */}
             <div className="max-w-xl animate-fade-in-up space-y-6">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-accent/15 to-accent/5 text-accent text-sm font-semibold border border-accent/20 shadow-sm">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/15 text-accent text-sm font-semibold border border-accent/25 shadow-sm">
                 <GraduationCap className="h-4 w-4" />
                 20+ Years of Excellence
               </div>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-foreground leading-[1.1] tracking-tight">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-primary-foreground leading-[1.1] tracking-tight">
                 {hero.headline}
               </h1>
-              <p className="text-base md:text-lg text-muted-foreground max-w-lg leading-relaxed">
+              <p className="text-base md:text-lg text-primary-foreground/70 max-w-lg leading-relaxed">
                 {hero.subheading}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 pt-2">
@@ -269,7 +269,7 @@ export default function Index() {
                   </Button>
                 </SmartLink>
                 <SmartLink to={hero.cta_secondary_link}>
-                  <Button variant="outline" size="lg" className="w-full sm:w-auto rounded-full border-secondary/30 text-secondary hover:bg-secondary hover:text-secondary-foreground shadow-sm">
+                  <Button variant="hero-outline" size="lg" className="w-full sm:w-auto rounded-full border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 shadow-sm">
                     {hero.cta_secondary_text}
                   </Button>
                 </SmartLink>
@@ -280,7 +280,7 @@ export default function Index() {
             <div className="relative hidden lg:block animate-fade-in-up" style={{ animationDelay: '200ms' }}>
               {/* Decorative ring */}
               <div className="absolute -inset-6 rounded-3xl bg-gradient-to-br from-accent/20 via-primary/10 to-secondary/10 p-px">
-                <div className="w-full h-full rounded-3xl bg-background" />
+                <div className="w-full h-full rounded-3xl bg-secondary" />
               </div>
               {/* Accent shapes */}
               <div className="absolute -bottom-5 -right-5 w-36 h-36 bg-gradient-to-br from-accent/20 to-accent/5 rounded-2xl -z-10" />
@@ -298,13 +298,13 @@ export default function Index() {
       </section>
 
       {/* University Logo Bar */}
-      <section className="py-12 md:py-16 bg-secondary overflow-hidden">
-        <p className="text-xs md:text-sm font-semibold tracking-widest uppercase text-primary-foreground/60 mb-10 text-center">
+      <section className="py-12 md:py-16 bg-background overflow-hidden">
+        <p className="text-xs md:text-sm font-semibold tracking-widest uppercase text-muted-foreground mb-10 text-center">
           Where Our Students Have Gone
         </p>
         <div className="relative">
-          <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-secondary to-transparent z-10" />
-          <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-secondary to-transparent z-10" />
+          <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-background to-transparent z-10" />
+          <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-background to-transparent z-10" />
           <div className="flex w-max animate-marquee items-center">
             {[...Array(2)].map((_, setIdx) => (
               <div key={setIdx} className="flex shrink-0 items-center">
@@ -324,7 +324,7 @@ export default function Index() {
                 ].map((school) => (
                   <div key={`${setIdx}-${school.name}`} className="flex flex-col items-center gap-3 mx-8 md:mx-14">
                     <img src={school.logo} alt={school.name} className="h-12 w-12 md:h-16 md:w-16 object-contain" />
-                    <span className="text-xs md:text-sm font-semibold text-primary-foreground/70 whitespace-nowrap tracking-tight">
+                    <span className="text-xs md:text-sm font-semibold text-foreground/60 whitespace-nowrap tracking-tight">
                       {school.name}
                     </span>
                   </div>
