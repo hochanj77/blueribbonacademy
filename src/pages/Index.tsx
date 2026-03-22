@@ -271,6 +271,22 @@ export default function Index() {
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
       </section>
 
+      {/* University Logo Bar */}
+      <section className="py-10 md:py-14 bg-background border-b border-border/30">
+        <div className="container mx-auto px-4 text-center">
+          <p className="text-xs md:text-sm font-semibold tracking-widest uppercase text-muted-foreground/60 mb-8">
+            Where Our Students Have Gone
+          </p>
+          <div className="flex items-center justify-center">
+            <img
+              src={universityLogos}
+              alt="Universities including Illinois, Duke, Google, University of Michigan, IBM, Vanderbilt, Johns Hopkins"
+              className="max-w-full h-10 md:h-14 object-contain opacity-70 hover:opacity-100 transition-opacity duration-500"
+            />
+          </div>
+        </div>
+      </section>
+
       {/* Announcements */}
       {announcements.length > 0 && (
         <section className="py-16 md:py-24 bg-background">
