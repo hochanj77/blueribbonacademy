@@ -306,7 +306,7 @@ export default function Index() {
           <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-secondary to-transparent z-10" />
           <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-secondary to-transparent z-10" />
           <div className="flex animate-marquee items-center">
-            {[...Array(2)].map((_, setIdx) => (
+            {[...Array(3)].map((_, setIdx) => (
               <div key={setIdx} className="flex shrink-0 items-center">
                 {[
                   { name: "UCLA", logo: logoUcla },
