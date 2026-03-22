@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import heroBg from "@/assets/hero-bg.jpg";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Megaphone, CalendarDays, ArrowRight } from "lucide-react";
@@ -56,9 +57,12 @@ export default function Index() {
       <section
         className="relative min-h-screen flex items-center"
       >
-        {/* Rich gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-secondary via-primary to-secondary" />
-        <div className="absolute inset-0 bg-gradient-to-t from-secondary/60 via-transparent to-transparent" />
+        {/* Background image with dark overlay */}
+        <div className="absolute inset-0">
+          <img src={heroBg} alt="" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-secondary/80" />
+          <div className="absolute inset-0 bg-gradient-to-t from-secondary via-secondary/40 to-secondary/60" />
+        </div>
 
         {/* Subtle pattern overlay */}
         <div className="absolute inset-0 opacity-[0.03]" style={{
