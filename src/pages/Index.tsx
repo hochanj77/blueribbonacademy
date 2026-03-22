@@ -100,7 +100,7 @@ function TestimonialCarousel() {
             <span className="text-accent text-sm font-semibold tracking-widest uppercase">Testimonials</span>
             <div className="h-px w-10 bg-accent" />
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground">What Our Students Say</h2>
+          <h2 className="text-2xl md:text-4xl font-bold text-foreground">What Our Students Say</h2>
         </div>
 
         <div
