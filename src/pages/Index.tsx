@@ -188,7 +188,7 @@ function CollegeConsultingSection() {
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 max-w-5xl mx-auto">
           {consultingHighlights.map((item, i) => (
             <div
               key={item.title}
