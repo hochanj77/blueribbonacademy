@@ -242,7 +242,7 @@ export default function Index() {
   return (
     <div className="overflow-hidden">
       {/* Hero Section */}
-      <section className="relative min-h-[60vh] sm:min-h-[75vh] flex items-center overflow-hidden pt-20 sm:pt-24" style={{ paddingTop: `max(calc(env(safe-area-inset-top) + 5rem), 5rem)` }}>
+      <section className="relative min-h-[70svh] sm:min-h-[75vh] flex items-center overflow-hidden" style={{ paddingTop: `max(calc(env(safe-area-inset-top) + 5rem), 5rem)` }}>
         {/* Full background image with overlay */}
         <div className="absolute inset-0">
           <img src={heroBg} alt="" className="w-full h-full object-cover" />
