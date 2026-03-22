@@ -173,16 +173,17 @@ function CollegeConsultingSection() {
   const section = useInView();
 
   return (
-    <section className="py-16 md:py-24 bg-background" ref={section.ref}>
-      <div className="container mx-auto px-4">
+    <section className="py-16 md:py-24 bg-secondary relative overflow-hidden" ref={section.ref}>
+      <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '32px 32px' }} />
+      <div className="container mx-auto px-4 relative z-10">
         <div className={cn("text-center mb-12 transition-all duration-700", section.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6")}>
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="h-px w-10 bg-accent" />
             <span className="text-accent text-sm font-semibold tracking-widest uppercase">Expert Guidance</span>
             <div className="h-px w-10 bg-accent" />
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">College Consulting</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">College Consulting</h2>
+          <p className="text-primary-foreground/70 max-w-2xl mx-auto">
             From freshman year strategy to senior year applications, our experienced consultants guide students every step of the way to their dream schools.
           </p>
         </div>
@@ -192,16 +193,16 @@ function CollegeConsultingSection() {
             <div
               key={item.title}
               className={cn(
-                "group bg-card border border-border rounded-2xl p-6 text-center hover:border-accent/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-500",
+                "group bg-white/10 border border-white/15 rounded-2xl p-6 text-center hover:bg-white/15 hover:border-accent/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-500",
                 section.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
               )}
               style={{ transitionDelay: `${(i + 1) * 100}ms` }}
             >
-              <div className="w-14 h-14 rounded-2xl bg-primary/10 group-hover:bg-accent/20 group-hover:scale-110 flex items-center justify-center mb-5 mx-auto transition-all duration-300">
-                <item.icon className="h-7 w-7 text-primary group-hover:text-accent transition-colors duration-300" />
+              <div className="w-14 h-14 rounded-2xl bg-accent/15 group-hover:bg-accent/25 group-hover:scale-110 flex items-center justify-center mb-5 mx-auto transition-all duration-300">
+                <item.icon className="h-7 w-7 text-accent transition-colors duration-300" />
               </div>
-              <h3 className="font-bold text-foreground mb-2 group-hover:text-primary transition-colors">{item.title}</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">{item.desc}</p>
+              <h3 className="font-bold text-primary-foreground mb-2 group-hover:text-accent transition-colors">{item.title}</h3>
+              <p className="text-primary-foreground/60 text-sm leading-relaxed">{item.desc}</p>
             </div>
           ))}
         </div>
