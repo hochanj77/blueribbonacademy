@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import heroBg from "@/assets/hero-bg.jpg";
-import universityLogos from "@/assets/university-logos-strip.png";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Megaphone, CalendarDays, ArrowRight, Quote, ChevronLeft, ChevronRight, GraduationCap, FileText, Users, Lightbulb } from "lucide-react";
