@@ -92,15 +92,15 @@ function TestimonialCarousel() {
   }, [isAutoPlaying, next]);
 
   return (
-    <section className="py-16 md:py-24 bg-muted" ref={section.ref}>
-      <div className="container mx-auto px-4">
+    <section className="py-12 md:py-24 bg-muted" ref={section.ref}>
+      <div className="container mx-auto px-4 sm:px-6">
         <div className={cn("text-center mb-12 transition-all duration-700", section.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6")}>
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="h-px w-10 bg-accent" />
             <span className="text-accent text-sm font-semibold tracking-widest uppercase">Testimonials</span>
             <div className="h-px w-10 bg-accent" />
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground">What Our Students Say</h2>
+          <h2 className="text-2xl md:text-4xl font-bold text-foreground">What Our Students Say</h2>
         </div>
 
         <div
@@ -109,10 +109,10 @@ function TestimonialCarousel() {
           onMouseEnter={() => setIsAutoPlaying(false)}
           onMouseLeave={() => setIsAutoPlaying(true)}
         >
-          <div className="relative bg-card border border-border rounded-2xl p-8 md:p-12 shadow-lg">
-            <Quote className="h-10 w-10 text-accent/20 mb-6" />
-            <div className="min-h-[140px] flex items-center">
-              <blockquote className="text-muted-foreground text-base md:text-lg leading-relaxed transition-opacity duration-500">
+          <div className="relative bg-card border border-border rounded-2xl p-5 sm:p-8 md:p-12 shadow-lg">
+            <Quote className="h-8 w-8 sm:h-10 sm:w-10 text-accent/20 mb-4 sm:mb-6" />
+            <div className="min-h-[120px] sm:min-h-[140px] flex items-center">
+              <blockquote className="text-muted-foreground text-sm sm:text-base md:text-lg leading-relaxed transition-opacity duration-500">
                 "{testimonials[current].text}"
               </blockquote>
             </div>
@@ -173,36 +173,36 @@ function CollegeConsultingSection() {
   const section = useInView();
 
   return (
-    <section className="py-16 md:py-24 bg-secondary relative overflow-hidden" ref={section.ref}>
+    <section className="py-12 md:py-24 bg-secondary relative overflow-hidden" ref={section.ref}>
       <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '32px 32px' }} />
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <div className={cn("text-center mb-12 transition-all duration-700", section.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6")}>
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="h-px w-10 bg-accent" />
             <span className="text-accent text-sm font-semibold tracking-widest uppercase">Expert Guidance</span>
             <div className="h-px w-10 bg-accent" />
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">College Consulting</h2>
+          <h2 className="text-2xl md:text-4xl font-bold text-primary-foreground mb-4">College Consulting</h2>
           <p className="text-primary-foreground/70 max-w-2xl mx-auto">
             From freshman year strategy to senior year applications, our experienced consultants guide students every step of the way to their dream schools.
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 max-w-5xl mx-auto">
           {consultingHighlights.map((item, i) => (
             <div
               key={item.title}
               className={cn(
-                "group bg-white/10 border border-white/15 rounded-2xl p-6 text-center hover:bg-white/15 hover:border-accent/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-500",
+                "group bg-white/10 border border-white/15 rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center hover:bg-white/15 hover:border-accent/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-500",
                 section.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
               )}
               style={{ transitionDelay: `${(i + 1) * 100}ms` }}
             >
-              <div className="w-14 h-14 rounded-2xl bg-accent/15 group-hover:bg-accent/25 group-hover:scale-110 flex items-center justify-center mb-5 mx-auto transition-all duration-300">
-                <item.icon className="h-7 w-7 text-accent transition-colors duration-300" />
+              <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-accent/15 group-hover:bg-accent/25 group-hover:scale-110 flex items-center justify-center mb-3 sm:mb-5 mx-auto transition-all duration-300">
+                <item.icon className="h-5 w-5 sm:h-7 sm:w-7 text-accent transition-colors duration-300" />
               </div>
-              <h3 className="font-bold text-primary-foreground mb-2 group-hover:text-accent transition-colors">{item.title}</h3>
-              <p className="text-primary-foreground/60 text-sm leading-relaxed">{item.desc}</p>
+              <h3 className="font-bold text-sm sm:text-base text-primary-foreground mb-1 sm:mb-2 group-hover:text-accent transition-colors">{item.title}</h3>
+              <p className="text-primary-foreground/60 text-xs sm:text-sm leading-relaxed hidden sm:block">{item.desc}</p>
             </div>
           ))}
         </div>
@@ -242,7 +242,7 @@ export default function Index() {
   return (
     <div className="overflow-hidden">
       {/* Hero Section */}
-      <section className="relative min-h-[75vh] flex items-center overflow-hidden">
+      <section className="relative min-h-[60vh] sm:min-h-[75vh] flex items-center overflow-hidden">
         {/* Full background image with overlay */}
         <div className="absolute inset-0">
           <img src={heroBg} alt="" className="w-full h-full object-cover" />
@@ -250,15 +250,15 @@ export default function Index() {
         </div>
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
 
-        <div className="container mx-auto px-4 relative z-10 text-center">
-          <div className="max-w-3xl mx-auto animate-fade-in-up space-y-6">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-primary-foreground leading-[1.1] tracking-tight">
+        <div className="container mx-auto px-4 sm:px-6 relative z-10 text-center">
+          <div className="max-w-3xl mx-auto animate-fade-in-up space-y-4 sm:space-y-6">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-primary-foreground leading-[1.1] tracking-tight">
               {hero.headline}
             </h1>
-            <p className="text-base md:text-lg text-primary-foreground/70 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-sm sm:text-base md:text-lg text-primary-foreground/70 max-w-2xl mx-auto leading-relaxed px-2 sm:px-0">
               {hero.subheading}
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 pt-2 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2 justify-center px-4 sm:px-0">
               <SmartLink to={hero.cta_primary_link}>
                 <Button variant="accent" size="lg" className="w-full sm:w-auto rounded-full gap-2 group shadow-lg shadow-accent/25">
                   {hero.cta_primary_text}
@@ -276,8 +276,8 @@ export default function Index() {
       </section>
 
       {/* University Logo Bar */}
-      <section className="py-12 md:py-16 bg-background overflow-hidden">
-        <p className="text-xs md:text-sm font-semibold tracking-widest uppercase text-muted-foreground mb-10 text-center">
+      <section className="py-8 md:py-16 bg-background overflow-hidden">
+        <p className="text-xs md:text-sm font-semibold tracking-widest uppercase text-muted-foreground mb-6 md:mb-10 text-center px-4">
           Where Our Students Have Gone
         </p>
         <div className="relative">
@@ -300,9 +300,9 @@ export default function Index() {
                   { name: "Princeton University", logo: logoPrinceton },
                   { name: "MIT", logo: logoMit },
                 ].map((school) => (
-                  <div key={`${setIdx}-${school.name}`} className="flex flex-col items-center gap-3 mx-8 md:mx-14">
-                    <img src={school.logo} alt={school.name} className="h-12 w-12 md:h-16 md:w-16 object-contain" />
-                    <span className="text-xs md:text-sm font-semibold text-foreground/60 whitespace-nowrap tracking-tight">
+                  <div key={`${setIdx}-${school.name}`} className="flex flex-col items-center gap-2 sm:gap-3 mx-5 sm:mx-8 md:mx-14">
+                    <img src={school.logo} alt={school.name} className="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 object-contain" />
+                    <span className="text-[10px] sm:text-xs md:text-sm font-semibold text-foreground/60 whitespace-nowrap tracking-tight">
                       {school.name}
                     </span>
                   </div>
@@ -320,14 +320,14 @@ export default function Index() {
 
       {/* Announcements */}
       {announcements.length > 0 && (
-        <section className="py-16 md:py-24 bg-background">
+        <section className="py-12 md:py-24 bg-background">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 text-accent text-sm font-semibold mb-4">
                 <Megaphone className="h-4 w-4" />
                 Announcements
               </div>
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground">Latest Updates</h2>
+              <h2 className="text-2xl md:text-4xl font-bold text-foreground">Latest Updates</h2>
               <div className="section-divider mt-4" />
             </div>
             <div className="flex flex-wrap justify-center gap-6">
@@ -360,15 +360,15 @@ export default function Index() {
       <TestimonialCarousel />
 
       {/* CTA Section */}
-      <section className="py-16 md:py-24 bg-gradient-to-br from-secondary via-primary to-secondary relative overflow-hidden">
+      <section className="py-12 md:py-24 bg-gradient-to-br from-secondary via-primary to-secondary relative overflow-hidden">
         <div className="absolute inset-0 opacity-[0.04]" style={{
           backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
           backgroundSize: '32px 32px'
         }} />
-        <div className="absolute top-0 right-0 w-96 h-96 bg-accent/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <h2 className="text-3xl md:text-5xl font-bold text-primary-foreground mb-6">{cta.headline}</h2>
-          <p className="text-lg text-primary-foreground/70 mb-10 max-w-2xl mx-auto">{cta.subheading}</p>
+        <div className="absolute top-0 right-0 w-64 sm:w-96 h-64 sm:h-96 bg-accent/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+        <div className="container mx-auto px-4 sm:px-6 text-center relative z-10">
+          <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-primary-foreground mb-4 sm:mb-6">{cta.headline}</h2>
+          <p className="text-sm sm:text-lg text-primary-foreground/70 mb-6 sm:mb-10 max-w-2xl mx-auto">{cta.subheading}</p>
           <SmartLink to={cta.button_link}>
             <Button variant="accent" size="xl" className="rounded-full gap-2 group">
               {cta.button_text}
