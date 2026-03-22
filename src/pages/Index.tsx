@@ -252,11 +252,6 @@ export default function Index() {
         }} />
         <div className="container mx-auto px-4 relative z-10 flex items-center">
           <div className="max-w-2xl animate-fade-in-up space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="h-px w-10 bg-accent" />
-              <span className="text-accent text-sm font-semibold tracking-widest uppercase">Blue Ribbon Academy</span>
-              <div className="h-px w-10 bg-accent" />
-            </div>
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-primary-foreground leading-[1.1] tracking-tight">
               {hero.headline}
             </h1>
