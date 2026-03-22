@@ -13,6 +13,8 @@ import Contact from "./pages/Contact";
 import Social from "./pages/Social";
 import Schedule from "./pages/Schedule";
 import Consulting from "./pages/Consulting";
+import CollegeConsulting from "./pages/CollegeConsulting";
+import Testimonials from "./pages/Testimonials";
 
 import Admin from "./pages/Admin";
 import Portal from "./pages/Portal";
