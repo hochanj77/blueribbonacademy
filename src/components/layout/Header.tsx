@@ -51,10 +51,12 @@ export function Header() {
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
+        "pt-[env(safe-area-inset-top)]",
         isScrolled
           ? "py-2 md:py-3 bg-background/80 backdrop-blur-xl shadow-lg shadow-primary/5 border-b border-border/50"
           : "py-4 md:py-5 bg-background/95 backdrop-blur-sm"
       )}
+      style={{ paddingTop: `max(env(safe-area-inset-top), ${isScrolled ? '0.5rem' : '1rem'})` }}
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
