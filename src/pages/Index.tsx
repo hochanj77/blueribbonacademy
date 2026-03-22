@@ -250,9 +250,9 @@ export default function Index() {
         </div>
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
 
-        <div className="container mx-auto px-4 relative z-10 text-center">
-          <div className="max-w-3xl mx-auto animate-fade-in-up space-y-6">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-primary-foreground leading-[1.1] tracking-tight">
+        <div className="container mx-auto px-4 sm:px-6 relative z-10 text-center">
+          <div className="max-w-3xl mx-auto animate-fade-in-up space-y-4 sm:space-y-6">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-primary-foreground leading-[1.1] tracking-tight">
               {hero.headline}
             </h1>
             <p className="text-base md:text-lg text-primary-foreground/70 max-w-2xl mx-auto leading-relaxed">
