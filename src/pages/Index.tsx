@@ -255,7 +255,7 @@ export default function Index() {
                 <GraduationCap className="h-4 w-4" />
                 20+ Years of Excellence
               </div>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-foreground leading-[1.1] tracking-tight">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-primary-foreground leading-[1.1] tracking-tight">
                 {hero.headline}
               </h1>
               <p className="text-base md:text-lg text-muted-foreground max-w-lg leading-relaxed">
