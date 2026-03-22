@@ -281,10 +281,7 @@ export default function Index() {
           <div className="absolute right-0 top-0 bottom-0 w-24 md:w-48 bg-gradient-to-l from-background to-transparent z-10" />
           <div className="flex animate-marquee items-center">
             {[...Array(2)].map((_, i) => (
-              <div key={i} className="flex shrink-0 items-center gap-4 md:gap-8">
-                <img src={logosRow1} alt="UCLA, Duke, UPenn, Northwestern, Columbia logos" className="h-16 md:h-24 w-auto object-contain" />
-                <img src={logosRow2} alt="Johns Hopkins, Vanderbilt, Michigan, Illinois, Google, IBM logos" className="h-16 md:h-24 w-auto object-contain" />
-              </div>
+              <img key={i} src={universityLogos} alt="UCLA, Duke, UPenn, Northwestern, Columbia, Johns Hopkins, Vanderbilt, Michigan logos" className="shrink-0 h-20 md:h-14 w-auto object-contain mx-8" />
             ))}
           </div>
         </div>
