@@ -112,7 +112,7 @@ function TestimonialCarousel() {
           <div className="relative bg-card border border-border rounded-2xl p-5 sm:p-8 md:p-12 shadow-lg">
             <Quote className="h-8 w-8 sm:h-10 sm:w-10 text-accent/20 mb-4 sm:mb-6" />
             <div className="min-h-[120px] sm:min-h-[140px] flex items-center">
-              <blockquote className="text-muted-foreground text-base md:text-lg leading-relaxed transition-opacity duration-500">
+              <blockquote className="text-muted-foreground text-sm sm:text-base md:text-lg leading-relaxed transition-opacity duration-500">
                 "{testimonials[current].text}"
               </blockquote>
             </div>
