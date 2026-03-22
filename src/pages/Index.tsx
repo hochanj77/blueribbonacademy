@@ -10,6 +10,8 @@ import logoJhu from "@/assets/logos/jhu.png";
 import logoVanderbilt from "@/assets/logos/vanderbilt.png";
 import logoUmich from "@/assets/logos/umich.png";
 import logoUiuc from "@/assets/logos/uiuc.png";
+import logoHarvard from "@/assets/logos/harvard.png";
+import logoPrinceton from "@/assets/logos/princeton.png";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Megaphone, CalendarDays, ArrowRight, Quote, ChevronLeft, ChevronRight, GraduationCap, FileText, Users, Lightbulb } from "lucide-react";
@@ -300,6 +302,8 @@ export default function Index() {
                   { name: "Vanderbilt University", logo: logoVanderbilt },
                   { name: "University of Michigan", logo: logoUmich },
                   { name: "University of Illinois", logo: logoUiuc },
+                  { name: "Harvard University", logo: logoHarvard },
+                  { name: "Princeton University", logo: logoPrinceton },
                 ].map((school) => (
                   <div key={`${setIdx}-${school.name}`} className="flex flex-col items-center gap-3 mx-8 md:mx-14">
                     <img src={school.logo} alt={school.name} className="h-12 w-12 md:h-16 md:w-16 object-contain" />
