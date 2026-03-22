@@ -15,7 +15,6 @@ const defaults = {
 
 export default function About() {
   const [mounted, setMounted] = useState(false);
-  const statsSection = useInView();
 
   useEffect(() => {
     const timer = setTimeout(() => setMounted(true), 100);
