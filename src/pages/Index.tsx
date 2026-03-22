@@ -12,6 +12,7 @@ import logoUmich from "@/assets/logos/umich.png";
 import logoUiuc from "@/assets/logos/uiuc.png";
 import logoHarvard from "@/assets/logos/harvard.png";
 import logoPrinceton from "@/assets/logos/princeton.png";
+import logoMit from "@/assets/logos/mit.png";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Megaphone, CalendarDays, ArrowRight, Quote, ChevronLeft, ChevronRight, GraduationCap, FileText, Users, Lightbulb } from "lucide-react";
@@ -305,7 +306,7 @@ export default function Index() {
           <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-secondary to-transparent z-10" />
           <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-secondary to-transparent z-10" />
           <div className="flex animate-marquee items-center">
-            {[...Array(2)].map((_, setIdx) => (
+            {[...Array(3)].map((_, setIdx) => (
               <div key={setIdx} className="flex shrink-0 items-center">
                 {[
                   { name: "UCLA", logo: logoUcla },
@@ -319,6 +320,7 @@ export default function Index() {
                   { name: "University of Illinois", logo: logoUiuc },
                   { name: "Harvard University", logo: logoHarvard },
                   { name: "Princeton University", logo: logoPrinceton },
+                  { name: "MIT", logo: logoMit },
                 ].map((school) => (
                   <div key={`${setIdx}-${school.name}`} className="flex flex-col items-center gap-3 mx-8 md:mx-14">
                     <img src={school.logo} alt={school.name} className="h-12 w-12 md:h-16 md:w-16 object-contain" />
