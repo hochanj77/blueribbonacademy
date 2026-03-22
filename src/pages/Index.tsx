@@ -255,7 +255,7 @@ export default function Index() {
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-primary-foreground leading-[1.1] tracking-tight">
               {hero.headline}
             </h1>
-            <p className="text-base md:text-lg text-primary-foreground/70 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-sm sm:text-base md:text-lg text-primary-foreground/70 max-w-2xl mx-auto leading-relaxed px-2 sm:px-0">
               {hero.subheading}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 pt-2 justify-center">
