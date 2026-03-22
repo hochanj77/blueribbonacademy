@@ -280,7 +280,7 @@ export default function Index() {
             <div className="relative hidden lg:block animate-fade-in-up" style={{ animationDelay: '200ms' }}>
               {/* Decorative ring */}
               <div className="absolute -inset-6 rounded-3xl bg-gradient-to-br from-accent/20 via-primary/10 to-secondary/10 p-px">
-                <div className="w-full h-full rounded-3xl bg-background" />
+                <div className="w-full h-full rounded-3xl bg-secondary" />
               </div>
               {/* Accent shapes */}
               <div className="absolute -bottom-5 -right-5 w-36 h-36 bg-gradient-to-br from-accent/20 to-accent/5 rounded-2xl -z-10" />
