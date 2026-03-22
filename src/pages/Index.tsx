@@ -272,16 +272,25 @@ export default function Index() {
       </section>
 
       {/* University Logo Bar */}
-      <section className="py-14 md:py-20 bg-background border-b border-border/30 overflow-hidden">
-        <p className="text-xs md:text-sm font-semibold tracking-widest uppercase text-muted-foreground mb-12 text-center">
+      <section className="py-10 md:py-14 bg-secondary overflow-hidden">
+        <p className="text-xs md:text-sm font-semibold tracking-widest uppercase text-secondary-foreground/50 mb-8 text-center">
           Where Our Students Have Gone
         </p>
         <div className="relative">
-          <div className="absolute left-0 top-0 bottom-0 w-24 md:w-48 bg-gradient-to-r from-background to-transparent z-10" />
-          <div className="absolute right-0 top-0 bottom-0 w-24 md:w-48 bg-gradient-to-l from-background to-transparent z-10" />
+          <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-secondary to-transparent z-10" />
+          <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-secondary to-transparent z-10" />
           <div className="flex animate-marquee items-center">
-            {[...Array(2)].map((_, i) => (
-              <img key={i} src={universityLogos} alt="UCLA, Duke, UPenn, Northwestern, Columbia, Johns Hopkins, Vanderbilt, Michigan logos" className="shrink-0 h-20 md:h-14 w-auto object-contain mx-8" />
+            {[...Array(2)].map((_, setIdx) => (
+              <div key={setIdx} className="flex shrink-0 items-center">
+                {["UCLA", "Duke University", "University of Pennsylvania", "Northwestern", "Columbia University", "Johns Hopkins", "Vanderbilt University", "University of Michigan", "University of Illinois"].map((name) => (
+                  <div key={`${setIdx}-${name}`} className="flex items-center gap-3 mx-8 md:mx-12">
+                    <GraduationCap className="h-5 w-5 md:h-6 md:w-6 text-accent shrink-0" />
+                    <span className="text-base md:text-lg font-bold text-secondary-foreground/80 whitespace-nowrap tracking-tight">
+                      {name}
+                    </span>
+                  </div>
+                ))}
+              </div>
             ))}
           </div>
         </div>
