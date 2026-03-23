@@ -6,7 +6,7 @@ interface PageHeroProps {
 
 export default function PageHero({ title, accent, subtitle }: PageHeroProps) {
   return (
-    <section className="relative py-20 md:py-28 bg-gradient-to-br from-secondary via-primary to-secondary overflow-hidden">
+    <section className="relative pt-32 pb-20 md:pt-36 md:pb-28 bg-gradient-to-br from-secondary via-primary to-secondary overflow-hidden">
       {/* Dot pattern overlay */}
       <div className="absolute inset-0 opacity-[0.04]" style={{
         backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
