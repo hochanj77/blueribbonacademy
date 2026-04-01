@@ -405,25 +405,25 @@ const StudentsTab = () => {
   const inactiveCount = students.filter((s) => s.status === 'inactive').length;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Import Section */}
       <Card>
-        <CardHeader>
+        <CardHeader className="p-4 md:p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-primary/10 text-primary">
+            <div className="p-2 rounded-lg bg-primary/10 text-primary shrink-0">
               <FileSpreadsheet className="h-5 w-5" />
             </div>
-            <div>
-              <CardTitle>Import Students from Excel</CardTitle>
-              <CardDescription>
+            <div className="min-w-0">
+              <CardTitle className="text-base md:text-lg">Import Students from Excel</CardTitle>
+              <CardDescription className="hidden sm:block">
                 Upload an .xlsx file to mass-create or update student records
               </CardDescription>
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 md:p-6 pt-0 md:pt-0">
           {importState === 'idle' && (
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
               <label className="cursor-pointer">
                 <Input type="file" accept=".xlsx,.xls,.csv" onChange={handleFileUpload} className="hidden" />
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors text-sm font-medium">
@@ -433,9 +433,9 @@ const StudentsTab = () => {
               </label>
               <Button variant="outline" size="sm" onClick={handleDownloadTemplate}>
                 <Download className="h-4 w-4 mr-2" />
-                Download Template
+                Template
               </Button>
-              <span className="text-sm text-muted-foreground">
+              <span className="text-xs sm:text-sm text-muted-foreground hidden md:inline">
                 Columns: First Name, Last Name, Phone, Grade Level, School, Parent Name, Parent Email, Parent Phone, Notes
               </span>
             </div>
