@@ -539,20 +539,21 @@ const StudentsTab = () => {
 
       {/* Students List */}
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Student Management</CardTitle>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={handleExportExcel}>
-              <Download className="h-4 w-4 mr-2" />
-              Export Excel
-            </Button>
-            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Student
-                </Button>
-              </DialogTrigger>
+        <CardHeader className="p-4 md:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <CardTitle className="text-base md:text-lg">Student Management</CardTitle>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={handleExportExcel}>
+                <Download className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Export Excel</span>
+              </Button>
+              <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button size="sm">
+                    <Plus className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Add Student</span>
+                  </Button>
+                </DialogTrigger>
               <DialogContent className="max-w-2xl">
                 <DialogHeader>
                   <DialogTitle>Add New Student</DialogTitle>
@@ -565,11 +566,12 @@ const StudentsTab = () => {
                 />
               </DialogContent>
             </Dialog>
+            </div>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
-            <div className="relative flex-1 max-w-sm">
+        <CardContent className="p-4 md:p-6 pt-0 md:pt-0">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4 md:mb-6">
+            <div className="relative flex-1 w-full sm:max-w-sm">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search students..."
@@ -579,7 +581,7 @@ const StudentsTab = () => {
               />
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>
               <SelectContent>
@@ -595,20 +597,20 @@ const StudentsTab = () => {
           {selectedIds.size > 0 && (
             <div className="flex items-center gap-3 mb-4 p-3 rounded-md bg-muted border">
               <span className="text-sm font-medium">
-                {selectedIds.size} student{selectedIds.size !== 1 ? 's' : ''} selected
+                {selectedIds.size} selected
               </span>
               <AlertDialog open={isBulkDeleteOpen} onOpenChange={setIsBulkDeleteOpen}>
                 <AlertDialogTrigger asChild>
                   <Button variant="destructive" size="sm" className="gap-2">
                     <Trash2 className="h-4 w-4" />
-                    Delete Selected
+                    <span className="hidden sm:inline">Delete Selected</span>
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
                     <AlertDialogTitle>Delete {selectedIds.size} Student{selectedIds.size !== 1 ? 's' : ''}?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This will permanently delete {selectedIds.size} student record{selectedIds.size !== 1 ? 's' : ''} and all associated data. This action cannot be undone.
+                      This will permanently delete {selectedIds.size} student record{selectedIds.size !== 1 ? 's' : ''} and all associated data.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
@@ -620,13 +622,13 @@ const StudentsTab = () => {
                       {bulkDeleteMutation.isPending ? (
                         <Loader2 className="h-4 w-4 animate-spin mr-2" />
                       ) : null}
-                      Delete {selectedIds.size} Student{selectedIds.size !== 1 ? 's' : ''}
+                      Delete
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
               <Button variant="ghost" size="sm" onClick={() => setSelectedIds(new Set())}>
-                Clear Selection
+                Clear
               </Button>
             </div>
           )}
@@ -636,94 +638,184 @@ const StudentsTab = () => {
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
             </div>
           ) : (
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[40px]">
-                      <Checkbox
-                        checked={filteredStudents.length > 0 && selectedIds.size === filteredStudents.length}
-                        onCheckedChange={toggleSelectAll}
-                      />
-                    </TableHead>
-                    <TableHead>Student ID</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Grade</TableHead>
-                    <TableHead>School</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredStudents.length === 0 ? (
+            <>
+              {/* Desktop table */}
+              <div className="hidden md:block rounded-md border">
+                <Table>
+                  <TableHeader>
                     <TableRow>
-                      <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                        No students found
-                      </TableCell>
+                      <TableHead className="w-[40px]">
+                        <Checkbox
+                          checked={filteredStudents.length > 0 && selectedIds.size === filteredStudents.length}
+                          onCheckedChange={toggleSelectAll}
+                        />
+                      </TableHead>
+                      <TableHead>Student ID</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Grade</TableHead>
+                      <TableHead>School</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
-                  ) : (
-                    filteredStudents.map((student) => (
-                      <TableRow key={student.id} className={selectedIds.has(student.id) ? 'bg-muted/50' : ''}>
-                        <TableCell>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredStudents.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                          No students found
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      filteredStudents.map((student) => (
+                        <TableRow key={student.id} className={selectedIds.has(student.id) ? 'bg-muted/50' : ''}>
+                          <TableCell>
+                            <Checkbox
+                              checked={selectedIds.has(student.id)}
+                              onCheckedChange={() => toggleSelect(student.id)}
+                            />
+                          </TableCell>
+                          <TableCell className="font-mono text-sm">
+                            {student.student_number || '-'}
+                          </TableCell>
+                          <TableCell className="font-medium">
+                            {student.first_name} {student.last_name}
+                          </TableCell>
+                          <TableCell>{student.email || '-'}</TableCell>
+                          <TableCell>{student.grade_level || '-'}</TableCell>
+                          <TableCell>{student.school || '-'}</TableCell>
+                          <TableCell>
+                            {getStatusBadge(student.status)}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => {
+                                  setSelectedStudent(student);
+                                  setIsDetailsOpen(true);
+                                }}
+                              >
+                                <FileText className="h-4 w-4" />
+                              </Button>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button variant="ghost" size="icon">
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Delete Student</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Are you sure you want to delete {student.first_name} {student.last_name}?
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => deleteMutation.mutate(student.id)}>
+                                      Delete
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Mobile card list */}
+              <div className="md:hidden space-y-3">
+                {filteredStudents.length === 0 ? (
+                  <p className="text-center py-8 text-muted-foreground">No students found</p>
+                ) : (
+                  filteredStudents.map((student) => (
+                    <div
+                      key={student.id}
+                      className={`border border-border rounded-lg p-3 space-y-2 ${selectedIds.has(student.id) ? 'bg-muted/50 border-primary/30' : ''}`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-start gap-2 min-w-0">
                           <Checkbox
                             checked={selectedIds.has(student.id)}
                             onCheckedChange={() => toggleSelect(student.id)}
+                            className="mt-0.5"
                           />
-                        </TableCell>
-                        <TableCell className="font-mono text-sm">
-                          {student.student_number || '-'}
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          {student.first_name} {student.last_name}
-                        </TableCell>
-                        <TableCell>{student.email || '-'}</TableCell>
-                        <TableCell>{student.grade_level || '-'}</TableCell>
-                        <TableCell>{student.school || '-'}</TableCell>
-                        <TableCell>
-                          {getStatusBadge(student.status)}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => {
-                                setSelectedStudent(student);
-                                setIsDetailsOpen(true);
-                              }}
-                            >
-                              <FileText className="h-4 w-4" />
-                            </Button>
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button variant="ghost" size="icon">
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>Delete Student</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    Are you sure you want to delete {student.first_name} {student.last_name}? This action cannot be undone.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                  <AlertDialogAction onClick={() => deleteMutation.mutate(student.id)}>
-                                    Delete
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
+                          <div className="min-w-0">
+                            <p className="font-medium text-sm truncate">
+                              {student.first_name} {student.last_name}
+                            </p>
+                            {student.student_number && (
+                              <p className="text-xs text-muted-foreground font-mono">{student.student_number}</p>
+                            )}
                           </div>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </div>
+                        </div>
+                        {getStatusBadge(student.status)}
+                      </div>
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs ml-6">
+                        {student.email && (
+                          <>
+                            <span className="text-muted-foreground">Email</span>
+                            <span className="truncate">{student.email}</span>
+                          </>
+                        )}
+                        {student.grade_level && (
+                          <>
+                            <span className="text-muted-foreground">Grade</span>
+                            <span>{student.grade_level}</span>
+                          </>
+                        )}
+                        {student.school && (
+                          <>
+                            <span className="text-muted-foreground">School</span>
+                            <span className="truncate">{student.school}</span>
+                          </>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-end gap-1 ml-6">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedStudent(student);
+                            setIsDetailsOpen(true);
+                          }}
+                        >
+                          <FileText className="h-4 w-4 mr-1" />
+                          Details
+                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="sm" className="text-destructive">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete Student</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Delete {student.first_name} {student.last_name}?
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => deleteMutation.mutate(student.id)}>
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </>
           )}
 
           <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
