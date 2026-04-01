@@ -98,9 +98,7 @@ export default function About() {
                   )}
                   style={{ transitionDelay: `${(i + 1) * 100}ms` }}
                 >
-                  <div className={cn("w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center mt-0.5", v.iconBg)}>
-                    <v.icon className={cn("h-5 w-5", v.iconColor)} />
-                  </div>
+                  <div className={cn("w-1 h-10 rounded-full flex-shrink-0 mt-0.5", v.iconBg)} />
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">{v.title}</h3>
                     <p className="text-muted-foreground text-sm leading-relaxed">{v.desc}</p>
