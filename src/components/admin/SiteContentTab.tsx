@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Label } from '@/components/ui/label';
-import { Loader2, Save, Globe, CheckCircle, Plus, X, Info } from 'lucide-react';
+import { Loader2, Save, Globe, CheckCircle, Info } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface SiteContentRow {
