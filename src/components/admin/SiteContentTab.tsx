@@ -80,6 +80,28 @@ const contentSchema: Record<string, {
       },
     },
   },
+  consulting: {
+    label: 'College Consulting',
+    sections: {
+      hero: {
+        label: 'Page Header',
+        description: 'The hero banner on the College Consulting page.',
+        fields: [
+          { label: 'Title', key: 'headline', type: 'text', hint: 'e.g. "College"' },
+          { label: 'Accent Word', key: 'accent', type: 'text', hint: 'e.g. "Consulting"' },
+          { label: 'Subtitle', key: 'subheading', type: 'textarea' },
+        ],
+      },
+      intro: {
+        label: 'Introduction Text',
+        description: 'The introductory paragraph at the top of the consulting page.',
+        fields: [
+          { label: 'Main Text', key: 'text', type: 'textarea', hint: 'Overview of consulting services.' },
+          { label: 'Korean Text', key: 'korean_text', type: 'textarea', hint: 'Korean translation (optional).' },
+        ],
+      },
+    },
+  },
   about: {
     label: 'About Us',
     sections: {
