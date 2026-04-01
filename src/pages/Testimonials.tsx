@@ -1,6 +1,22 @@
+import { Link } from "react-router-dom";
 import PageHero from "@/components/PageHero";
 import { useInView } from "@/hooks/useInView";
-import { Quote } from "lucide-react";
+import { usePageContent } from "@/hooks/useSiteContent";
+import { Quote, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+const heroDefaults = {
+  headline: "Student",
+  accent: "Testimonials",
+  subheading: "At Blue Ribbon, we aim to provide the best learning experience for our students to ensure their academic success. See what our students have had to say about us!",
+};
+
+const ctaDefaults = {
+  headline: "Join Our Success Stories",
+  subheading: "Start your journey with Blue Ribbon Academy today.",
+  button_text: "Get Started",
+  button_link: "/contact",
+};
 
 const testimonials = [
   {
@@ -52,12 +68,16 @@ function TestimonialCard({ name, text, index }: { name: string; text: string; in
 }
 
 export default function Testimonials() {
+  const { data: pageContent } = usePageContent("testimonials");
+  const hero = { ...heroDefaults, ...pageContent?.hero };
+  const cta = { ...ctaDefaults, ...pageContent?.cta };
+
   return (
     <div>
       <PageHero
-        title="Student"
-        accent="Testimonials"
-        subtitle="At Blue Ribbon, we aim to provide the best learning experience for our students to ensure their academic success. See what our students have had to say about us!"
+        title={hero.headline}
+        accent={hero.accent}
+        subtitle={hero.subheading}
       />
 
       <section className="py-16 md:py-24 bg-background">
@@ -74,16 +94,17 @@ export default function Testimonials() {
       <section className="py-16 md:py-20 bg-secondary">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-2xl md:text-4xl font-bold text-secondary-foreground mb-4">
-            Join Our Success Stories
+            {cta.headline}
           </h2>
           <p className="text-secondary-foreground/70 mb-8 max-w-2xl mx-auto">
-            Start your journey with Blue Ribbon Academy today.
+            {cta.subheading}
           </p>
-          <a href="/contact">
-            <button className="inline-flex items-center justify-center gap-2 rounded-md bg-accent text-accent-foreground px-10 h-14 text-lg font-bold shadow-lg hover:bg-accent/90 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
-              Get Started
-            </button>
-          </a>
+          <Link to={cta.button_link}>
+            <Button variant="accent" size="lg" className="rounded-full gap-2 group shadow-lg">
+              {cta.button_text}
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Button>
+          </Link>
         </div>
       </section>
     </div>
