@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import AnnouncementsTab from './AnnouncementsTab';
-import ResourcesTab from './ResourcesTab';
+import ScheduleContentEditor from './ScheduleContentEditor';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -21,7 +21,6 @@ interface SiteContentRow {
   updated_at: string | null;
 }
 
-// Schema maps exactly to what each page reads from the CMS
 type FieldDef = { label: string; key: string; type: 'text' | 'textarea' | 'url'; hint?: string; defaultValue?: string };
 type SectionDef = { label: string; description?: string; fields: FieldDef[] };
 
@@ -56,25 +55,16 @@ const contentSchema: Record<string, {
       },
     },
   },
-  courses: {
-    label: 'Programs',
+  about: {
+    label: 'About Us',
     sections: {
-      hero: {
-        label: 'Page Header',
-        description: 'The hero banner on the Programs page.',
+      welcome: {
+        label: 'Welcome Section',
+        description: 'The main intro section on the About page.',
         fields: [
-          { label: 'Title', key: 'headline', type: 'text', defaultValue: 'Our' },
-          { label: 'Accent Word', key: 'accent', type: 'text', defaultValue: 'Programs' },
-          { label: 'Subtitle', key: 'subheading', type: 'textarea', defaultValue: 'Explore our comprehensive range of test preparation and academic tutoring services designed to help every student succeed.' },
-        ],
-      },
-      cta: {
-        label: 'Bottom Call-to-Action',
-        description: 'The CTA bar at the bottom of the Programs page.',
-        fields: [
-          { label: 'Text', key: 'text', type: 'textarea', defaultValue: "Reach out and we'll help you find the perfect program for your needs." },
-          { label: 'Button Text', key: 'button_text', type: 'text', defaultValue: 'Download Course Catalog' },
-          { label: 'Button Link', key: 'button_link', type: 'url', defaultValue: '/catalog' },
+          { label: 'Headline', key: 'headline', type: 'text', defaultValue: 'Welcome to Blue Ribbon Academy' },
+          { label: 'Intro Statement', key: 'intro', type: 'text', defaultValue: 'We believe all students have the right to receive a good education.' },
+          { label: 'Body Text', key: 'body', type: 'textarea', defaultValue: "With over 20 years of experience, we've learned that good education is impossible without sharing life together with the students. We do not perceive our students merely as attendants of our academy but more as disciples we nurture through our lives. We make sure to treat all students with much care with this mission in mind." },
         ],
       },
     },
@@ -146,7 +136,7 @@ const contentSchema: Record<string, {
     },
   },
   schedule: {
-    label: 'Schedule',
+    label: 'Schedule Hero',
     sections: {
       hero: {
         label: 'Page Header',
@@ -155,44 +145,6 @@ const contentSchema: Record<string, {
           { label: 'Title', key: 'headline', type: 'text', defaultValue: 'Class' },
           { label: 'Accent Word', key: 'accent', type: 'text', defaultValue: 'Schedule' },
           { label: 'Subtitle', key: 'subheading', type: 'textarea', defaultValue: 'Find the right class and time that fits your schedule. Contact us for availability.' },
-        ],
-      },
-    },
-  },
-  free_consultation: {
-    label: 'Free Consultation',
-    sections: {
-      hero: {
-        label: 'Hero Section',
-        description: 'The hero section on the Free Consultation page.',
-        fields: [
-          { label: 'Title', key: 'headline', type: 'text', defaultValue: 'Free' },
-          { label: 'Accent Word', key: 'accent', type: 'text', defaultValue: 'Consultation' },
-          { label: 'Subtitle', key: 'subheading', type: 'textarea', defaultValue: 'Not sure where to start? Schedule a free consultation with our academic advisors to create a personalized plan for SAT success.' },
-        ],
-      },
-      cta: {
-        label: 'Bottom Call-to-Action',
-        description: 'CTA section at the bottom of the Free Consultation page.',
-        fields: [
-          { label: 'Headline', key: 'headline', type: 'text', defaultValue: 'Your SAT Success Story Starts Here' },
-          { label: 'Subheading', key: 'subheading', type: 'textarea', defaultValue: "Take the first step today. Schedule your free consultation and let's create a plan together." },
-          { label: 'Button Text', key: 'button_text', type: 'text', defaultValue: 'Schedule Free Consultation' },
-          { label: 'Button Link', key: 'button_link', type: 'url', defaultValue: '/contact' },
-        ],
-      },
-    },
-  },
-  about: {
-    label: 'About Us',
-    sections: {
-      welcome: {
-        label: 'Welcome Section',
-        description: 'The main intro section on the About page.',
-        fields: [
-          { label: 'Headline', key: 'headline', type: 'text', defaultValue: 'Welcome to Blue Ribbon Academy' },
-          { label: 'Intro Statement', key: 'intro', type: 'text', defaultValue: 'We believe all students have the right to receive a good education.' },
-          { label: 'Body Text', key: 'body', type: 'textarea', defaultValue: "With over 20 years of experience, we've learned that good education is impossible without sharing life together with the students. We do not perceive our students merely as attendants of our academy but more as disciples we nurture through our lives. We make sure to treat all students with much care with this mission in mind." },
         ],
       },
     },
@@ -220,13 +172,6 @@ const contentSchema: Record<string, {
           { label: 'Instagram URL', key: 'instagram_url', type: 'url' },
           { label: 'Google Business Name', key: 'google_business_name', type: 'text', defaultValue: 'Blue Ribbon Academy' },
           { label: 'Google Business URL', key: 'google_business_url', type: 'url' },
-        ],
-      },
-      catalog: {
-        label: 'Course Catalog',
-        description: 'Description text shown on the catalog request page.',
-        fields: [
-          { label: 'Catalog Description', key: 'catalog_description', type: 'textarea' },
         ],
       },
     },
@@ -290,7 +235,7 @@ const SiteContentTab = () => {
                 {contentSchema[page].label}
               </TabsTrigger>
             ))}
-            <TabsTrigger value="resources">Resources</TabsTrigger>
+            <TabsTrigger value="schedule_classes">Schedule Classes</TabsTrigger>
             <TabsTrigger value="announcements">Announcements</TabsTrigger>
           </TabsList>
 
@@ -309,14 +254,8 @@ const SiteContentTab = () => {
               ))}
             </TabsContent>
           ))}
-          <TabsContent value="resources">
-            <ResourcesTab
-              catalogContent={contentByPage['global']?.['catalog'] ? {
-                id: allContent.find(r => r.page === 'global' && r.section_key === 'catalog')?.id || '',
-                content: contentByPage['global']['catalog'] as unknown as Record<string, string>,
-              } : null}
-              userId={user?.id}
-            />
+          <TabsContent value="schedule_classes">
+            <ScheduleContentEditor />
           </TabsContent>
           <TabsContent value="announcements">
             <AnnouncementsTab />
