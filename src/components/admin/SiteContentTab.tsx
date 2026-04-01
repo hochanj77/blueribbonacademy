@@ -193,13 +193,6 @@ const SiteContentTab = () => {
 
           {pageKeys.map((page) => (
             <TabsContent key={page} value={page} className="space-y-6">
-              {page === 'courses' && (
-                <ProgramsListEditor
-                  existingContent={contentByPage['courses']?.['programs_list']}
-                  userId={user?.id}
-                  queryClient={queryClient}
-                />
-              )}
               {Object.entries(contentSchema[page].sections).map(([sectionKey, section]) => (
                 <SectionEditor
                   key={`${page}-${sectionKey}`}
