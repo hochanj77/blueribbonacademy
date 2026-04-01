@@ -346,7 +346,7 @@ const SectionEditor = ({ page, sectionKey, section, existingContent, userId, que
   const [formData, setFormData] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {};
     section.fields.forEach((f) => {
-      initial[f.key] = existingContent?.content?.[f.key] || '';
+      initial[f.key] = existingContent?.content?.[f.key] || f.defaultValue || '';
     });
     return initial;
   });
