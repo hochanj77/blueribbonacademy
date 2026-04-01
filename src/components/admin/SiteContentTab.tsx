@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState } from 'react';
 import AnnouncementsTab from './AnnouncementsTab';
 import ResourcesTab from './ResourcesTab';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Label } from '@/components/ui/label';
-import { Loader2, Save, Globe, CheckCircle, Plus, X } from 'lucide-react';
+import { Loader2, Save, Globe, CheckCircle, Plus, X, Info } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface SiteContentRow {
@@ -21,99 +21,119 @@ interface SiteContentRow {
   updated_at: string | null;
 }
 
-const contentSchema: Record<string, Record<string, { label: string; type: 'text' | 'textarea' | 'url' }[]>> = {
+// Schema maps exactly to what each page reads from the CMS
+const contentSchema: Record<string, {
+  label: string;
+  sections: Record<string, {
+    label: string;
+    description?: string;
+    fields: { label: string; key: string; type: 'text' | 'textarea' | 'url'; hint?: string }[];
+  }>;
+}> = {
   home: {
-    hero: [
-      { label: 'Headline', type: 'text' },
-      { label: 'Subheading', type: 'textarea' },
-      { label: 'CTA Primary Text', type: 'text' },
-      { label: 'CTA Secondary Text', type: 'text' },
-    ],
-    cta_section: [
-      { label: 'Headline', type: 'text' },
-      { label: 'Subheading', type: 'textarea' },
-      { label: 'Button Text', type: 'text' },
-    ],
+    label: 'Homepage',
+    sections: {
+      hero: {
+        label: 'Hero Banner',
+        description: 'The main banner visitors see when they land on the homepage.',
+        fields: [
+          { label: 'Headline', key: 'headline', type: 'text', hint: 'e.g. "Where Every Student Can Shine."' },
+          { label: 'Subheading', key: 'subheading', type: 'textarea', hint: 'A brief description below the headline.' },
+          { label: 'Primary Button Text', key: 'cta_primary_text', type: 'text', hint: 'e.g. "View Programs"' },
+          { label: 'Primary Button Link', key: 'cta_primary_link', type: 'url', hint: 'e.g. /courses or /contact' },
+          { label: 'Secondary Button Text', key: 'cta_secondary_text', type: 'text', hint: 'e.g. "Download Course Catalog"' },
+          { label: 'Secondary Button Link', key: 'cta_secondary_link', type: 'url', hint: 'e.g. /catalog' },
+        ],
+      },
+      cta_section: {
+        label: 'Bottom Call-to-Action',
+        description: 'The "Ready to Start?" section at the bottom of the homepage.',
+        fields: [
+          { label: 'Headline', key: 'headline', type: 'text', hint: 'e.g. "Ready to Start Your Journey?"' },
+          { label: 'Subheading', key: 'subheading', type: 'textarea' },
+          { label: 'Button Text', key: 'button_text', type: 'text' },
+          { label: 'Button Link', key: 'button_link', type: 'url', hint: 'e.g. /contact' },
+        ],
+      },
+    },
   },
   courses: {
-    hero: [
-      { label: 'Headline', type: 'text' },
-      { label: 'Subheading', type: 'textarea' },
-    ],
-    cta: [
-      { label: 'Text', type: 'textarea' },
-      { label: 'Button Text', type: 'text' },
-    ],
+    label: 'Programs',
+    sections: {
+      hero: {
+        label: 'Page Header',
+        description: 'The hero banner on the Programs page.',
+        fields: [
+          { label: 'Title', key: 'headline', type: 'text', hint: 'First part of title, e.g. "Our"' },
+          { label: 'Accent Word', key: 'accent', type: 'text', hint: 'Highlighted word, e.g. "Programs"' },
+          { label: 'Subtitle', key: 'subheading', type: 'textarea' },
+        ],
+      },
+      cta: {
+        label: 'Bottom Call-to-Action',
+        description: 'The CTA bar at the bottom of the Programs page.',
+        fields: [
+          { label: 'Text', key: 'text', type: 'textarea' },
+          { label: 'Button Text', key: 'button_text', type: 'text' },
+          { label: 'Button Link', key: 'button_link', type: 'url', hint: 'e.g. /catalog' },
+        ],
+      },
+    },
   },
   about: {
-    welcome: [
-      { label: 'Headline', type: 'text' },
-      { label: 'Intro', type: 'text' },
-      { label: 'Body', type: 'textarea' },
-    ],
-    belonging: [
-      { label: 'Headline', type: 'text' },
-      { label: 'Body', type: 'textarea' },
-    ],
-    heart: [
-      { label: 'Headline', type: 'text' },
-      { label: 'Body', type: 'textarea' },
-      { label: 'Values Intro', type: 'text' },
-    ],
-    excellence: [
-      { label: 'Headline', type: 'text' },
-      { label: 'Body', type: 'textarea' },
-      { label: 'Quote', type: 'textarea' },
-    ],
+    label: 'About Us',
+    sections: {
+      welcome: {
+        label: 'Welcome Section',
+        description: 'The main intro section on the About page.',
+        fields: [
+          { label: 'Headline', key: 'headline', type: 'text', hint: 'e.g. "Welcome to Blue Ribbon Academy"' },
+          { label: 'Intro Statement', key: 'intro', type: 'text', hint: 'Bold opening line.' },
+          { label: 'Body Text', key: 'body', type: 'textarea', hint: 'The detailed paragraph below the intro.' },
+        ],
+      },
+    },
   },
   global: {
-    contact_info: [
-      { label: 'Address Line1', type: 'text' },
-      { label: 'Address Line2', type: 'text' },
-      { label: 'Phone', type: 'text' },
-      { label: 'Email', type: 'text' },
-      { label: 'Hours Weekday', type: 'text' },
-      { label: 'Hours Weekend', type: 'text' },
-    ],
-    social_links: [
-      { label: 'Instagram Handle', type: 'text' },
-      { label: 'Google Business Name', type: 'text' },
-    ],
-    catalog: [
-      { label: 'Catalog Description', type: 'textarea' },
-    ],
+    label: 'Global Settings',
+    sections: {
+      contact_info: {
+        label: 'Contact Information',
+        description: 'Used on the Contact page, Footer, and anywhere contact info appears.',
+        fields: [
+          { label: 'Address Line 1', key: 'address_line1', type: 'text', hint: 'Street address, e.g. "41 Union Ave FL2"' },
+          { label: 'Address Line 2', key: 'address_line2', type: 'text', hint: 'City/State/Zip, e.g. "Cresskill, NJ 07626"' },
+          { label: 'Phone Number', key: 'phone', type: 'text', hint: 'e.g. "+1.201.406.3929"' },
+          { label: 'Email Address', key: 'email', type: 'text', hint: 'e.g. "info@blueribbon-nj.com"' },
+          { label: 'Weekday Hours', key: 'hours_weekday', type: 'text', hint: 'e.g. "Mon-Fri: 3:30pm - 9:00pm"' },
+          { label: 'Weekend Hours', key: 'hours_weekend', type: 'text', hint: 'e.g. "Sat: 9:00am - 4:00pm"' },
+        ],
+      },
+      social_links: {
+        label: 'Social Media',
+        description: 'Links shown on the Social page and Footer.',
+        fields: [
+          { label: 'Instagram Handle', key: 'instagram_handle', type: 'text', hint: 'e.g. "@blueribbonacademy"' },
+          { label: 'Instagram URL', key: 'instagram_url', type: 'url', hint: 'Full Instagram profile URL' },
+          { label: 'Google Business Name', key: 'google_business_name', type: 'text', hint: 'Your business name on Google' },
+          { label: 'Google Business URL', key: 'google_business_url', type: 'url', hint: 'Full Google Business profile URL' },
+        ],
+      },
+      catalog: {
+        label: 'Course Catalog',
+        description: 'Description text shown on the catalog request page.',
+        fields: [
+          { label: 'Catalog Description', key: 'catalog_description', type: 'textarea' },
+        ],
+      },
+    },
   },
-};
-
-function labelToKey(label: string): string {
-  return label.toLowerCase().replace(/\s+/g, '_');
-}
-
-const pageLabels: Record<string, string> = {
-  home: 'Homepage',
-  courses: 'Programs',
-  about: 'About Us',
-  global: 'Global Settings',
-};
-
-const sectionLabels: Record<string, string> = {
-  hero: 'Hero Section',
-  cta_section: 'CTA Section',
-  cta: 'Call to Action',
-  welcome: 'Welcome Section',
-  belonging: 'Power of Belonging',
-  heart: 'Heart Behind Knowledge',
-  excellence: 'Built for Excellence',
-  contact_info: 'Contact Information',
-  social_links: 'Social Media Links',
-  catalog: 'Course Catalog',
-  programs_list: 'Programs List',
 };
 
 const SiteContentTab = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState('global');
+  const [activeTab, setActiveTab] = useState('home');
 
   const { data: allContent = [], isLoading } = useQuery({
     queryKey: ['site_content_admin'],
@@ -142,6 +162,8 @@ const SiteContentTab = () => {
     );
   }
 
+  const pageKeys = Object.keys(contentSchema);
+
   return (
     <Card>
       <CardHeader>
@@ -160,16 +182,16 @@ const SiteContentTab = () => {
       <CardContent>
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="mb-6 flex-wrap">
-            {Object.keys(contentSchema).map((page) => (
+            {pageKeys.map((page) => (
               <TabsTrigger key={page} value={page}>
-                {pageLabels[page] || page}
+                {contentSchema[page].label}
               </TabsTrigger>
             ))}
             <TabsTrigger value="resources">Resources</TabsTrigger>
             <TabsTrigger value="announcements">Announcements</TabsTrigger>
           </TabsList>
 
-          {Object.entries(contentSchema).map(([page, sections]) => (
+          {pageKeys.map((page) => (
             <TabsContent key={page} value={page} className="space-y-6">
               {page === 'courses' && (
                 <ProgramsListEditor
@@ -178,12 +200,12 @@ const SiteContentTab = () => {
                   queryClient={queryClient}
                 />
               )}
-              {Object.entries(sections).map(([sectionKey, fields]) => (
+              {Object.entries(contentSchema[page].sections).map(([sectionKey, section]) => (
                 <SectionEditor
                   key={`${page}-${sectionKey}`}
                   page={page}
                   sectionKey={sectionKey}
-                  fields={fields}
+                  section={section}
                   existingContent={contentByPage[page]?.[sectionKey]}
                   userId={user?.id}
                   queryClient={queryClient}
@@ -209,21 +231,26 @@ const SiteContentTab = () => {
   );
 };
 
+interface SectionConfig {
+  label: string;
+  description?: string;
+  fields: { label: string; key: string; type: 'text' | 'textarea' | 'url'; hint?: string }[];
+}
+
 interface SectionEditorProps {
   page: string;
   sectionKey: string;
-  fields: { label: string; type: 'text' | 'textarea' | 'url' }[];
+  section: SectionConfig;
   existingContent?: SiteContentRow;
   userId?: string;
   queryClient: ReturnType<typeof useQueryClient>;
 }
 
-const SectionEditor = ({ page, sectionKey, fields, existingContent, userId, queryClient }: SectionEditorProps) => {
+const SectionEditor = ({ page, sectionKey, section, existingContent, userId, queryClient }: SectionEditorProps) => {
   const [formData, setFormData] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {};
-    fields.forEach((f) => {
-      const key = labelToKey(f.label);
-      initial[key] = existingContent?.content?.[key] || '';
+    section.fields.forEach((f) => {
+      initial[f.key] = existingContent?.content?.[f.key] || '';
     });
     return initial;
   });
@@ -247,7 +274,7 @@ const SectionEditor = ({ page, sectionKey, fields, existingContent, userId, quer
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['site_content_admin'] });
       queryClient.invalidateQueries({ queryKey: ['site_content'] });
-      toast.success(`${sectionLabels[sectionKey] || sectionKey} saved`);
+      toast.success(`${section.label} saved`);
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     },
@@ -264,36 +291,40 @@ const SectionEditor = ({ page, sectionKey, fields, existingContent, userId, quer
   return (
     <Card className="border-dashed">
       <CardHeader className="pb-3">
-        <CardTitle className="text-base">{sectionLabels[sectionKey] || sectionKey}</CardTitle>
+        <CardTitle className="text-base">{section.label}</CardTitle>
+        {section.description && (
+          <CardDescription className="flex items-start gap-1.5 text-xs mt-1">
+            <Info className="h-3.5 w-3.5 text-muted-foreground shrink-0 mt-0.5" />
+            {section.description}
+          </CardDescription>
+        )}
       </CardHeader>
       <CardContent className="space-y-4">
-        {fields.map((field) => {
-          const key = labelToKey(field.label);
-          return (
-            <div key={key} className="space-y-1.5">
-              <Label htmlFor={`${page}-${sectionKey}-${key}`} className="text-sm font-medium">
-                {field.label}
-              </Label>
-              {field.type === 'textarea' ? (
-                <Textarea
-                  id={`${page}-${sectionKey}-${key}`}
-                  value={formData[key] || ''}
-                  onChange={(e) => updateField(key, e.target.value)}
-                  rows={3}
-                  className="resize-y"
-                />
-              ) : (
-                <Input
-                  id={`${page}-${sectionKey}-${key}`}
-                  type="text"
-                  value={formData[key] || ''}
-                  onChange={(e) => updateField(key, e.target.value)}
-                  placeholder={field.type === 'url' ? '/path or https://...' : ''}
-                />
-              )}
-            </div>
-          );
-        })}
+        {section.fields.map((field) => (
+          <div key={field.key} className="space-y-1.5">
+            <Label htmlFor={`${page}-${sectionKey}-${field.key}`} className="text-sm font-medium">
+              {field.label}
+            </Label>
+            {field.type === 'textarea' ? (
+              <Textarea
+                id={`${page}-${sectionKey}-${field.key}`}
+                value={formData[field.key] || ''}
+                onChange={(e) => updateField(field.key, e.target.value)}
+                rows={3}
+                className="resize-y"
+                placeholder={field.hint || ''}
+              />
+            ) : (
+              <Input
+                id={`${page}-${sectionKey}-${field.key}`}
+                type="text"
+                value={formData[field.key] || ''}
+                onChange={(e) => updateField(field.key, e.target.value)}
+                placeholder={field.hint || (field.type === 'url' ? 'https://... or /page-path' : '')}
+              />
+            )}
+          </div>
+        ))}
         <div className="flex justify-end pt-2">
           <Button
             onClick={handleSave}
@@ -393,6 +424,10 @@ const ProgramsListEditor = ({ existingContent, userId, queryClient }: ProgramsLi
     <Card className="border-dashed">
       <CardHeader className="pb-3">
         <CardTitle className="text-base">Programs List</CardTitle>
+        <CardDescription className="flex items-start gap-1.5 text-xs mt-1">
+          <Info className="h-3.5 w-3.5 text-muted-foreground shrink-0 mt-0.5" />
+          Manage the list of programs shown on the Programs page. Drag to reorder.
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
