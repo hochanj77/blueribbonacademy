@@ -87,22 +87,22 @@ export default function About() {
             </div>
 
             {/* Interactive Values Card Grid */}
-            <div ref={cards.ref} className="grid grid-cols-2 gap-4">
+            <div ref={cards.ref} className="space-y-4">
               {values.map((v, i) => (
                 <div
                   key={v.title}
                   className={cn(
-                    "group relative bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-500 cursor-default overflow-hidden",
-                    cards.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+                    "group flex items-start gap-5 bg-card border border-border/60 border-l-4 rounded-xl px-6 py-5 hover:shadow-md transition-all duration-500 cursor-default",
+                    v.accent,
+                    cards.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                   )}
-                  style={{ transitionDelay: `${(i + 1) * 120}ms` }}
+                  style={{ transitionDelay: `${(i + 1) * 100}ms` }}
                 >
-                  <div className={cn("absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-500", v.color)} />
-                  <div className="relative z-10">
-                    <div className={cn("w-12 h-12 rounded-xl bg-muted group-hover:scale-110 flex items-center justify-center mb-4 transition-transform duration-300")}>
-                      <v.icon className={cn("h-6 w-6", v.iconColor)} />
-                    </div>
-                    <h3 className="font-bold text-foreground mb-2 group-hover:text-primary transition-colors">{v.title}</h3>
+                  <div className={cn("w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center mt-0.5", v.iconBg)}>
+                    <v.icon className={cn("h-5 w-5", v.iconColor)} />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-foreground mb-1">{v.title}</h3>
                     <p className="text-muted-foreground text-sm leading-relaxed">{v.desc}</p>
                   </div>
                 </div>
