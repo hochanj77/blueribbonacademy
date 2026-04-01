@@ -1,5 +1,34 @@
+import { Link } from "react-router-dom";
 import PageHero from "@/components/PageHero";
 import { useInView } from "@/hooks/useInView";
+import { usePageContent } from "@/hooks/useSiteContent";
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
+
+const heroDefaults = {
+  headline: "College",
+  accent: "Consulting",
+  subheading: "Strategic guidance for 9th–12th graders to maximize college acceptance potential.",
+};
+
+const grade9Defaults = {
+  label: "Underclassmen",
+  heading: "Grades 9-11",
+  description: "Build a strong foundation and position yourself competitively before senior year.",
+};
+
+const grade12Defaults = {
+  label: "Seniors",
+  heading: "12th Grade",
+  description: "Comprehensive support through every stage of the college application process.",
+};
+
+const ctaDefaults = {
+  headline: "Ready to Plan Your Future?",
+  subheading: "Schedule a consultation to discuss your goals and build a personalized roadmap to your dream school.",
+  button_text: "Schedule Consultation",
+  button_link: "/contact",
+};
 
 const grade9to11 = [
   {
@@ -66,14 +95,20 @@ function ServiceCard({ title, korean, description, index }: { title: string; kor
 }
 
 export default function CollegeConsulting() {
+  const { data: pageContent } = usePageContent("consulting");
+  const hero = { ...heroDefaults, ...pageContent?.hero };
+  const g9 = { ...grade9Defaults, ...pageContent?.grade9_intro };
+  const g12 = { ...grade12Defaults, ...pageContent?.grade12_intro };
+  const cta = { ...ctaDefaults, ...pageContent?.cta };
+
   const heroRef = useInView(0.1);
 
   return (
     <div>
       <PageHero
-        title="College"
-        accent="Consulting"
-        subtitle="Strategic guidance for 9th–12th graders to maximize college acceptance potential."
+        title={hero.headline}
+        accent={hero.accent}
+        subtitle={hero.subheading}
       />
 
       {/* 9-11th Grade */}
@@ -82,11 +117,11 @@ export default function CollegeConsulting() {
           <div ref={heroRef.ref} className={`text-center mb-12 transition-all duration-700 ${heroRef.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
             <div className="flex items-center justify-center gap-3 mb-4">
               <div className="h-px w-12 bg-accent" />
-              <span className="text-accent text-sm font-semibold tracking-widest uppercase">Underclassmen</span>
+              <span className="text-accent text-sm font-semibold tracking-widest uppercase">{g9.label}</span>
               <div className="h-px w-12 bg-accent" />
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-secondary">Grades 9-11</h2>
-            <p className="text-muted-foreground mt-3 max-w-xl mx-auto">Build a strong foundation and position yourself competitively before senior year.</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-secondary">{g9.heading}</h2>
+            <p className="text-muted-foreground mt-3 max-w-xl mx-auto">{g9.description}</p>
           </div>
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {grade9to11.map((s, i) => (
@@ -102,11 +137,11 @@ export default function CollegeConsulting() {
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-3 mb-4">
               <div className="h-px w-12 bg-accent" />
-              <span className="text-accent text-sm font-semibold tracking-widest uppercase">Seniors</span>
+              <span className="text-accent text-sm font-semibold tracking-widest uppercase">{g12.label}</span>
               <div className="h-px w-12 bg-accent" />
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-secondary">12th Grade</h2>
-            <p className="text-muted-foreground mt-3 max-w-xl mx-auto">Comprehensive support through every stage of the college application process.</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-secondary">{g12.heading}</h2>
+            <p className="text-muted-foreground mt-3 max-w-xl mx-auto">{g12.description}</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {grade12.map((s, i) => (
@@ -120,16 +155,17 @@ export default function CollegeConsulting() {
       <section className="py-16 md:py-20 bg-secondary">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-2xl md:text-4xl font-bold text-secondary-foreground mb-4">
-            Ready to Plan Your Future?
+            {cta.headline}
           </h2>
           <p className="text-secondary-foreground/70 mb-8 max-w-2xl mx-auto">
-            Schedule a consultation to discuss your goals and build a personalized roadmap to your dream school.
+            {cta.subheading}
           </p>
-          <a href="/contact">
-            <button className="inline-flex items-center justify-center gap-2 rounded-md bg-accent text-accent-foreground px-10 h-14 text-lg font-bold shadow-lg hover:bg-accent/90 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
-              Schedule Consultation
-            </button>
-          </a>
+          <Link to={cta.button_link}>
+            <Button variant="accent" size="lg" className="rounded-full gap-2 group shadow-lg">
+              {cta.button_text}
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Button>
+          </Link>
         </div>
       </section>
     </div>

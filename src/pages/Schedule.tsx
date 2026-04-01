@@ -2,7 +2,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Clock, MapPin } from "lucide-react";
 import PageHero from "@/components/PageHero";
 import { useInView } from "@/hooks/useInView";
+import { usePageContent } from "@/hooks/useSiteContent";
 import { cn } from "@/lib/utils";
+
+const heroDefaults = {
+  headline: "Class",
+  accent: "Schedule",
+  subheading: "Find the right class and time that fits your schedule. Contact us for availability.",
+};
 
 interface ClassEntry {
   subject: string;
@@ -123,15 +130,17 @@ const sections = [
 ];
 
 export default function Schedule() {
+  const { data: pageContent } = usePageContent("schedule");
+  const hero = { ...heroDefaults, ...pageContent?.hero };
   const cresskillSection = useInView();
   const fortLeeSection = useInView();
 
   return (
     <div>
       <PageHero
-        title="Class"
-        accent="Schedule"
-        subtitle="Find the right class and time that fits your schedule. Contact us for availability."
+        title={hero.headline}
+        accent={hero.accent}
+        subtitle={hero.subheading}
       />
 
       {/* Cresskill Campus */}

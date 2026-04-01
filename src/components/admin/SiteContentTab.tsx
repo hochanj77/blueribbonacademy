@@ -92,12 +92,94 @@ const contentSchema: Record<string, {
           { label: 'Subtitle', key: 'subheading', type: 'textarea' },
         ],
       },
-      intro: {
-        label: 'Introduction Text',
-        description: 'The introductory paragraph at the top of the consulting page.',
+      grade9_intro: {
+        label: 'Grades 9-11 Section',
+        description: 'Section header for underclassmen consulting services.',
         fields: [
-          { label: 'Main Text', key: 'text', type: 'textarea', hint: 'Overview of consulting services.' },
-          { label: 'Korean Text', key: 'korean_text', type: 'textarea', hint: 'Korean translation (optional).' },
+          { label: 'Section Label', key: 'label', type: 'text', hint: 'e.g. "Underclassmen"' },
+          { label: 'Heading', key: 'heading', type: 'text', hint: 'e.g. "Grades 9-11"' },
+          { label: 'Description', key: 'description', type: 'textarea' },
+        ],
+      },
+      grade12_intro: {
+        label: 'Grade 12 Section',
+        description: 'Section header for senior year consulting services.',
+        fields: [
+          { label: 'Section Label', key: 'label', type: 'text', hint: 'e.g. "Seniors"' },
+          { label: 'Heading', key: 'heading', type: 'text', hint: 'e.g. "12th Grade"' },
+          { label: 'Description', key: 'description', type: 'textarea' },
+        ],
+      },
+      cta: {
+        label: 'Bottom Call-to-Action',
+        description: 'CTA section at the bottom of the College Consulting page.',
+        fields: [
+          { label: 'Headline', key: 'headline', type: 'text', hint: 'e.g. "Ready to Plan Your Future?"' },
+          { label: 'Subheading', key: 'subheading', type: 'textarea' },
+          { label: 'Button Text', key: 'button_text', type: 'text', hint: 'e.g. "Schedule Consultation"' },
+          { label: 'Button Link', key: 'button_link', type: 'url', hint: 'e.g. /contact' },
+        ],
+      },
+    },
+  },
+  testimonials: {
+    label: 'Testimonials',
+    sections: {
+      hero: {
+        label: 'Page Header',
+        description: 'The hero banner on the Testimonials page.',
+        fields: [
+          { label: 'Title', key: 'headline', type: 'text', hint: 'e.g. "Student"' },
+          { label: 'Accent Word', key: 'accent', type: 'text', hint: 'e.g. "Testimonials"' },
+          { label: 'Subtitle', key: 'subheading', type: 'textarea' },
+        ],
+      },
+      cta: {
+        label: 'Bottom Call-to-Action',
+        description: 'CTA section at the bottom of the Testimonials page.',
+        fields: [
+          { label: 'Headline', key: 'headline', type: 'text', hint: 'e.g. "Join Our Success Stories"' },
+          { label: 'Subheading', key: 'subheading', type: 'textarea' },
+          { label: 'Button Text', key: 'button_text', type: 'text', hint: 'e.g. "Get Started"' },
+          { label: 'Button Link', key: 'button_link', type: 'url', hint: 'e.g. /contact' },
+        ],
+      },
+    },
+  },
+  schedule: {
+    label: 'Schedule',
+    sections: {
+      hero: {
+        label: 'Page Header',
+        description: 'The hero banner on the Schedule page.',
+        fields: [
+          { label: 'Title', key: 'headline', type: 'text', hint: 'e.g. "Class"' },
+          { label: 'Accent Word', key: 'accent', type: 'text', hint: 'e.g. "Schedule"' },
+          { label: 'Subtitle', key: 'subheading', type: 'textarea' },
+        ],
+      },
+    },
+  },
+  free_consultation: {
+    label: 'Free Consultation',
+    sections: {
+      hero: {
+        label: 'Hero Section',
+        description: 'The hero section on the Free Consultation page.',
+        fields: [
+          { label: 'Title', key: 'headline', type: 'text', hint: 'e.g. "Free"' },
+          { label: 'Accent Word', key: 'accent', type: 'text', hint: 'e.g. "Consultation"' },
+          { label: 'Subtitle', key: 'subheading', type: 'textarea' },
+        ],
+      },
+      cta: {
+        label: 'Bottom Call-to-Action',
+        description: 'CTA section at the bottom of the Free Consultation page.',
+        fields: [
+          { label: 'Headline', key: 'headline', type: 'text', hint: 'e.g. "Your SAT Success Story Starts Here"' },
+          { label: 'Subheading', key: 'subheading', type: 'textarea' },
+          { label: 'Button Text', key: 'button_text', type: 'text', hint: 'e.g. "Schedule Free Consultation"' },
+          { label: 'Button Link', key: 'button_link', type: 'url', hint: 'e.g. /contact' },
         ],
       },
     },
