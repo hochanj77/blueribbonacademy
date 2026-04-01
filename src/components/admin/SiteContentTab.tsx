@@ -22,13 +22,12 @@ interface SiteContentRow {
 }
 
 // Schema maps exactly to what each page reads from the CMS
+type FieldDef = { label: string; key: string; type: 'text' | 'textarea' | 'url'; hint?: string; defaultValue?: string };
+type SectionDef = { label: string; description?: string; fields: FieldDef[] };
+
 const contentSchema: Record<string, {
   label: string;
-  sections: Record<string, {
-    label: string;
-    description?: string;
-    fields: { label: string; key: string; type: 'text' | 'textarea' | 'url'; hint?: string }[];
-  }>;
+  sections: Record<string, SectionDef>;
 }> = {
   home: {
     label: 'Homepage',
@@ -37,22 +36,22 @@ const contentSchema: Record<string, {
         label: 'Hero Banner',
         description: 'The main banner visitors see when they land on the homepage.',
         fields: [
-          { label: 'Headline', key: 'headline', type: 'text', hint: 'e.g. "Where Every Student Can Shine."' },
-          { label: 'Subheading', key: 'subheading', type: 'textarea', hint: 'A brief description below the headline.' },
-          { label: 'Primary Button Text', key: 'cta_primary_text', type: 'text', hint: 'e.g. "View Programs"' },
-          { label: 'Primary Button Link', key: 'cta_primary_link', type: 'url', hint: 'e.g. /courses or /contact' },
-          { label: 'Secondary Button Text', key: 'cta_secondary_text', type: 'text', hint: 'e.g. "Download Course Catalog"' },
-          { label: 'Secondary Button Link', key: 'cta_secondary_link', type: 'url', hint: 'e.g. /catalog' },
+          { label: 'Headline', key: 'headline', type: 'text', defaultValue: 'Where Every Student Can Shine.' },
+          { label: 'Subheading', key: 'subheading', type: 'textarea', defaultValue: 'We believe all students have the right to receive a good education. With over 20 years of experience, we strive to help students develop character alongside academic prowess every step of the way.' },
+          { label: 'Primary Button Text', key: 'cta_primary_text', type: 'text', defaultValue: 'View Programs' },
+          { label: 'Primary Button Link', key: 'cta_primary_link', type: 'url', defaultValue: '/contact' },
+          { label: 'Secondary Button Text', key: 'cta_secondary_text', type: 'text', defaultValue: 'Download Course Catalog' },
+          { label: 'Secondary Button Link', key: 'cta_secondary_link', type: 'url', defaultValue: '/catalog' },
         ],
       },
       cta_section: {
         label: 'Bottom Call-to-Action',
         description: 'The "Ready to Start?" section at the bottom of the homepage.',
         fields: [
-          { label: 'Headline', key: 'headline', type: 'text', hint: 'e.g. "Ready to Start Your Journey?"' },
-          { label: 'Subheading', key: 'subheading', type: 'textarea' },
-          { label: 'Button Text', key: 'button_text', type: 'text' },
-          { label: 'Button Link', key: 'button_link', type: 'url', hint: 'e.g. /contact' },
+          { label: 'Headline', key: 'headline', type: 'text', defaultValue: 'Ready to Start Your Journey?' },
+          { label: 'Subheading', key: 'subheading', type: 'textarea', defaultValue: 'Contact us today and learn how Blue Ribbon Academy can help you achieve your academic goals.' },
+          { label: 'Button Text', key: 'button_text', type: 'text', defaultValue: 'Contact Us' },
+          { label: 'Button Link', key: 'button_link', type: 'url', defaultValue: '/contact' },
         ],
       },
     },
@@ -64,18 +63,18 @@ const contentSchema: Record<string, {
         label: 'Page Header',
         description: 'The hero banner on the Programs page.',
         fields: [
-          { label: 'Title', key: 'headline', type: 'text', hint: 'First part of title, e.g. "Our"' },
-          { label: 'Accent Word', key: 'accent', type: 'text', hint: 'Highlighted word, e.g. "Programs"' },
-          { label: 'Subtitle', key: 'subheading', type: 'textarea' },
+          { label: 'Title', key: 'headline', type: 'text', defaultValue: 'Our' },
+          { label: 'Accent Word', key: 'accent', type: 'text', defaultValue: 'Programs' },
+          { label: 'Subtitle', key: 'subheading', type: 'textarea', defaultValue: 'Explore our comprehensive range of test preparation and academic tutoring services designed to help every student succeed.' },
         ],
       },
       cta: {
         label: 'Bottom Call-to-Action',
         description: 'The CTA bar at the bottom of the Programs page.',
         fields: [
-          { label: 'Text', key: 'text', type: 'textarea' },
-          { label: 'Button Text', key: 'button_text', type: 'text' },
-          { label: 'Button Link', key: 'button_link', type: 'url', hint: 'e.g. /catalog' },
+          { label: 'Text', key: 'text', type: 'textarea', defaultValue: "Reach out and we'll help you find the perfect program for your needs." },
+          { label: 'Button Text', key: 'button_text', type: 'text', defaultValue: 'Download Course Catalog' },
+          { label: 'Button Link', key: 'button_link', type: 'url', defaultValue: '/catalog' },
         ],
       },
     },
@@ -87,37 +86,37 @@ const contentSchema: Record<string, {
         label: 'Page Header',
         description: 'The hero banner on the College Consulting page.',
         fields: [
-          { label: 'Title', key: 'headline', type: 'text', hint: 'e.g. "College"' },
-          { label: 'Accent Word', key: 'accent', type: 'text', hint: 'e.g. "Consulting"' },
-          { label: 'Subtitle', key: 'subheading', type: 'textarea' },
+          { label: 'Title', key: 'headline', type: 'text', defaultValue: 'College' },
+          { label: 'Accent Word', key: 'accent', type: 'text', defaultValue: 'Consulting' },
+          { label: 'Subtitle', key: 'subheading', type: 'textarea', defaultValue: 'Strategic guidance for 9th–12th graders to maximize college acceptance potential.' },
         ],
       },
       grade9_intro: {
         label: 'Grades 9-11 Section',
         description: 'Section header for underclassmen consulting services.',
         fields: [
-          { label: 'Section Label', key: 'label', type: 'text', hint: 'e.g. "Underclassmen"' },
-          { label: 'Heading', key: 'heading', type: 'text', hint: 'e.g. "Grades 9-11"' },
-          { label: 'Description', key: 'description', type: 'textarea' },
+          { label: 'Section Label', key: 'label', type: 'text', defaultValue: 'Underclassmen' },
+          { label: 'Heading', key: 'heading', type: 'text', defaultValue: 'Grades 9-11' },
+          { label: 'Description', key: 'description', type: 'textarea', defaultValue: 'Build a strong foundation and position yourself competitively before senior year.' },
         ],
       },
       grade12_intro: {
         label: 'Grade 12 Section',
         description: 'Section header for senior year consulting services.',
         fields: [
-          { label: 'Section Label', key: 'label', type: 'text', hint: 'e.g. "Seniors"' },
-          { label: 'Heading', key: 'heading', type: 'text', hint: 'e.g. "12th Grade"' },
-          { label: 'Description', key: 'description', type: 'textarea' },
+          { label: 'Section Label', key: 'label', type: 'text', defaultValue: 'Seniors' },
+          { label: 'Heading', key: 'heading', type: 'text', defaultValue: '12th Grade' },
+          { label: 'Description', key: 'description', type: 'textarea', defaultValue: 'Comprehensive support through every stage of the college application process.' },
         ],
       },
       cta: {
         label: 'Bottom Call-to-Action',
         description: 'CTA section at the bottom of the College Consulting page.',
         fields: [
-          { label: 'Headline', key: 'headline', type: 'text', hint: 'e.g. "Ready to Plan Your Future?"' },
-          { label: 'Subheading', key: 'subheading', type: 'textarea' },
-          { label: 'Button Text', key: 'button_text', type: 'text', hint: 'e.g. "Schedule Consultation"' },
-          { label: 'Button Link', key: 'button_link', type: 'url', hint: 'e.g. /contact' },
+          { label: 'Headline', key: 'headline', type: 'text', defaultValue: 'Ready to Plan Your Future?' },
+          { label: 'Subheading', key: 'subheading', type: 'textarea', defaultValue: 'Schedule a consultation to discuss your goals and build a personalized roadmap to your dream school.' },
+          { label: 'Button Text', key: 'button_text', type: 'text', defaultValue: 'Schedule Consultation' },
+          { label: 'Button Link', key: 'button_link', type: 'url', defaultValue: '/contact' },
         ],
       },
     },
@@ -129,19 +128,19 @@ const contentSchema: Record<string, {
         label: 'Page Header',
         description: 'The hero banner on the Testimonials page.',
         fields: [
-          { label: 'Title', key: 'headline', type: 'text', hint: 'e.g. "Student"' },
-          { label: 'Accent Word', key: 'accent', type: 'text', hint: 'e.g. "Testimonials"' },
-          { label: 'Subtitle', key: 'subheading', type: 'textarea' },
+          { label: 'Title', key: 'headline', type: 'text', defaultValue: 'Student' },
+          { label: 'Accent Word', key: 'accent', type: 'text', defaultValue: 'Testimonials' },
+          { label: 'Subtitle', key: 'subheading', type: 'textarea', defaultValue: 'At Blue Ribbon, we aim to provide the best learning experience for our students to ensure their academic success. See what our students have had to say about us!' },
         ],
       },
       cta: {
         label: 'Bottom Call-to-Action',
         description: 'CTA section at the bottom of the Testimonials page.',
         fields: [
-          { label: 'Headline', key: 'headline', type: 'text', hint: 'e.g. "Join Our Success Stories"' },
-          { label: 'Subheading', key: 'subheading', type: 'textarea' },
-          { label: 'Button Text', key: 'button_text', type: 'text', hint: 'e.g. "Get Started"' },
-          { label: 'Button Link', key: 'button_link', type: 'url', hint: 'e.g. /contact' },
+          { label: 'Headline', key: 'headline', type: 'text', defaultValue: 'Join Our Success Stories' },
+          { label: 'Subheading', key: 'subheading', type: 'textarea', defaultValue: 'Start your journey with Blue Ribbon Academy today.' },
+          { label: 'Button Text', key: 'button_text', type: 'text', defaultValue: 'Get Started' },
+          { label: 'Button Link', key: 'button_link', type: 'url', defaultValue: '/contact' },
         ],
       },
     },
@@ -153,9 +152,9 @@ const contentSchema: Record<string, {
         label: 'Page Header',
         description: 'The hero banner on the Schedule page.',
         fields: [
-          { label: 'Title', key: 'headline', type: 'text', hint: 'e.g. "Class"' },
-          { label: 'Accent Word', key: 'accent', type: 'text', hint: 'e.g. "Schedule"' },
-          { label: 'Subtitle', key: 'subheading', type: 'textarea' },
+          { label: 'Title', key: 'headline', type: 'text', defaultValue: 'Class' },
+          { label: 'Accent Word', key: 'accent', type: 'text', defaultValue: 'Schedule' },
+          { label: 'Subtitle', key: 'subheading', type: 'textarea', defaultValue: 'Find the right class and time that fits your schedule. Contact us for availability.' },
         ],
       },
     },
@@ -167,19 +166,19 @@ const contentSchema: Record<string, {
         label: 'Hero Section',
         description: 'The hero section on the Free Consultation page.',
         fields: [
-          { label: 'Title', key: 'headline', type: 'text', hint: 'e.g. "Free"' },
-          { label: 'Accent Word', key: 'accent', type: 'text', hint: 'e.g. "Consultation"' },
-          { label: 'Subtitle', key: 'subheading', type: 'textarea' },
+          { label: 'Title', key: 'headline', type: 'text', defaultValue: 'Free' },
+          { label: 'Accent Word', key: 'accent', type: 'text', defaultValue: 'Consultation' },
+          { label: 'Subtitle', key: 'subheading', type: 'textarea', defaultValue: 'Not sure where to start? Schedule a free consultation with our academic advisors to create a personalized plan for SAT success.' },
         ],
       },
       cta: {
         label: 'Bottom Call-to-Action',
         description: 'CTA section at the bottom of the Free Consultation page.',
         fields: [
-          { label: 'Headline', key: 'headline', type: 'text', hint: 'e.g. "Your SAT Success Story Starts Here"' },
-          { label: 'Subheading', key: 'subheading', type: 'textarea' },
-          { label: 'Button Text', key: 'button_text', type: 'text', hint: 'e.g. "Schedule Free Consultation"' },
-          { label: 'Button Link', key: 'button_link', type: 'url', hint: 'e.g. /contact' },
+          { label: 'Headline', key: 'headline', type: 'text', defaultValue: 'Your SAT Success Story Starts Here' },
+          { label: 'Subheading', key: 'subheading', type: 'textarea', defaultValue: "Take the first step today. Schedule your free consultation and let's create a plan together." },
+          { label: 'Button Text', key: 'button_text', type: 'text', defaultValue: 'Schedule Free Consultation' },
+          { label: 'Button Link', key: 'button_link', type: 'url', defaultValue: '/contact' },
         ],
       },
     },
@@ -191,9 +190,9 @@ const contentSchema: Record<string, {
         label: 'Welcome Section',
         description: 'The main intro section on the About page.',
         fields: [
-          { label: 'Headline', key: 'headline', type: 'text', hint: 'e.g. "Welcome to Blue Ribbon Academy"' },
-          { label: 'Intro Statement', key: 'intro', type: 'text', hint: 'Bold opening line.' },
-          { label: 'Body Text', key: 'body', type: 'textarea', hint: 'The detailed paragraph below the intro.' },
+          { label: 'Headline', key: 'headline', type: 'text', defaultValue: 'Welcome to Blue Ribbon Academy' },
+          { label: 'Intro Statement', key: 'intro', type: 'text', defaultValue: 'We believe all students have the right to receive a good education.' },
+          { label: 'Body Text', key: 'body', type: 'textarea', defaultValue: "With over 20 years of experience, we've learned that good education is impossible without sharing life together with the students. We do not perceive our students merely as attendants of our academy but more as disciples we nurture through our lives. We make sure to treat all students with much care with this mission in mind." },
         ],
       },
     },
@@ -205,22 +204,22 @@ const contentSchema: Record<string, {
         label: 'Contact Information',
         description: 'Used on the Contact page, Footer, and anywhere contact info appears.',
         fields: [
-          { label: 'Address Line 1', key: 'address_line1', type: 'text', hint: 'Street address, e.g. "41 Union Ave FL2"' },
-          { label: 'Address Line 2', key: 'address_line2', type: 'text', hint: 'City/State/Zip, e.g. "Cresskill, NJ 07626"' },
-          { label: 'Phone Number', key: 'phone', type: 'text', hint: 'e.g. "+1.201.406.3929"' },
-          { label: 'Email Address', key: 'email', type: 'text', hint: 'e.g. "info@blueribbon-nj.com"' },
-          { label: 'Weekday Hours', key: 'hours_weekday', type: 'text', hint: 'e.g. "Mon-Fri: 3:30pm - 9:00pm"' },
-          { label: 'Weekend Hours', key: 'hours_weekend', type: 'text', hint: 'e.g. "Sat: 9:00am - 4:00pm"' },
+          { label: 'Address Line 1', key: 'address_line1', type: 'text', defaultValue: '41 Union Ave FL2' },
+          { label: 'Address Line 2', key: 'address_line2', type: 'text', defaultValue: 'Cresskill, NJ 07626' },
+          { label: 'Phone Number', key: 'phone', type: 'text', defaultValue: '+1.201.406.3929' },
+          { label: 'Email Address', key: 'email', type: 'text', defaultValue: 'info@blueribbon-nj.com' },
+          { label: 'Weekday Hours', key: 'hours_weekday', type: 'text', defaultValue: 'Mon-Fri: 3:30pm - 9:00pm' },
+          { label: 'Weekend Hours', key: 'hours_weekend', type: 'text', defaultValue: 'Sat: 9:00am - 4:00pm' },
         ],
       },
       social_links: {
         label: 'Social Media',
         description: 'Links shown on the Social page and Footer.',
         fields: [
-          { label: 'Instagram Handle', key: 'instagram_handle', type: 'text', hint: 'e.g. "@blueribbonacademy"' },
-          { label: 'Instagram URL', key: 'instagram_url', type: 'url', hint: 'Full Instagram profile URL' },
-          { label: 'Google Business Name', key: 'google_business_name', type: 'text', hint: 'Your business name on Google' },
-          { label: 'Google Business URL', key: 'google_business_url', type: 'url', hint: 'Full Google Business profile URL' },
+          { label: 'Instagram Handle', key: 'instagram_handle', type: 'text', defaultValue: '@blueribbonacademy' },
+          { label: 'Instagram URL', key: 'instagram_url', type: 'url' },
+          { label: 'Google Business Name', key: 'google_business_name', type: 'text', defaultValue: 'Blue Ribbon Academy' },
+          { label: 'Google Business URL', key: 'google_business_url', type: 'url' },
         ],
       },
       catalog: {
@@ -331,7 +330,7 @@ const SiteContentTab = () => {
 interface SectionConfig {
   label: string;
   description?: string;
-  fields: { label: string; key: string; type: 'text' | 'textarea' | 'url'; hint?: string }[];
+  fields: FieldDef[];
 }
 
 interface SectionEditorProps {
@@ -347,7 +346,7 @@ const SectionEditor = ({ page, sectionKey, section, existingContent, userId, que
   const [formData, setFormData] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {};
     section.fields.forEach((f) => {
-      initial[f.key] = existingContent?.content?.[f.key] || '';
+      initial[f.key] = existingContent?.content?.[f.key] || f.defaultValue || '';
     });
     return initial;
   });
