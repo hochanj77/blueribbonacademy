@@ -37,27 +37,27 @@ const Admin = () => {
   }
 
   return (
-    <div className="container px-4 pt-20 md:pt-24 pb-8">
-      <div className="mb-6 md:mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-foreground">Admin Dashboard</h1>
-        <p className="text-sm md:text-base text-muted-foreground mt-1">Manage students, grades, content, and communications</p>
+    <div className="container px-3 sm:px-4 pt-20 md:pt-24 pb-6 md:pb-8">
+      <div className="mb-4 md:mb-8">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">Admin Dashboard</h1>
+        <p className="text-xs sm:text-sm md:text-base text-muted-foreground mt-1">Manage students, grades, content, and communications</p>
       </div>
 
-      <Tabs defaultValue="students" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid lg:grid-cols-4">
-          <TabsTrigger value="students" className="gap-2">
+      <Tabs defaultValue="students" className="space-y-4 md:space-y-6">
+        <TabsList className="grid w-full grid-cols-4 h-auto">
+          <TabsTrigger value="students" className="gap-1.5 sm:gap-2 text-xs sm:text-sm py-2">
             <Users className="h-4 w-4" />
             <span className="hidden sm:inline">Students</span>
           </TabsTrigger>
-          <TabsTrigger value="grades" className="gap-2">
+          <TabsTrigger value="grades" className="gap-1.5 sm:gap-2 text-xs sm:text-sm py-2">
             <GraduationCap className="h-4 w-4" />
             <span className="hidden sm:inline">Grades</span>
           </TabsTrigger>
-          <TabsTrigger value="users" className="gap-2">
+          <TabsTrigger value="users" className="gap-1.5 sm:gap-2 text-xs sm:text-sm py-2">
             <UserCog className="h-4 w-4" />
             <span className="hidden sm:inline">Users</span>
           </TabsTrigger>
-          <TabsTrigger value="website" className="gap-2">
+          <TabsTrigger value="website" className="gap-1.5 sm:gap-2 text-xs sm:text-sm py-2">
             <Globe className="h-4 w-4" />
             <span className="hidden sm:inline">Website</span>
           </TabsTrigger>

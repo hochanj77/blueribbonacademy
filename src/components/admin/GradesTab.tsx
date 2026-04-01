@@ -406,26 +406,26 @@ const GradesTab = () => {
   const mismatchCount = parsedRows.filter((r) => r.name_mismatch).length;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Import Section */}
       <Card>
-        <CardHeader>
+        <CardHeader className="p-4 md:p-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-green-100 text-green-600">
+            <div className="p-2 rounded-lg bg-green-100 text-green-600 shrink-0">
               <FileSpreadsheet className="h-5 w-5" />
             </div>
-            <div>
-              <CardTitle>Import Report Cards from Excel</CardTitle>
-              <CardDescription>
+            <div className="min-w-0">
+              <CardTitle className="text-base md:text-lg">Import Report Cards from Excel</CardTitle>
+              <CardDescription className="hidden sm:block">
                 Upload the Blue Ribbon Report Card template (.xlsx) — matched by Student ID
               </CardDescription>
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 md:p-6 pt-0 md:pt-0">
           {importState === 'idle' && (
             <div className="space-y-4">
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                 <label className="cursor-pointer">
                   <Input type="file" accept=".xlsx,.xls,.csv" onChange={handleFileUpload} className="hidden" />
                   <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors text-sm font-medium">
@@ -433,14 +433,14 @@ const GradesTab = () => {
                     Choose Excel File
                   </div>
                 </label>
-                <span className="text-sm text-muted-foreground">
+                <span className="text-xs sm:text-sm text-muted-foreground hidden md:inline">
                   Columns: Student ID, First Name, Last Name, Class, Semester, Attitude, Homework, Participation, Test/Quiz, Comments
                 </span>
               </div>
               {students.filter(s => !s.student_number).length > 0 && (
                 <Alert>
                   <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>
+                  <AlertDescription className="text-xs sm:text-sm">
                     {students.filter(s => !s.student_number).length} student(s) don't have a Student ID assigned.
                     Add IDs in the Students tab before importing.
                   </AlertDescription>
@@ -451,22 +451,22 @@ const GradesTab = () => {
 
           {importState === 'preview' && (
             <div className="space-y-4">
-              <div className="flex flex-wrap gap-3">
-                <Badge variant="outline" className="gap-1.5 px-3 py-1.5 text-sm">
-                  {parsedRows.length} total rows
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline" className="gap-1.5 px-2 py-1 text-xs sm:text-sm">
+                  {parsedRows.length} total
                 </Badge>
-                <Badge variant="default" className="gap-1.5 px-3 py-1.5 text-sm bg-green-500">
+                <Badge variant="default" className="gap-1.5 px-2 py-1 text-xs sm:text-sm bg-green-500">
                   <CheckCircle2 className="h-3.5 w-3.5" />
                   {matchedCount} matched
                 </Badge>
                 {parsedRows.length - matchedCount > 0 && (
-                  <Badge variant="destructive" className="gap-1.5 px-3 py-1.5 text-sm">
+                  <Badge variant="destructive" className="gap-1.5 px-2 py-1 text-xs sm:text-sm">
                     {parsedRows.length - matchedCount} unmatched
                   </Badge>
                 )}
                 {mismatchCount > 0 && (
-                  <Badge variant="secondary" className="gap-1.5 px-3 py-1.5 text-sm border-yellow-400 bg-yellow-50 text-yellow-700">
-                    {mismatchCount} name mismatch(es)
+                  <Badge variant="secondary" className="gap-1.5 px-2 py-1 text-xs sm:text-sm border-yellow-400 bg-yellow-50 text-yellow-700">
+                    {mismatchCount} name mismatch
                   </Badge>
                 )}
               </div>
@@ -475,7 +475,7 @@ const GradesTab = () => {
                 <Alert variant={importErrors.some(e => e.includes('not found')) ? 'destructive' : 'default'}>
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
-                    <span className="font-medium">{importErrors.length} issue(s) found:</span>
+                    <span className="font-medium">{importErrors.length} issue(s):</span>
                     <ul className="mt-2 space-y-1 text-xs max-h-32 overflow-y-auto">
                       {importErrors.map((err, i) => (
                         <li key={i}>{err}</li>
@@ -492,13 +492,13 @@ const GradesTab = () => {
                       <TableHead className="w-[80px]">Status</TableHead>
                       <TableHead>Student ID</TableHead>
                       <TableHead>Name (Excel)</TableHead>
-                      <TableHead>Name (DB)</TableHead>
+                      <TableHead className="hidden sm:table-cell">Name (DB)</TableHead>
                       <TableHead>Class</TableHead>
                       <TableHead>Semester</TableHead>
-                      <TableHead>Attitude</TableHead>
-                      <TableHead>Homework</TableHead>
-                      <TableHead>Participation</TableHead>
-                      <TableHead>Test/Quiz</TableHead>
+                      <TableHead className="hidden md:table-cell">Attitude</TableHead>
+                      <TableHead className="hidden md:table-cell">Homework</TableHead>
+                      <TableHead className="hidden lg:table-cell">Participation</TableHead>
+                      <TableHead className="hidden lg:table-cell">Test/Quiz</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -518,17 +518,17 @@ const GradesTab = () => {
                         </TableCell>
                         <TableCell className="font-mono text-xs">{row.student_id_raw}</TableCell>
                         <TableCell className="text-sm">{row.first_name} {row.last_name}</TableCell>
-                        <TableCell className="text-sm">
+                        <TableCell className="text-sm hidden sm:table-cell">
                           {row.matched_student
                             ? `${row.matched_student.first_name} ${row.matched_student.last_name}`
                             : <span className="text-muted-foreground">—</span>}
                         </TableCell>
                         <TableCell className="text-sm">{row.class_name}</TableCell>
                         <TableCell className="text-sm">{row.semester}</TableCell>
-                        <TableCell className="text-sm">{row.attitude || '—'}</TableCell>
-                        <TableCell className="text-sm">{row.homework || '—'}</TableCell>
-                        <TableCell className="text-sm">{row.participation || '—'}</TableCell>
-                        <TableCell className="text-sm">{row.test_quiz || '—'}</TableCell>
+                        <TableCell className="text-sm hidden md:table-cell">{row.attitude || '—'}</TableCell>
+                        <TableCell className="text-sm hidden md:table-cell">{row.homework || '—'}</TableCell>
+                        <TableCell className="text-sm hidden lg:table-cell">{row.participation || '—'}</TableCell>
+                        <TableCell className="text-sm hidden lg:table-cell">{row.test_quiz || '—'}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -536,12 +536,12 @@ const GradesTab = () => {
               </div>
 
               <div className="flex gap-3 justify-end">
-                <Button variant="outline" onClick={() => { setImportState('idle'); setParsedRows([]); setImportErrors([]); }}>
+                <Button variant="outline" size="sm" onClick={() => { setImportState('idle'); setParsedRows([]); setImportErrors([]); }}>
                   Cancel
                 </Button>
-                <Button onClick={handleImport} disabled={matchedCount === 0}>
+                <Button size="sm" onClick={handleImport} disabled={matchedCount === 0}>
                   <Upload className="h-4 w-4 mr-2" />
-                  Import {matchedCount} Report Card{matchedCount !== 1 ? 's' : ''}
+                  Import {matchedCount}
                 </Button>
               </div>
             </div>
@@ -556,27 +556,29 @@ const GradesTab = () => {
         </CardContent>
       </Card>
 
-      {/* Student Summary Table */}
+      {/* Student Summary */}
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Student Report Cards</CardTitle>
-          <Badge variant="outline" className="text-sm">
-            {studentSummaries.length} student{studentSummaries.length !== 1 ? 's' : ''} · {grades.length} record{grades.length !== 1 ? 's' : ''}
-          </Badge>
+        <CardHeader className="p-4 md:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <CardTitle className="text-base md:text-lg">Student Report Cards</CardTitle>
+            <Badge variant="outline" className="text-xs sm:text-sm w-fit">
+              {studentSummaries.length} student{studentSummaries.length !== 1 ? 's' : ''} · {grades.length} record{grades.length !== 1 ? 's' : ''}
+            </Badge>
+          </div>
         </CardHeader>
-        <CardContent>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
-            <div className="relative flex-1 max-w-sm">
+        <CardContent className="p-4 md:p-6 pt-0 md:pt-0">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4 md:mb-6">
+            <div className="relative flex-1 w-full sm:max-w-sm">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search by student name or ID..."
+                placeholder="Search by name or ID..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
               />
             </div>
             <Select value={filterSemester} onValueChange={setFilterSemester}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="Filter by semester" />
               </SelectTrigger>
               <SelectContent>
@@ -594,7 +596,7 @@ const GradesTab = () => {
                 disabled={bulkDeleteMutation.isPending}
               >
                 <Trash2 className="h-4 w-4 mr-1" />
-                Delete {selectedForDelete.size} Student{selectedForDelete.size !== 1 ? 's' : ''}'s Grades
+                Delete {selectedForDelete.size}
               </Button>
             )}
           </div>
@@ -604,67 +606,110 @@ const GradesTab = () => {
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
             </div>
           ) : (
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-10">
-                      <input
-                        type="checkbox"
-                        checked={filteredSummaries.length > 0 && selectedForDelete.size === filteredSummaries.length}
-                        onChange={toggleSelectAll}
-                        className="rounded border-border"
-                      />
-                    </TableHead>
-                    <TableHead>Student ID</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead className="text-center">Classes</TableHead>
-                    <TableHead className="text-center">Semesters</TableHead>
-                    <TableHead>Latest Semester</TableHead>
-                    <TableHead className="text-center">Records</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredSummaries.length === 0 ? (
+            <>
+              {/* Desktop table */}
+              <div className="hidden md:block rounded-md border">
+                <Table>
+                  <TableHeader>
                     <TableRow>
-                      <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                        No report cards found. Import an Excel file to get started.
-                      </TableCell>
+                      <TableHead className="w-10">
+                        <input
+                          type="checkbox"
+                          checked={filteredSummaries.length > 0 && selectedForDelete.size === filteredSummaries.length}
+                          onChange={toggleSelectAll}
+                          className="rounded border-border"
+                        />
+                      </TableHead>
+                      <TableHead>Student ID</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead className="text-center">Classes</TableHead>
+                      <TableHead className="text-center">Semesters</TableHead>
+                      <TableHead>Latest Semester</TableHead>
+                      <TableHead className="text-center">Records</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
-                  ) : (
-                    filteredSummaries.map((s) => (
-                      <TableRow
-                        key={s.student_id}
-                        className={`cursor-pointer hover:bg-muted/50 ${selectedForDelete.has(s.student_id) ? 'bg-muted/30' : ''}`}
-                      >
-                        <TableCell onClick={(e) => e.stopPropagation()}>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredSummaries.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                          No report cards found. Import an Excel file to get started.
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      filteredSummaries.map((s) => (
+                        <TableRow
+                          key={s.student_id}
+                          className={`cursor-pointer hover:bg-muted/50 ${selectedForDelete.has(s.student_id) ? 'bg-muted/30' : ''}`}
+                        >
+                          <TableCell onClick={(e) => e.stopPropagation()}>
+                            <input
+                              type="checkbox"
+                              checked={selectedForDelete.has(s.student_id)}
+                              onChange={() => toggleSelect(s.student_id)}
+                              className="rounded border-border"
+                            />
+                          </TableCell>
+                          <TableCell className="font-mono text-xs" onClick={() => setSelectedStudentId(s.student_id)}>{s.student_number || '—'}</TableCell>
+                          <TableCell className="font-medium" onClick={() => setSelectedStudentId(s.student_id)}>{s.student_name}</TableCell>
+                          <TableCell className="text-center" onClick={() => setSelectedStudentId(s.student_id)}>{s.classCount}</TableCell>
+                          <TableCell className="text-center" onClick={() => setSelectedStudentId(s.student_id)}>{s.semesters.length}</TableCell>
+                          <TableCell onClick={() => setSelectedStudentId(s.student_id)}>
+                            <Badge variant="outline">{s.latestSemester}</Badge>
+                          </TableCell>
+                          <TableCell className="text-center" onClick={() => setSelectedStudentId(s.student_id)}>{s.grades.length}</TableCell>
+                          <TableCell className="text-right">
+                            <Button variant="ghost" size="sm" className="gap-1" onClick={() => setSelectedStudentId(s.student_id)}>
+                              View <ChevronRight className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Mobile card list */}
+              <div className="md:hidden space-y-3">
+                {filteredSummaries.length === 0 ? (
+                  <p className="text-center py-8 text-muted-foreground text-sm">No report cards found.</p>
+                ) : (
+                  filteredSummaries.map((s) => (
+                    <div
+                      key={s.student_id}
+                      className={`border border-border rounded-lg p-3 space-y-2 cursor-pointer active:bg-muted/50 ${selectedForDelete.has(s.student_id) ? 'bg-muted/50 border-primary/30' : ''}`}
+                      onClick={() => setSelectedStudentId(s.student_id)}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-start gap-2 min-w-0">
                           <input
                             type="checkbox"
                             checked={selectedForDelete.has(s.student_id)}
-                            onChange={() => toggleSelect(s.student_id)}
-                            className="rounded border-border"
+                            onChange={(e) => { e.stopPropagation(); toggleSelect(s.student_id); }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="rounded border-border mt-0.5"
                           />
-                        </TableCell>
-                        <TableCell className="font-mono text-xs" onClick={() => setSelectedStudentId(s.student_id)}>{s.student_number || '—'}</TableCell>
-                        <TableCell className="font-medium" onClick={() => setSelectedStudentId(s.student_id)}>{s.student_name}</TableCell>
-                        <TableCell className="text-center" onClick={() => setSelectedStudentId(s.student_id)}>{s.classCount}</TableCell>
-                        <TableCell className="text-center" onClick={() => setSelectedStudentId(s.student_id)}>{s.semesters.length}</TableCell>
-                        <TableCell onClick={() => setSelectedStudentId(s.student_id)}>
-                          <Badge variant="outline">{s.latestSemester}</Badge>
-                        </TableCell>
-                        <TableCell className="text-center" onClick={() => setSelectedStudentId(s.student_id)}>{s.grades.length}</TableCell>
-                        <TableCell className="text-right">
-                          <Button variant="ghost" size="sm" className="gap-1" onClick={() => setSelectedStudentId(s.student_id)}>
-                            View <ChevronRight className="h-4 w-4" />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </div>
+                          <div className="min-w-0">
+                            <p className="font-medium text-sm">{s.student_name}</p>
+                            {s.student_number && (
+                              <p className="text-xs text-muted-foreground font-mono">{s.student_number}</p>
+                            )}
+                          </div>
+                        </div>
+                        <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
+                      </div>
+                      <div className="flex items-center gap-2 ml-6 flex-wrap">
+                        <Badge variant="outline" className="text-xs">{s.latestSemester}</Badge>
+                        <span className="text-xs text-muted-foreground">{s.classCount} class{s.classCount !== 1 ? 'es' : ''}</span>
+                        <span className="text-xs text-muted-foreground">·</span>
+                        <span className="text-xs text-muted-foreground">{s.grades.length} record{s.grades.length !== 1 ? 's' : ''}</span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </>
           )}
         </CardContent>
       </Card>
