@@ -949,7 +949,7 @@ const StudentForm = ({ student, onSuccess }: StudentFormProps) => {
 
       <div className="border-t pt-4">
         <h4 className="font-medium mb-3">Parent/Guardian Information</h4>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="space-y-2">
             <Label htmlFor="parent_name">Name</Label>
             <Input
