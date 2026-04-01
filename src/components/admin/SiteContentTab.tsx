@@ -330,7 +330,7 @@ const SiteContentTab = () => {
 interface SectionConfig {
   label: string;
   description?: string;
-  fields: { label: string; key: string; type: 'text' | 'textarea' | 'url'; hint?: string }[];
+  fields: FieldDef[];
 }
 
 interface SectionEditorProps {
