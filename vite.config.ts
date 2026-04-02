@@ -12,8 +12,8 @@ export default defineConfig(({ mode }) => {
   return {
     base: isGitHubPages ? "/blueribbonacademy/" : "/",
     define: {
-      "import.meta.env.VITE_SUPABASE_URL": JSON.stringify(resolvedSupabaseUrl),
-      "import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY": JSON.stringify(resolvedPublishableKey),
+      "import.meta.env.VITE_SUPABASE_URL": JSON.stringify(env.VITE_SUPABASE_URL || ""),
+      "import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY": JSON.stringify(env.VITE_SUPABASE_PUBLISHABLE_KEY || ""),
     },
     server: {
       host: "::",
