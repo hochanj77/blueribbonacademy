@@ -6,8 +6,6 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
-  const resolvedSupabaseUrl = env.VITE_SUPABASE_URL || "";
-  const resolvedPublishableKey = env.VITE_SUPABASE_PUBLISHABLE_KEY || "";
 
   const isGitHubPages = !!env.GITHUB_PAGES;
 
