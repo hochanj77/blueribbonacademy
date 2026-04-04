@@ -20,10 +20,21 @@ interface AuthUser {
 }
 
 async function adminUsersAction(action: string, payload: Record<string, unknown> = {}) {
-  const { data, error } = await supabase.functions.invoke("admin-users", {
-    body: { action, ...payload },
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) throw new Error("Not authenticated");
+
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const res = await fetch(`${supabaseUrl}/functions/v1/admin-users`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${session.access_token}`,
+    },
+    body: JSON.stringify({ action, ...payload }),
   });
-  if (error) throw new Error(error.message);
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || `Error ${res.status}`);
   if (data?.error) throw new Error(data.error);
   return data;
 }
