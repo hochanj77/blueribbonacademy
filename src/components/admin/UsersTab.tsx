@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { createClient } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -68,12 +69,17 @@ export default function UsersTab() {
 
   const users = fetchedUsers && fetchedUsers.length > 0 ? fetchedUsers : currentUserEntry;
 
-  // Verify current password by re-signing in
+  // Verify current password using a separate client to avoid triggering auth state changes
   const verifyCurrentPassword = async () => {
     if (!user?.email || !currentPassword) return;
     setVerifying(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const verifyClient = createClient(
+        import.meta.env.VITE_SUPABASE_URL,
+        import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        { auth: { persistSession: false, autoRefreshToken: false } }
+      );
+      const { error } = await verifyClient.auth.signInWithPassword({
         email: user.email,
         password: currentPassword,
       });
