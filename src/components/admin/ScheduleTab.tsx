@@ -19,7 +19,6 @@ interface Schedule {
   title: string;
   description: string | null;
   course_id: string | null;
-  tutor_id: string | null;
   start_time: string;
   end_time: string;
   recurring: boolean;
@@ -28,11 +27,6 @@ interface Schedule {
 }
 
 interface Course {
-  id: string;
-  name: string;
-}
-
-interface Tutor {
   id: string;
   name: string;
 }
@@ -71,18 +65,6 @@ const ScheduleTab = () => {
     },
   });
 
-  const { data: tutors = [] } = useQuery({
-    queryKey: ['tutors'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('tutors')
-        .select('id, name')
-        .eq('active', true);
-      if (error) throw error;
-      return data as Tutor[];
-    },
-  });
-
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase.from('class_schedules').delete().eq('id', id);
@@ -106,11 +88,6 @@ const ScheduleTab = () => {
     return courses.find((c) => c.id === courseId)?.name;
   };
 
-  const getTutorName = (tutorId: string | null) => {
-    if (!tutorId) return null;
-    return tutors.find((t) => t.id === tutorId)?.name;
-  };
-
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
@@ -128,7 +105,6 @@ const ScheduleTab = () => {
             </DialogHeader>
             <ScheduleForm
               courses={courses}
-              tutors={tutors}
               onSuccess={() => {
                 setIsAddDialogOpen(false);
                 queryClient.invalidateQueries({ queryKey: ['schedules'] });
@@ -225,9 +201,6 @@ const ScheduleTab = () => {
                             {getCourseName(schedule.course_id) && (
                               <Badge variant="outline">{getCourseName(schedule.course_id)}</Badge>
                             )}
-                            {getTutorName(schedule.tutor_id) && (
-                              <Badge variant="secondary">{getTutorName(schedule.tutor_id)}</Badge>
-                            )}
                           </div>
                         </div>
                         <div className="flex gap-2">
@@ -264,7 +237,6 @@ const ScheduleTab = () => {
               <ScheduleForm
                 schedule={editingSchedule}
                 courses={courses}
-                tutors={tutors}
                 onSuccess={() => {
                   setEditingSchedule(null);
                   queryClient.invalidateQueries({ queryKey: ['schedules'] });
@@ -281,17 +253,15 @@ const ScheduleTab = () => {
 interface ScheduleFormProps {
   schedule?: Schedule;
   courses: Course[];
-  tutors: Tutor[];
   onSuccess: () => void;
 }
 
-const ScheduleForm = ({ schedule, courses, tutors, onSuccess }: ScheduleFormProps) => {
+const ScheduleForm = ({ schedule, courses, onSuccess }: ScheduleFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     title: schedule?.title || '',
     description: schedule?.description || '',
     course_id: schedule?.course_id || '',
-    tutor_id: schedule?.tutor_id || '',
     start_date: schedule ? format(parseISO(schedule.start_time), 'yyyy-MM-dd') : '',
     start_time: schedule ? format(parseISO(schedule.start_time), 'HH:mm') : '',
     end_time: schedule ? format(parseISO(schedule.end_time), 'HH:mm') : '',
@@ -310,7 +280,6 @@ const ScheduleForm = ({ schedule, courses, tutors, onSuccess }: ScheduleFormProp
         title: formData.title,
         description: formData.description || null,
         course_id: formData.course_id || null,
-        tutor_id: formData.tutor_id || null,
         start_time: startDateTime,
         end_time: endDateTime,
         location: formData.location || null,
@@ -358,45 +327,24 @@ const ScheduleForm = ({ schedule, courses, tutors, onSuccess }: ScheduleFormProp
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="course_id">Course</Label>
-          <Select
-            value={formData.course_id}
-            onValueChange={(value) => setFormData({ ...formData, course_id: value })}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select a course" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="">None</SelectItem>
-              {courses.map((course) => (
-                <SelectItem key={course.id} value={course.id}>
-                  {course.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="tutor_id">Tutor</Label>
-          <Select
-            value={formData.tutor_id}
-            onValueChange={(value) => setFormData({ ...formData, tutor_id: value })}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select a tutor" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="">None</SelectItem>
-              {tutors.map((tutor) => (
-                <SelectItem key={tutor.id} value={tutor.id}>
-                  {tutor.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+      <div className="space-y-2">
+        <Label htmlFor="course_id">Course</Label>
+        <Select
+          value={formData.course_id}
+          onValueChange={(value) => setFormData({ ...formData, course_id: value })}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select a course" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">None</SelectItem>
+            {courses.map((course) => (
+              <SelectItem key={course.id} value={course.id}>
+                {course.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="grid grid-cols-3 gap-4">

@@ -33,7 +33,6 @@ interface ProgressNote {
   id: string;
   content: string;
   created_at: string;
-  tutor_id: string | null;
 }
 interface StudentDetailsProps {
   student: Student;

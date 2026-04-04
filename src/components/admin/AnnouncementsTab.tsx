@@ -79,8 +79,6 @@ const AnnouncementsTab = () => {
         return 'Students';
       case 'parents':
         return 'Parents';
-      case 'tutors':
-        return 'Tutors';
       default:
         return audience;
     }
@@ -277,7 +275,6 @@ const AnnouncementForm = ({ announcement, onSuccess }: AnnouncementFormProps) =>
             <SelectItem value="all">Everyone</SelectItem>
             <SelectItem value="students">Students Only</SelectItem>
             <SelectItem value="parents">Parents Only</SelectItem>
-            <SelectItem value="tutors">Tutors Only</SelectItem>
           </SelectContent>
         </Select>
       </div>
