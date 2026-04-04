@@ -1,0 +1,19 @@
+name: Sync to Client Repository
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push to client repo
+        run: |
+          git remote add client https://x-access-token:${{ secrets.CLIENT_REPO_PAT }}@github.com/Blue-Ribbon-Academy/blueribbon-nj.git
+          git push client main --force
