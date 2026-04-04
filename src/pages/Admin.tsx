@@ -55,17 +55,13 @@ const Admin = () => {
             <Users className="h-4 w-4" />
             <span className="hidden sm:inline">Students</span>
           </TabsTrigger>
-          <TabsTrigger value="contacts" className="gap-1.5 sm:gap-2 text-xs sm:text-sm py-2">
-            <Mail className="h-4 w-4" />
-            <span className="hidden sm:inline">Contacts</span>
-          </TabsTrigger>
-          <TabsTrigger value="grades" className="gap-1.5 sm:gap-2 text-xs sm:text-sm py-2">
-            <GraduationCap className="h-4 w-4" />
-            <span className="hidden sm:inline">Grades</span>
-          </TabsTrigger>
           <TabsTrigger value="users" className="gap-1.5 sm:gap-2 text-xs sm:text-sm py-2">
             <UserCog className="h-4 w-4" />
             <span className="hidden sm:inline">Users</span>
+          </TabsTrigger>
+          <TabsTrigger value="contacts" className="gap-1.5 sm:gap-2 text-xs sm:text-sm py-2">
+            <Mail className="h-4 w-4" />
+            <span className="hidden sm:inline">Contacts</span>
           </TabsTrigger>
           <TabsTrigger value="website" className="gap-1.5 sm:gap-2 text-xs sm:text-sm py-2">
             <Globe className="h-4 w-4" />
@@ -81,16 +77,16 @@ const Admin = () => {
           <StudentsTab />
         </TabsContent>
 
-        <TabsContent value="contacts">
-          <ContactsTab />
-        </TabsContent>
-
         <TabsContent value="grades">
           <GradesTab />
         </TabsContent>
 
         <TabsContent value="users">
           <UsersTab />
+        </TabsContent>
+
+        <TabsContent value="contacts">
+          <ContactsTab />
         </TabsContent>
 
         <TabsContent value="website">

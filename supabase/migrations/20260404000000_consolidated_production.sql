@@ -497,6 +497,8 @@ CREATE POLICY "Anyone can submit contact form" ON public.contact_submissions
   FOR INSERT TO anon, authenticated WITH CHECK (true);
 CREATE POLICY "Admins can view contact submissions" ON public.contact_submissions
   FOR SELECT TO authenticated USING (has_role(auth.uid(), 'admin'::app_role));
+CREATE POLICY "Admins can update contact submissions" ON public.contact_submissions
+  FOR UPDATE TO authenticated USING (has_role(auth.uid(), 'admin'::app_role));
 
 -- =============================================
 -- 16. ANALYTICS EVENTS
