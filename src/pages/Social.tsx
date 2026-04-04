@@ -5,9 +5,9 @@ import { useInView } from "@/hooks/useInView";
 import { cn } from "@/lib/utils";
 
 const socialDefaults = {
-  instagram_url: "#",
+  instagram_url: "https://www.instagram.com/blueribbonacademy",
   instagram_handle: "@blueribbonacademy",
-  google_business_url: "#",
+  google_business_url: "https://www.google.com/maps/place/Blue+Ribbon+Academy+-+SAT+%2F+ACT+Prep+Center/@40.9414,-73.9594,17z/",
   google_business_name: "Blue Ribbon Academy",
 };
 

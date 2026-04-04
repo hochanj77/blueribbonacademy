@@ -23,8 +23,8 @@ const contactDefaults = {
 };
 
 const socialDefaults = {
-  instagram_url: "#",
-  google_business_url: "https://share.google/sB0wrIS3IhJoOfnOJ",
+  instagram_url: "https://www.instagram.com/blueribbonacademy",
+  google_business_url: "https://www.google.com/maps/place/Blue+Ribbon+Academy+-+SAT+%2F+ACT+Prep+Center/@40.9414,-73.9594,17z/",
 };
 
 export function Footer() {
