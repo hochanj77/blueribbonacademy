@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Loader2, Mail, Phone, BookOpen, Search, Pencil, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Loader2, Mail, Phone, BookOpen, Search, Pencil, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 
@@ -59,6 +59,21 @@ export default function ContactsTab() {
       setEditingContact(null);
     },
     onError: () => toast.error('Failed to update contact'),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('contact_submissions')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success('Contact deleted');
+      queryClient.invalidateQueries({ queryKey: ['contact-submissions'] });
+    },
+    onError: () => toast.error('Failed to delete contact'),
   });
 
   const filtered = contacts.filter((c) => {
@@ -169,6 +184,18 @@ export default function ContactsTab() {
                     </span>
                     <Button variant="ghost" size="icon" onClick={() => openEdit(c)}>
                       <Pencil className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-destructive hover:text-destructive"
+                      onClick={() => {
+                        if (confirm(`Delete contact ${c.name}?`)) {
+                          deleteMutation.mutate(c.id);
+                        }
+                      }}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                   </div>
                 </div>

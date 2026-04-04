@@ -499,6 +499,8 @@ CREATE POLICY "Admins can view contact submissions" ON public.contact_submission
   FOR SELECT TO authenticated USING (has_role(auth.uid(), 'admin'::app_role));
 CREATE POLICY "Admins can update contact submissions" ON public.contact_submissions
   FOR UPDATE TO authenticated USING (has_role(auth.uid(), 'admin'::app_role));
+CREATE POLICY "Admins can delete contact submissions" ON public.contact_submissions
+  FOR DELETE TO authenticated USING (has_role(auth.uid(), 'admin'::app_role));
 
 -- =============================================
 -- 16. ANALYTICS EVENTS
