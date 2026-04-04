@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 const socialDefaults = {
   instagram_url: "https://www.instagram.com/blueribbonacademy",
   instagram_handle: "@blueribbonacademy",
-  google_business_url: "https://www.google.com/maps/place/Blue+Ribbon+Academy+-+SAT+%2F+ACT+Prep+Center/@40.9414,-73.9594,17z/",
+  google_business_url: "https://maps.app.goo.gl/LN2h5hTFhrknZ3SN8",
   google_business_name: "Blue Ribbon Academy",
 };
 
