@@ -1,10 +1,14 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 function getCorsHeaders(req: Request) {
-  const allowedOrigin = Deno.env.get("ALLOWED_ORIGIN") || "https://www.blueribbon-nj.com";
+  const allowedOrigins = [
+    Deno.env.get("ALLOWED_ORIGIN") || "https://www.blueribbon-nj.com",
+    "https://blueribbon-nj.vercel.app",
+  ];
   const origin = req.headers.get("origin") || "";
+  const matched = allowedOrigins.includes(origin) ? origin : allowedOrigins[0];
   return {
-    "Access-Control-Allow-Origin": origin === allowedOrigin ? origin : allowedOrigin,
+    "Access-Control-Allow-Origin": matched,
     "Access-Control-Allow-Headers":
       "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
   };
