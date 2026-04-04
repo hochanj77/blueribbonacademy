@@ -52,6 +52,18 @@ export default function UsersTab() {
       const result = await adminUsersAction("list");
       return result.users || [];
     },
+    // Show current user as placeholder while edge function loads
+    placeholderData: user
+      ? [
+          {
+            id: user.id,
+            email: user.email || "",
+            created_at: user.created_at || new Date().toISOString(),
+            last_sign_in_at: user.last_sign_in_at || null,
+            roles: ["admin"],
+          },
+        ]
+      : [],
   });
 
   const verifyPassword = async (): Promise<boolean> => {
@@ -122,19 +134,14 @@ export default function UsersTab() {
     setResetPassword("");
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold text-foreground">Admin Accounts</h2>
+          <h2 className="text-xl font-bold text-foreground">
+            Admin Accounts
+            {isLoading && <Loader2 className="inline h-4 w-4 animate-spin ml-2" />}
+          </h2>
           <p className="text-sm text-muted-foreground">Manage admin authentication accounts, emails, and passwords</p>
         </div>
 
