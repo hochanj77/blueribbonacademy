@@ -24,10 +24,13 @@ export default function UsersTab() {
   const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
   const [passwordOpen, setPasswordOpen] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
+  const [verifying, setVerifying] = useState(false);
 
   // Form state
   const [newEmail, setNewEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
   const [resetPassword, setResetPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -65,6 +68,35 @@ export default function UsersTab() {
 
   const users = fetchedUsers && fetchedUsers.length > 0 ? fetchedUsers : currentUserEntry;
 
+  // Verify current password by re-signing in
+  const verifyCurrentPassword = async () => {
+    if (!user?.email || !currentPassword) return;
+    setVerifying(true);
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: currentPassword,
+      });
+      if (error) {
+        toast.error("Incorrect password");
+        return;
+      }
+      setIsVerified(true);
+    } catch {
+      toast.error("Verification failed");
+    } finally {
+      setVerifying(false);
+    }
+  };
+
+  const closePasswordDialog = () => {
+    setPasswordOpen(false);
+    setIsVerified(false);
+    setCurrentPassword("");
+    setResetPassword("");
+    setConfirmPassword("");
+  };
+
   // Change own password using Supabase auth
   const updatePasswordMutation = useMutation({
     mutationFn: async (password: string) => {
@@ -73,9 +105,7 @@ export default function UsersTab() {
     },
     onSuccess: () => {
       toast.success("Password updated successfully");
-      setPasswordOpen(false);
-      setResetPassword("");
-      setConfirmPassword("");
+      closePasswordDialog();
     },
     onError: (err: Error) => toast.error(err.message),
   });
@@ -169,7 +199,10 @@ export default function UsersTab() {
                 </div>
 
                 {u.id === user?.id && (
-                  <Dialog open={passwordOpen} onOpenChange={setPasswordOpen}>
+                  <Dialog open={passwordOpen} onOpenChange={(open) => {
+                    if (!open) closePasswordDialog();
+                    else setPasswordOpen(true);
+                  }}>
                     <DialogTrigger asChild>
                       <Button variant="outline" size="sm" className="gap-1.5">
                         <Key className="h-3.5 w-3.5" />
@@ -179,44 +212,74 @@ export default function UsersTab() {
                     <DialogContent>
                       <DialogHeader>
                         <DialogTitle>Change Password</DialogTitle>
-                        <DialogDescription>Set a new password for your account.</DialogDescription>
+                        <DialogDescription>
+                          {!isVerified
+                            ? "Enter your current password to verify your identity."
+                            : "Set a new password for your account."}
+                        </DialogDescription>
                       </DialogHeader>
-                      <form
-                        onSubmit={(e) => {
-                          e.preventDefault();
-                          if (resetPassword !== confirmPassword) {
-                            toast.error("Passwords do not match");
-                            return;
-                          }
-                          updatePasswordMutation.mutate(resetPassword);
-                        }}
-                        className="space-y-4"
-                      >
-                        <div className="space-y-2">
-                          <Label>New Password</Label>
-                          <Input
-                            type="password"
-                            value={resetPassword}
-                            onChange={(e) => setResetPassword(e.target.value)}
-                            required
-                            minLength={6}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label>Confirm Password</Label>
-                          <Input
-                            type="password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            required
-                            minLength={6}
-                          />
-                        </div>
-                        <Button type="submit" className="w-full" disabled={updatePasswordMutation.isPending}>
-                          {updatePasswordMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                          Update Password
-                        </Button>
-                      </form>
+
+                      {!isVerified ? (
+                        <form
+                          onSubmit={(e) => {
+                            e.preventDefault();
+                            verifyCurrentPassword();
+                          }}
+                          className="space-y-4"
+                        >
+                          <div className="space-y-2">
+                            <Label>Current Password</Label>
+                            <Input
+                              type="password"
+                              value={currentPassword}
+                              onChange={(e) => setCurrentPassword(e.target.value)}
+                              required
+                              placeholder="Enter your current password"
+                            />
+                          </div>
+                          <Button type="submit" className="w-full gap-2" disabled={verifying}>
+                            {verifying ? <Loader2 className="h-4 w-4 animate-spin" /> : <Key className="h-4 w-4" />}
+                            Verify Identity
+                          </Button>
+                        </form>
+                      ) : (
+                        <form
+                          onSubmit={(e) => {
+                            e.preventDefault();
+                            if (resetPassword !== confirmPassword) {
+                              toast.error("Passwords do not match");
+                              return;
+                            }
+                            updatePasswordMutation.mutate(resetPassword);
+                          }}
+                          className="space-y-4"
+                        >
+                          <div className="space-y-2">
+                            <Label>New Password</Label>
+                            <Input
+                              type="password"
+                              value={resetPassword}
+                              onChange={(e) => setResetPassword(e.target.value)}
+                              required
+                              minLength={6}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Confirm New Password</Label>
+                            <Input
+                              type="password"
+                              value={confirmPassword}
+                              onChange={(e) => setConfirmPassword(e.target.value)}
+                              required
+                              minLength={6}
+                            />
+                          </div>
+                          <Button type="submit" className="w-full" disabled={updatePasswordMutation.isPending}>
+                            {updatePasswordMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                            Update Password
+                          </Button>
+                        </form>
+                      )}
                     </DialogContent>
                   </Dialog>
                 )}
