@@ -2,12 +2,13 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, Users, GraduationCap, Globe, UserCog, BarChart3 } from 'lucide-react';
+import { Loader2, Users, GraduationCap, Globe, UserCog, BarChart3, Mail } from 'lucide-react';
 import StudentsTab from '@/components/admin/StudentsTab';
 import GradesTab from '@/components/admin/GradesTab';
 import SiteContentTab from '@/components/admin/SiteContentTab';
 import UsersTab from '@/components/admin/UsersTab';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
+import ContactsTab from '@/components/admin/ContactsTab';
 
 const Admin = () => {
   const { user, loading, isAdmin, isAdminLoading } = useAuth();
@@ -45,7 +46,7 @@ const Admin = () => {
       </div>
 
       <Tabs defaultValue="analytics" className="space-y-4 md:space-y-6">
-        <TabsList className="grid w-full grid-cols-5 h-auto">
+        <TabsList className="grid w-full grid-cols-6 h-auto">
           <TabsTrigger value="analytics" className="gap-1.5 sm:gap-2 text-xs sm:text-sm py-2">
             <BarChart3 className="h-4 w-4" />
             <span className="hidden sm:inline">Analytics</span>
@@ -53,6 +54,10 @@ const Admin = () => {
           <TabsTrigger value="students" className="gap-1.5 sm:gap-2 text-xs sm:text-sm py-2">
             <Users className="h-4 w-4" />
             <span className="hidden sm:inline">Students</span>
+          </TabsTrigger>
+          <TabsTrigger value="contacts" className="gap-1.5 sm:gap-2 text-xs sm:text-sm py-2">
+            <Mail className="h-4 w-4" />
+            <span className="hidden sm:inline">Contacts</span>
           </TabsTrigger>
           <TabsTrigger value="grades" className="gap-1.5 sm:gap-2 text-xs sm:text-sm py-2">
             <GraduationCap className="h-4 w-4" />
@@ -74,6 +79,10 @@ const Admin = () => {
 
         <TabsContent value="students">
           <StudentsTab />
+        </TabsContent>
+
+        <TabsContent value="contacts">
+          <ContactsTab />
         </TabsContent>
 
         <TabsContent value="grades">

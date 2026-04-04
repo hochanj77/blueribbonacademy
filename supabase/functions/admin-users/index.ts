@@ -100,11 +100,6 @@ Deno.serve(async (req) => {
 
       const users = allAuthUsers
         .filter((u) => adminUserIds.includes(u.id))
-        .filter(
-          (u) =>
-            u.id === caller.id ||
-            u.app_metadata?.created_via_admin_users === true
-        )
         .map((u) => ({
           id: u.id,
           email: u.email,
