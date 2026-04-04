@@ -11,10 +11,8 @@ export async function invokeEdgeFunction(
   options?: { requireAuth?: boolean }
 ): Promise<{ data: any; error: any }> {
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    'apikey': anonKey, // Required by Supabase gateway
   };
 
   if (options?.requireAuth !== false) {
