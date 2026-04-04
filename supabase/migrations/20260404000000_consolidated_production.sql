@@ -53,23 +53,29 @@ RETURNS trigger LANGUAGE plpgsql SET search_path TO 'public'
 AS $function$
 DECLARE
   initials TEXT;
-  next_num INT;
+  rand_num INT;
   new_student_number TEXT;
+  attempts INT := 0;
 BEGIN
   IF NEW.student_number IS NOT NULL AND NEW.student_number != '' THEN
     RETURN NEW;
   END IF;
   initials := UPPER(LEFT(NEW.first_name, 1) || LEFT(NEW.last_name, 1));
-  SELECT COALESCE(MAX(
-    CASE
-      WHEN student_number ~ ('^' || initials || '[0-9]+$')
-      THEN CAST(SUBSTRING(student_number FROM LENGTH(initials) + 1) AS INT)
-      ELSE 0
-    END
-  ), 0) + 1 INTO next_num
-  FROM students WHERE student_number LIKE initials || '%';
-  IF next_num < 100 THEN next_num := 100 + next_num; END IF;
-  new_student_number := initials || next_num::TEXT;
+  LOOP
+    rand_num := 1000 + floor(random() * 9000)::INT; -- 1000-9999
+    new_student_number := initials || rand_num::TEXT;
+    -- Check for collision
+    IF NOT EXISTS (SELECT 1 FROM students WHERE student_number = new_student_number) THEN
+      EXIT;
+    END IF;
+    attempts := attempts + 1;
+    IF attempts > 20 THEN
+      -- Fallback: use 5 digits
+      rand_num := 10000 + floor(random() * 90000)::INT;
+      new_student_number := initials || rand_num::TEXT;
+      EXIT;
+    END IF;
+  END LOOP;
   NEW.student_number := new_student_number;
   RETURN NEW;
 END;
