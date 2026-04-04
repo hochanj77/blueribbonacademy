@@ -1,8 +1,23 @@
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_APP_PASSWORD,
+  },
+});
 
 export default async function handler(req, res) {
+  // CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -16,9 +31,10 @@ export default async function handler(req, res) {
 
     const subjectList = subjects && subjects.length > 0 ? subjects.join(', ') : 'None specified';
 
-    await resend.emails.send({
-      from: 'Blue Ribbon Academy <notifications@blueribbon-nj.com>',
-      to: 'info@blueribbon-nj.com',
+    // Send notification to admin
+    await transporter.sendMail({
+      from: `"Blue Ribbon Academy" <${process.env.GMAIL_USER}>`,
+      to: process.env.GMAIL_USER,
       replyTo: email,
       subject: `New Contact Form: ${name}`,
       html: `
@@ -66,9 +82,9 @@ export default async function handler(req, res) {
       `,
     });
 
-    // Also send confirmation to the person who submitted
-    await resend.emails.send({
-      from: 'Blue Ribbon Academy <notifications@blueribbon-nj.com>',
+    // Send confirmation to submitter
+    await transporter.sendMail({
+      from: `"Blue Ribbon Academy" <${process.env.GMAIL_USER}>`,
       to: email,
       subject: 'Thank you for contacting Blue Ribbon Academy',
       html: `
