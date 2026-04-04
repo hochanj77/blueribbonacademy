@@ -81,7 +81,7 @@ export default function Portal() {
         const { data, error: fnError } = await invokeEdgeFunction("login-with-student-id", {
           student_number: loginIdentifier.trim(),
           password,
-        });
+        }, { requireAuth: false });
 
         if (fnError || data?.error) {
           const msg = data?.error || fnError?.message || "Invalid credentials.";
@@ -138,7 +138,7 @@ export default function Portal() {
         last_name: activateLastName.trim(),
         email: activateEmail.trim(),
         password: activatePassword,
-      });
+      }, { requireAuth: false });
 
       if (fnError || response?.error) {
         const msg = response?.error || fnError?.message || "Activation failed. Please try again.";
