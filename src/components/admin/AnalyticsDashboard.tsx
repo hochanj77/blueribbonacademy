@@ -54,6 +54,7 @@ function StatCard({ title, value, prevValue, icon: Icon, today, yesterday }: {
 
 function SessionsChart({ data }: { data: { date: string; sessions: number; visitors: number }[] }) {
   const maxVal = Math.max(...data.map(d => Math.max(d.sessions, d.visitors)), 1);
+  const hasData = data.some(d => d.sessions > 0);
 
   return (
     <Card>
@@ -61,24 +62,30 @@ function SessionsChart({ data }: { data: { date: string; sessions: number; visit
         <CardTitle className="text-sm font-medium">Sessions Over Time</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex items-end gap-[2px] h-40">
-          {data.map((d) => (
-            <div key={d.date} className="flex-1 flex flex-col items-center gap-0.5 group relative">
-              <div className="absolute -top-8 hidden group-hover:block text-xs bg-foreground text-background px-2 py-1 rounded whitespace-nowrap z-10 shadow-lg">
-                {format(new Date(d.date), 'MMM d')}: {d.sessions} sessions, {d.visitors} unique
-              </div>
-              <div
-                className="w-full bg-primary/20 rounded-t relative overflow-hidden transition-all hover:bg-primary/30"
-                style={{ height: `${(d.sessions / maxVal) * 100}%`, minHeight: d.sessions > 0 ? '2px' : '0' }}
-              >
+        {!hasData ? (
+          <div className="flex items-center justify-center h-40 text-sm text-muted-foreground">
+            No session data yet — chart will populate as visitors arrive
+          </div>
+        ) : (
+          <div className="flex items-end gap-[2px] h-40">
+            {data.map((d) => (
+              <div key={d.date} className="flex-1 flex flex-col items-center gap-0.5 group relative">
+                <div className="absolute -top-8 hidden group-hover:block text-xs bg-foreground text-background px-2 py-1 rounded whitespace-nowrap z-10 shadow-lg">
+                  {format(new Date(d.date), 'MMM d')}: {d.sessions} sessions, {d.visitors} unique
+                </div>
                 <div
-                  className="absolute bottom-0 left-0 right-0 bg-primary/70 rounded-t"
-                  style={{ height: `${d.visitors > 0 ? (d.visitors / d.sessions) * 100 : 0}%` }}
-                />
+                  className="w-full bg-primary/20 rounded-t relative overflow-hidden transition-all hover:bg-primary/30"
+                  style={{ height: `${Math.max((d.sessions / maxVal) * 100, d.sessions > 0 ? 8 : 0)}%` }}
+                >
+                  <div
+                    className="absolute bottom-0 left-0 right-0 bg-primary/70 rounded-t"
+                    style={{ height: `${d.visitors > 0 ? (d.visitors / d.sessions) * 100 : 0}%` }}
+                  />
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
         <div className="flex justify-between mt-2 text-xs text-muted-foreground">
           <span>{data.length > 0 ? format(new Date(data[0].date), 'MMM d') : ''}</span>
           <span>{data.length > 0 ? format(new Date(data[data.length - 1].date), 'MMM d') : ''}</span>
