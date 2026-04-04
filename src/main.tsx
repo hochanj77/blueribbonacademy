@@ -35,4 +35,13 @@ import("./App")
   .then(({ default: App }) => {
     root.render(<App />);
   })
-  .catch(renderStartupError);
+  .catch((error) => {
+    console.warn("Primary bootstrap failed, attempting minimal render:", error);
+    // Try rendering without the dynamic import wrapper
+    try {
+      const App = require("./App").default;
+      root.render(<App />);
+    } catch {
+      renderStartupError(error);
+    }
+  });
