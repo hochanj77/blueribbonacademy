@@ -87,20 +87,16 @@ Deno.serve(async (req) => {
 
       const adminUserIds = (adminRoles || []).map((r) => r.user_id);
 
-      let allAuthUsers: any[] = [];
-      let page = 1;
-      const perPage = 100;
-      while (true) {
-        const { data, error } = await adminClient.auth.admin.listUsers({ page, perPage });
-        if (error) throw error;
-        allAuthUsers = allAuthUsers.concat(data.users);
-        if (data.users.length < perPage) break;
-        page++;
-      }
-
-      const users = allAuthUsers
-        .filter((u) => adminUserIds.includes(u.id))
-        .map((u) => ({
+      const users = (
+        await Promise.all(
+          adminUserIds.map(async (uid) => {
+            const { data } = await adminClient.auth.admin.getUserById(uid);
+            return data?.user;
+          })
+        )
+      )
+        .filter(Boolean)
+        .map((u: any) => ({
           id: u.id,
           email: u.email,
           created_at: u.created_at,
