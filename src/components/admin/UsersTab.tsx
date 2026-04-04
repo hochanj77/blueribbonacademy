@@ -46,25 +46,29 @@ export default function UsersTab() {
   const [isVerified, setIsVerified] = useState(false);
   const [verifying, setVerifying] = useState(false);
 
-  const { data: users = [], isLoading } = useQuery<AuthUser[]>({
+  const currentUserFallback: AuthUser[] = user
+    ? [
+        {
+          id: user.id,
+          email: user.email || "",
+          created_at: user.created_at || new Date().toISOString(),
+          last_sign_in_at: user.last_sign_in_at || null,
+          roles: ["admin"],
+        },
+      ]
+    : [];
+
+  const { data: fetchedUsers, isLoading } = useQuery<AuthUser[]>({
     queryKey: ["admin-users"],
     queryFn: async () => {
       const result = await adminUsersAction("list");
       return result.users || [];
     },
-    // Show current user as placeholder while edge function loads
-    placeholderData: user
-      ? [
-          {
-            id: user.id,
-            email: user.email || "",
-            created_at: user.created_at || new Date().toISOString(),
-            last_sign_in_at: user.last_sign_in_at || null,
-            roles: ["admin"],
-          },
-        ]
-      : [],
+    retry: 1,
   });
+
+  // Use fetched users if available and non-empty, otherwise show current user
+  const users = fetchedUsers && fetchedUsers.length > 0 ? fetchedUsers : currentUserFallback;
 
   const verifyPassword = async (): Promise<boolean> => {
     setVerifying(true);

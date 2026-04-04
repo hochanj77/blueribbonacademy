@@ -84,29 +84,31 @@ Deno.serve(async (req) => {
 
     // LIST admin users only
     if (action === "list") {
-      const { data: adminRoles } = await adminClient
+      const { data: adminRoles, error: rolesError } = await adminClient
         .from("user_roles")
         .select("user_id")
         .eq("role", "admin");
 
-      const adminUserIds = (adminRoles || []).map((r) => r.user_id);
+      console.log("admin roles query:", { adminRoles, rolesError });
 
-      const users = (
-        await Promise.all(
-          adminUserIds.map(async (uid) => {
-            const { data } = await adminClient.auth.admin.getUserById(uid);
-            return data?.user;
-          })
-        )
-      )
-        .filter(Boolean)
-        .map((u: any) => ({
-          id: u.id,
-          email: u.email,
-          created_at: u.created_at,
-          last_sign_in_at: u.last_sign_in_at,
-          roles: ["admin"],
-        }));
+      if (rolesError) throw new Error(`Failed to query roles: ${rolesError.message}`);
+
+      const adminUserIds = (adminRoles || []).map((r: any) => r.user_id);
+
+      const users = [];
+      for (const uid of adminUserIds) {
+        const { data, error } = await adminClient.auth.admin.getUserById(uid);
+        console.log("getUserById:", uid, { found: !!data?.user, error: error?.message });
+        if (data?.user) {
+          users.push({
+            id: data.user.id,
+            email: data.user.email,
+            created_at: data.user.created_at,
+            last_sign_in_at: data.user.last_sign_in_at,
+            roles: ["admin"],
+          });
+        }
+      }
 
       return new Response(JSON.stringify({ users }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
