@@ -96,45 +96,60 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+    let subscription: { unsubscribe: () => void } | null = null;
+
+    try {
+      const { data } = supabase.auth.onAuthStateChange(
+        (event, session) => {
+          setSession(session);
+          setUser(session?.user ?? null);
+          setLoading(false);
+
+          if (!initialLoadRef.current) {
+            if (event === 'SIGNED_IN') {
+              toast.success('Signed in successfully');
+            } else if (event === 'SIGNED_OUT') {
+              toast.info('You have been signed out');
+            }
+          }
+          initialLoadRef.current = false;
+
+          if (session?.user) {
+            setTimeout(() => {
+              checkRoles(session.user.id);
+            }, 0);
+          } else {
+            setIsAdmin(false);
+            setIsStudent(false);
+            setStudentProfile(null);
+            setIsAdminLoading(false);
+          }
+        }
+      );
+      subscription = data.subscription;
+    } catch (err) {
+      console.warn('Supabase auth listener failed (backend may be unavailable):', err);
+      setLoading(false);
+      setIsAdminLoading(false);
+    }
+
+    supabase.auth.getSession()
+      .then(({ data: { session } }) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
 
-        if (!initialLoadRef.current) {
-          if (event === 'SIGNED_IN') {
-            toast.success('Signed in successfully');
-          } else if (event === 'SIGNED_OUT') {
-            toast.info('You have been signed out');
-          }
-        }
-        initialLoadRef.current = false;
-
         if (session?.user) {
-          setTimeout(() => {
-            checkRoles(session.user.id);
-          }, 0);
-        } else {
-          setIsAdmin(false);
-          setIsStudent(false);
-          setStudentProfile(null);
-          setIsAdminLoading(false);
+          checkRoles(session.user.id);
         }
-      }
-    );
+      })
+      .catch((err) => {
+        console.warn('Supabase getSession failed (backend may be unavailable):', err);
+        setLoading(false);
+        setIsAdminLoading(false);
+      });
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-
-      if (session?.user) {
-        checkRoles(session.user.id);
-      }
-    });
-
-    return () => subscription.unsubscribe();
+    return () => subscription?.unsubscribe();
   }, []);
 
   const signIn = async (email: string, password: string) => {
