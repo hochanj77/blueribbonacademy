@@ -24,8 +24,8 @@ const languageOptions = [
 ];
 
 const locationOptions = [
-  { value: "palisades-park", label: "Palisades Park" },
-  { value: "closter", label: "Closter" },
+  { value: "cresskill", label: "Cresskill" },
+  { value: "fort-lee", label: "Fort Lee" },
   { value: "both", label: "Both" },
 ];
 

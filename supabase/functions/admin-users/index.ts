@@ -88,8 +88,6 @@ Deno.serve(async (req) => {
         .select("user_id")
         .eq("role", "admin");
 
-      console.log("admin roles query:", { adminRoles, rolesError });
-
       if (rolesError) throw new Error(`Failed to query roles: ${rolesError.message}`);
 
       const adminUserIds = (adminRoles || []).map((r: any) => r.user_id);
@@ -97,7 +95,6 @@ Deno.serve(async (req) => {
       const users = [];
       for (const uid of adminUserIds) {
         const { data, error } = await adminClient.auth.admin.getUserById(uid);
-        console.log("getUserById:", uid, { found: !!data?.user, error: error?.message });
         if (data?.user) {
           users.push({
             id: data.user.id,
