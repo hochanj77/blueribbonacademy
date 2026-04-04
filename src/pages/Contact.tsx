@@ -80,6 +80,22 @@ export default function Contact() {
       });
       if (error) throw error;
       track('contact_submit');
+
+      // Send email notification (non-blocking — don't fail the form if email fails)
+      fetch('/api/contact-notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone || null,
+          grade: formData.grade || null,
+          subjects: formData.subjects,
+          message: formData.message,
+          wantsCatalog: formData.wantsCatalog,
+        }),
+      }).catch(() => {}); // Silently fail — form data is already saved to database
+
       toast.success("Message sent! We'll get back to you within 24 hours.");
       setFormData({ name: "", email: "", phone: "", grade: "", subjects: [], message: "", wantsCatalog: false });
     } catch {
