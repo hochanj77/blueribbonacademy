@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Label } from '@/components/ui/label';
-import { Loader2, Save, Globe, CheckCircle, Info } from 'lucide-react';
+import { Loader2, Save, Globe, CheckCircle, Info, Upload, ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface SiteContentRow {
@@ -21,7 +21,7 @@ interface SiteContentRow {
   updated_at: string | null;
 }
 
-type FieldDef = { label: string; key: string; type: 'text' | 'textarea' | 'url'; hint?: string; defaultValue?: string };
+type FieldDef = { label: string; key: string; type: 'text' | 'textarea' | 'url' | 'image'; hint?: string; defaultValue?: string };
 type SectionDef = { label: string; description?: string; fields: FieldDef[] };
 
 const contentSchema: Record<string, {
@@ -35,6 +35,7 @@ const contentSchema: Record<string, {
         label: 'Hero Banner',
         description: 'The main banner visitors see when they land on the homepage.',
         fields: [
+          { label: 'Hero Background Image', key: 'hero_image', type: 'image', hint: 'Upload a new hero background image (recommended: 1920x1080 or larger)' },
           { label: 'Headline', key: 'headline', type: 'text', defaultValue: 'Where Every Student Can Shine.' },
           { label: 'Subheading', key: 'subheading', type: 'textarea', defaultValue: 'We believe all students have the right to receive a good education. With over 20 years of experience, we strive to help students develop character alongside academic prowess every step of the way.' },
           { label: 'Primary Button Text', key: 'cta_primary_text', type: 'text', defaultValue: 'View Programs' },
@@ -318,9 +319,32 @@ const SectionEditor = ({ page, sectionKey, section, existingContent, userId, que
 
   const handleSave = () => saveMutation.mutate(formData);
 
+  const [uploading, setUploading] = useState(false);
+
   const updateField = (key: string, value: string) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
     setSaved(false);
+  };
+
+  const handleImageUpload = async (key: string, file: File) => {
+    setUploading(true);
+    try {
+      const ext = file.name.split('.').pop();
+      const filePath = `site-images/${page}-${sectionKey}-${key}-${Date.now()}.${ext}`;
+      const { error: uploadError } = await supabase.storage
+        .from('catalog')
+        .upload(filePath, file, { upsert: true });
+      if (uploadError) throw uploadError;
+      const { data: { publicUrl } } = supabase.storage
+        .from('catalog')
+        .getPublicUrl(filePath);
+      updateField(key, publicUrl);
+      toast.success('Image uploaded — click Save Changes to apply');
+    } catch {
+      toast.error('Failed to upload image');
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -340,7 +364,45 @@ const SectionEditor = ({ page, sectionKey, section, existingContent, userId, que
             <Label htmlFor={`${page}-${sectionKey}-${field.key}`} className="text-sm font-medium">
               {field.label}
             </Label>
-            {field.type === 'textarea' ? (
+            {field.type === 'image' ? (
+              <div className="space-y-2">
+                {formData[field.key] && (
+                  <div className="relative w-full h-32 rounded-lg overflow-hidden border">
+                    <img src={formData[field.key]} alt="Preview" className="w-full h-full object-cover" />
+                  </div>
+                )}
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="gap-2"
+                    disabled={uploading}
+                    onClick={() => document.getElementById(`upload-${page}-${sectionKey}-${field.key}`)?.click()}
+                  >
+                    {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                    {uploading ? 'Uploading...' : formData[field.key] ? 'Replace Image' : 'Upload Image'}
+                  </Button>
+                  {!formData[field.key] && (
+                    <span className="text-xs text-muted-foreground flex items-center gap-1">
+                      <ImageIcon className="h-3.5 w-3.5" />
+                      {field.hint || 'Upload an image'}
+                    </span>
+                  )}
+                </div>
+                <input
+                  id={`upload-${page}-${sectionKey}-${field.key}`}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleImageUpload(field.key, file);
+                    e.target.value = '';
+                  }}
+                />
+              </div>
+            ) : field.type === 'textarea' ? (
               <Textarea
                 id={`${page}-${sectionKey}-${field.key}`}
                 value={formData[field.key] || ''}

@@ -245,7 +245,7 @@ export default function Index() {
       <section className="relative min-h-[70svh] sm:min-h-[75vh] flex items-center overflow-hidden" style={{ paddingTop: `max(calc(env(safe-area-inset-top) + 5rem), 5rem)` }}>
         {/* Full background image with overlay */}
         <div className="absolute inset-0">
-          <img src={heroBg} alt="" className="w-full h-full object-cover" />
+          <img src={hero.hero_image || heroBg} alt="" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-secondary/80" />
         </div>
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
