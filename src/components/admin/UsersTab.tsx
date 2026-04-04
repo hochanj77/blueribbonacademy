@@ -58,16 +58,27 @@ export default function UsersTab() {
       ]
     : [];
 
+  // Query admin users directly from user_roles table (no edge function needed for listing)
   const { data: fetchedUsers, isLoading } = useQuery<AuthUser[]>({
     queryKey: ["admin-users"],
     queryFn: async () => {
-      const result = await adminUsersAction("list");
-      return result.users || [];
+      const { data: roles, error } = await supabase
+        .from("user_roles")
+        .select("user_id, created_at")
+        .eq("role", "admin");
+      if (error) throw error;
+      // We only have user_ids from the table, combine with current user info
+      return (roles || []).map((r) => ({
+        id: r.user_id,
+        email: r.user_id === user?.id ? (user?.email || "") : r.user_id,
+        created_at: r.created_at,
+        last_sign_in_at: r.user_id === user?.id ? (user?.last_sign_in_at || null) : null,
+        roles: ["admin"],
+      }));
     },
     retry: 1,
   });
 
-  // Use fetched users if available and non-empty, otherwise show current user
   const users = fetchedUsers && fetchedUsers.length > 0 ? fetchedUsers : currentUserFallback;
 
   const verifyPassword = async (): Promise<boolean> => {
