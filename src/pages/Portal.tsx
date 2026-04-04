@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { invokeEdgeFunction } from "@/lib/edgeFunction";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -77,29 +78,15 @@ export default function Portal() {
       const isStudentId = /^[A-Za-z]{2}\d+$/.test(loginIdentifier.trim());
 
       if (isStudentId) {
-        const { data, error: fnError } = await supabase.functions.invoke("login-with-student-id", {
-          body: { student_number: loginIdentifier.trim(), password },
+        const { data, error: fnError } = await invokeEdgeFunction("login-with-student-id", {
+          student_number: loginIdentifier.trim(),
+          password,
         });
 
-        if (fnError) {
-          let msg = "Invalid credentials.";
-          try {
-            if (fnError instanceof Error && 'context' in fnError) {
-              const resp = (fnError as any).context;
-              if (resp instanceof Response) {
-                const body = await resp.json();
-                msg = body?.error || msg;
-              }
-            }
-          } catch {}
+        if (fnError || data?.error) {
+          const msg = data?.error || fnError?.message || "Invalid credentials.";
           setError(msg);
           toast.error(msg);
-          return;
-        }
-
-        if (data?.error) {
-          setError(data.error);
-          toast.error(data.error);
           return;
         }
 
@@ -146,17 +133,15 @@ export default function Portal() {
 
     setIsSubmitting(true);
     try {
-      const response = await supabase.functions.invoke("activate-account", {
-        body: {
-          student_number: activateStudentId.trim(),
-          last_name: activateLastName.trim(),
-          email: activateEmail.trim(),
-          password: activatePassword,
-        },
+      const { data: response, error: fnError } = await invokeEdgeFunction("activate-account", {
+        student_number: activateStudentId.trim(),
+        last_name: activateLastName.trim(),
+        email: activateEmail.trim(),
+        password: activatePassword,
       });
 
-      if (response.error || response.data?.error) {
-        const msg = response.data?.error || "Activation failed. Please try again.";
+      if (fnError || response?.error) {
+        const msg = response?.error || fnError?.message || "Activation failed. Please try again.";
         setError(msg);
         toast.error(msg);
       } else {
