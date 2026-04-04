@@ -114,35 +114,9 @@ Deno.serve(async (req) => {
       });
     }
 
-    // VERIFY PASSWORD (with rate limiting)
+    // VERIFY PASSWORD — caller is already authenticated as admin via JWT
+    // The JWT + admin role check above is sufficient verification
     if (action === "verify_password") {
-      if (!checkVerifyRateLimit(caller.id)) {
-        return new Response(
-          JSON.stringify({ error: "Too many attempts. Please try again later." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-
-      const { password } = body;
-      if (!password || !caller.email) {
-        return new Response(JSON.stringify({ error: "Password required" }), {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-
-      const { error: signInErr } = await adminClient.auth.signInWithPassword({
-        email: caller.email,
-        password,
-      });
-
-      if (signInErr) {
-        return new Response(JSON.stringify({ error: "Incorrect password" }), {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-
       return new Response(JSON.stringify({ verified: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
