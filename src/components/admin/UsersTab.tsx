@@ -24,11 +24,13 @@ async function adminUsersAction(action: string, payload: Record<string, unknown>
   if (!session) throw new Error("Not authenticated");
 
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
   const res = await fetch(`${supabaseUrl}/functions/v1/admin-users`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${session.access_token}`,
+      "apikey": anonKey,
     },
     body: JSON.stringify({ action, ...payload }),
   });
