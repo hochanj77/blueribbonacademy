@@ -14,6 +14,10 @@ jobs:
           fetch-depth: 0
 
       - name: Push to client repo
+        env:
+          CLIENT_PAT: ${{ secrets.CLIENT_REPO_PAT }}
         run: |
-          git remote add client https://x-access-token:${{ secrets.CLIENT_REPO_PAT }}@github.com/Blue-Ribbon-Academy/blueribbon-nj.git
+          git config --global credential.helper store
+          echo "https://x-access-token:${CLIENT_PAT}@github.com" > ~/.git-credentials
+          git remote add client https://github.com/Blue-Ribbon-Academy/blueribbon-nj.git
           git push client main --force
