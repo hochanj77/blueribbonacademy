@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { invokeEdgeFunction } from "@/lib/edgeFunction";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -78,23 +77,21 @@ export default function Portal() {
       const isStudentId = /^[A-Za-z]{2}\d+$/.test(loginIdentifier.trim());
 
       if (isStudentId) {
-        const { data, error: fnError } = await invokeEdgeFunction("login-with-student-id", {
-          student_number: loginIdentifier.trim(),
-          password,
-        }, { requireAuth: false });
+        // Look up student email by student ID, then sign in
+        const { data: lookup, error: lookupErr } = await supabase.rpc('get_student_email_for_login', {
+          p_student_number: loginIdentifier.trim(),
+        });
 
-        if (fnError || data?.error) {
-          const msg = data?.error || fnError?.message || "Invalid credentials.";
-          setError(msg);
-          toast.error(msg);
+        if (lookupErr || !lookup?.found) {
+          setError("Invalid credentials.");
+          toast.error("Invalid credentials.");
           return;
         }
 
-        if (data?.session) {
-          await supabase.auth.setSession({
-            access_token: data.session.access_token,
-            refresh_token: data.session.refresh_token,
-          });
+        const { error } = await signIn(lookup.email, password);
+        if (error) {
+          setError("Invalid credentials.");
+          toast.error("Invalid credentials.");
         }
       } else {
         const { error } = await signIn(loginIdentifier.trim(), password);
@@ -133,15 +130,50 @@ export default function Portal() {
 
     setIsSubmitting(true);
     try {
-      const { data: response, error: fnError } = await invokeEdgeFunction("activate-account", {
-        student_number: activateStudentId.trim(),
-        last_name: activateLastName.trim(),
-        email: activateEmail.trim(),
-        password: activatePassword,
-      }, { requireAuth: false });
+      // Step 1: Verify student exists and is pending
+      const { data: verification, error: verifyErr } = await supabase.rpc('verify_student_for_activation', {
+        p_student_number: activateStudentId.trim(),
+        p_last_name: activateLastName.trim(),
+      });
 
-      if (fnError || response?.error) {
-        const msg = response?.error || fnError?.message || "Activation failed. Please try again.";
+      if (verifyErr || !verification?.valid) {
+        const msg = "Unable to activate. Please check your information or contact Blue Ribbon Academy administration.";
+        setError(msg);
+        toast.error(msg);
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Step 2: Create auth account
+      const finalEmail = (verification.email || activateEmail.trim()).toLowerCase();
+      const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
+        email: finalEmail,
+        password: activatePassword,
+        options: {
+          data: {
+            first_name: verification.first_name,
+            last_name: verification.last_name,
+          },
+        },
+      });
+
+      if (signUpErr || !signUpData.user) {
+        const msg = signUpErr?.message || "Failed to create account. Please try again.";
+        setError(msg);
+        toast.error(msg);
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Step 3: Link student record to auth user
+      const { data: linkResult, error: linkErr } = await supabase.rpc('link_student_account', {
+        p_student_id: verification.student_id,
+        p_user_id: signUpData.user.id,
+        p_email: finalEmail,
+      });
+
+      if (linkErr || !linkResult?.success) {
+        const msg = linkResult?.error || "Failed to activate account. Please try again.";
         setError(msg);
         toast.error(msg);
       } else {
