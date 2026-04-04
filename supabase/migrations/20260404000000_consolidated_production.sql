@@ -499,6 +499,30 @@ CREATE POLICY "Admins can view contact submissions" ON public.contact_submission
   FOR SELECT TO authenticated USING (has_role(auth.uid(), 'admin'::app_role));
 
 -- =============================================
+-- 16. ANALYTICS EVENTS
+-- =============================================
+CREATE TABLE public.analytics_events (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    event_type TEXT NOT NULL,
+    page TEXT NOT NULL,
+    referrer TEXT,
+    user_agent TEXT,
+    metadata JSONB,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+ALTER TABLE public.analytics_events ENABLE ROW LEVEL SECURITY;
+
+-- Anyone (including anonymous visitors) can insert events
+CREATE POLICY "Anyone can insert analytics events" ON public.analytics_events
+  FOR INSERT TO anon, authenticated WITH CHECK (true);
+-- Only admins can read analytics
+CREATE POLICY "Admins can read analytics" ON public.analytics_events
+  FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'));
+
+CREATE INDEX idx_analytics_event_type ON public.analytics_events(event_type);
+CREATE INDEX idx_analytics_created_at ON public.analytics_events(created_at);
+
+-- =============================================
 -- STORAGE BUCKETS
 -- =============================================
 

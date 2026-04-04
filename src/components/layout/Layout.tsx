@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { BackToTop } from "@/components/ui/back-to-top";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 interface LayoutProps {
   children: ReactNode;
@@ -10,11 +11,13 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   const { pathname } = useLocation();
+  const { track } = useAnalytics();
 
-  // Scroll to top on route change
+  // Scroll to top and track page view on route change
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [pathname]);
+    track('page_view', { page: pathname });
+  }, [pathname, track]);
 
   return (
     <div className="min-h-screen flex flex-col">

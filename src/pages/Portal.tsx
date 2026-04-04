@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Lock, User, Loader2, AlertCircle, KeyRound } from "lucide-react";
+import { useAnalytics } from "@/hooks/useAnalytics";
 import { toast } from "sonner";
 
 export default function Portal() {
@@ -25,6 +26,7 @@ export default function Portal() {
   const [activatePassword, setActivatePassword] = useState("");
   const [activateConfirmPassword, setActivateConfirmPassword] = useState("");
 
+  const { track } = useAnalytics();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -158,6 +160,7 @@ export default function Portal() {
         setError(msg);
         toast.error(msg);
       } else {
+        track('signup');
         setSuccess("Account activated! You can now sign in with your email and password.");
         toast.success("Account activated! You can now sign in.");
         setActivateStudentId("");

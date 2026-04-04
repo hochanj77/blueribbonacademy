@@ -2,11 +2,12 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, Users, GraduationCap, Globe, UserCog } from 'lucide-react';
+import { Loader2, Users, GraduationCap, Globe, UserCog, BarChart3 } from 'lucide-react';
 import StudentsTab from '@/components/admin/StudentsTab';
 import GradesTab from '@/components/admin/GradesTab';
 import SiteContentTab from '@/components/admin/SiteContentTab';
 import UsersTab from '@/components/admin/UsersTab';
+import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 
 const Admin = () => {
   const { user, loading, isAdmin, isAdminLoading } = useAuth();
@@ -43,8 +44,12 @@ const Admin = () => {
         <p className="text-xs sm:text-sm md:text-base text-muted-foreground mt-1">Manage students, grades, content, and communications</p>
       </div>
 
-      <Tabs defaultValue="students" className="space-y-4 md:space-y-6">
-        <TabsList className="grid w-full grid-cols-4 h-auto">
+      <Tabs defaultValue="analytics" className="space-y-4 md:space-y-6">
+        <TabsList className="grid w-full grid-cols-5 h-auto">
+          <TabsTrigger value="analytics" className="gap-1.5 sm:gap-2 text-xs sm:text-sm py-2">
+            <BarChart3 className="h-4 w-4" />
+            <span className="hidden sm:inline">Analytics</span>
+          </TabsTrigger>
           <TabsTrigger value="students" className="gap-1.5 sm:gap-2 text-xs sm:text-sm py-2">
             <Users className="h-4 w-4" />
             <span className="hidden sm:inline">Students</span>
@@ -62,6 +67,10 @@ const Admin = () => {
             <span className="hidden sm:inline">Website</span>
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="analytics">
+          <AnalyticsDashboard />
+        </TabsContent>
 
         <TabsContent value="students">
           <StudentsTab />

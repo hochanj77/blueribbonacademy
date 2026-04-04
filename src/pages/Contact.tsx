@@ -8,6 +8,7 @@ import { MapPin, Phone, Mail, Clock, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { useSiteContent } from "@/hooks/useSiteContent";
 import { supabase } from "@/integrations/supabase/client";
+import { useAnalytics } from "@/hooks/useAnalytics";
 import PageHero from "@/components/PageHero";
 import { useInView } from "@/hooks/useInView";
 import { cn } from "@/lib/utils";
@@ -51,6 +52,7 @@ export default function Contact() {
     wantsCatalog: false,
   });
 
+  const { track } = useAnalytics();
   const { data: contactData } = useSiteContent("global", "contact_info");
   const c = { ...contactDefaults, ...contactData?.content };
   const infoSection = useInView();
@@ -77,6 +79,7 @@ export default function Contact() {
         wants_catalog: formData.wantsCatalog,
       });
       if (error) throw error;
+      track('contact_submit');
       toast.success("Message sent! We'll get back to you within 24 hours.");
       setFormData({ name: "", email: "", phone: "", grade: "", subjects: [], message: "", wantsCatalog: false });
     } catch {
