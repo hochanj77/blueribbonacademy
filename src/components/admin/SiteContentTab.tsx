@@ -38,7 +38,7 @@ const contentSchema: Record<string, {
           { label: 'Headline', key: 'headline', type: 'text', defaultValue: 'Where Every Student Can Shine.' },
           { label: 'Subheading', key: 'subheading', type: 'textarea', defaultValue: 'We believe all students have the right to receive a good education. With over 20 years of experience, we strive to help students develop character alongside academic prowess every step of the way.' },
           { label: 'Primary Button Text', key: 'cta_primary_text', type: 'text', defaultValue: 'View Programs' },
-          { label: 'Primary Button Link', key: 'cta_primary_link', type: 'url', defaultValue: '/contact' },
+          { label: 'Primary Button Link', key: 'cta_primary_link', type: 'url', defaultValue: '/college-consulting' },
           { label: 'Secondary Button Text', key: 'cta_secondary_text', type: 'text', defaultValue: 'Download Course Catalog' },
           { label: 'Secondary Button Link', key: 'cta_secondary_link', type: 'url', defaultValue: '/catalog' },
         ],

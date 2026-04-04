@@ -1,7 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 function getCorsHeaders(req: Request) {
-  const allowedOrigin = Deno.env.get("ALLOWED_ORIGIN") || "https://blueribbon-nj.com";
+  const allowedOrigin = Deno.env.get("ALLOWED_ORIGIN") || "https://www.blueribbon-nj.com";
   const origin = req.headers.get("origin") || "";
   return {
     "Access-Control-Allow-Origin": origin === allowedOrigin ? origin : allowedOrigin,

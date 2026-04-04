@@ -28,7 +28,7 @@ const heroDefaults = {
   headline: "Where Every Student Can Shine.",
   subheading: "We believe all students have the right to receive a good education. With over 20 years of experience, we strive to help students develop character alongside academic prowess every step of the way.",
   cta_primary_text: "View Programs",
-  cta_primary_link: "/contact",
+  cta_primary_link: "/college-consulting",
   cta_secondary_text: "Download Course Catalog",
   cta_secondary_link: "/catalog",
 };
