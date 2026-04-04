@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
-import { Loader2, Pencil, Key, Trash2, UserPlus, Lock } from "lucide-react";
+import { Loader2, Key, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -19,47 +19,19 @@ interface AuthUser {
   roles: string[];
 }
 
-async function adminUsersAction(action: string, payload: Record<string, unknown> = {}) {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) throw new Error("Not authenticated");
-
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-  const res = await fetch(`${supabaseUrl}/functions/v1/admin-users`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${session.access_token}`,
-      "apikey": anonKey,
-    },
-    body: JSON.stringify({ action, ...payload }),
-  });
-
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || `Error ${res.status}`);
-  if (data?.error) throw new Error(data.error);
-  return data;
-}
-
 export default function UsersTab() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
-  const [editUser, setEditUser] = useState<AuthUser | null>(null);
-  const [passwordUser, setPasswordUser] = useState<AuthUser | null>(null);
+  const [passwordOpen, setPasswordOpen] = useState(false);
 
   // Form state
   const [newEmail, setNewEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [editEmail, setEditEmail] = useState("");
   const [resetPassword, setResetPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  // Password verification state
-  const [adminPassword, setAdminPassword] = useState("");
-  const [isVerified, setIsVerified] = useState(false);
-  const [verifying, setVerifying] = useState(false);
-
-  const currentUserFallback: AuthUser[] = user
+  const currentUserEntry: AuthUser[] = user
     ? [
         {
           id: user.id,
@@ -71,7 +43,7 @@ export default function UsersTab() {
       ]
     : [];
 
-  // Query admin users directly from user_roles table (no edge function needed for listing)
+  // Query admin users from user_roles table
   const { data: fetchedUsers, isLoading } = useQuery<AuthUser[]>({
     queryKey: ["admin-users"],
     queryFn: async () => {
@@ -80,7 +52,6 @@ export default function UsersTab() {
         .select("user_id, created_at")
         .eq("role", "admin");
       if (error) throw error;
-      // We only have user_ids from the table, combine with current user info
       return (roles || []).map((r) => ({
         id: r.user_id,
         email: r.user_id === user?.id ? (user?.email || "") : r.user_id,
@@ -92,26 +63,41 @@ export default function UsersTab() {
     retry: 1,
   });
 
-  const users = fetchedUsers && fetchedUsers.length > 0 ? fetchedUsers : currentUserFallback;
+  const users = fetchedUsers && fetchedUsers.length > 0 ? fetchedUsers : currentUserEntry;
 
-  const verifyPassword = async (): Promise<boolean> => {
-    setVerifying(true);
-    try {
-      await adminUsersAction("verify_password", { password: adminPassword });
-      setIsVerified(true);
-      return true;
-    } catch (err: any) {
-      toast.error(err.message || "Incorrect password");
-      return false;
-    } finally {
-      setVerifying(false);
-    }
-  };
-
-  const createMutation = useMutation({
-    mutationFn: () => adminUsersAction("create", { email: newEmail, password: newPassword, role: "admin" }),
+  // Change own password using Supabase auth
+  const updatePasswordMutation = useMutation({
+    mutationFn: async (password: string) => {
+      const { error } = await supabase.auth.updateUser({ password });
+      if (error) throw error;
+    },
     onSuccess: () => {
-      toast.success(`Admin account created for ${newEmail}`);
+      toast.success("Password updated successfully");
+      setPasswordOpen(false);
+      setResetPassword("");
+      setConfirmPassword("");
+    },
+    onError: (err: Error) => toast.error(err.message),
+  });
+
+  // Create new admin — insert into auth + user_roles
+  const createMutation = useMutation({
+    mutationFn: async ({ email, password }: { email: string; password: string }) => {
+      // Sign up the new user
+      const { data, error } = await supabase.auth.signUp({ email, password });
+      if (error) throw error;
+      if (!data.user) throw new Error("Failed to create user");
+
+      // Add admin role
+      const { error: roleError } = await supabase
+        .from("user_roles")
+        .insert({ user_id: data.user.id, role: "admin" });
+      if (roleError) throw roleError;
+
+      return data.user;
+    },
+    onSuccess: (newUser) => {
+      toast.success(`Admin account created for ${newUser.email}`);
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
       setCreateOpen(false);
       setNewEmail("");
@@ -119,48 +105,6 @@ export default function UsersTab() {
     },
     onError: (err: Error) => toast.error(err.message),
   });
-
-  const updateEmailMutation = useMutation({
-    mutationFn: (params: { user_id: string; email: string }) => adminUsersAction("update_email", params),
-    onSuccess: () => {
-      toast.success("Email updated");
-      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-      closeEditDialog();
-    },
-    onError: (err: Error) => toast.error(err.message),
-  });
-
-  const updatePasswordMutation = useMutation({
-    mutationFn: (params: { user_id: string; password: string }) => adminUsersAction("update_password", params),
-    onSuccess: () => {
-      toast.success("Password updated");
-      closePasswordDialog();
-    },
-    onError: (err: Error) => toast.error(err.message),
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: (user_id: string) => adminUsersAction("delete", { user_id }),
-    onSuccess: () => {
-      toast.success("Admin deleted");
-      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-    },
-    onError: (err: Error) => toast.error(err.message),
-  });
-
-  const closeEditDialog = () => {
-    setEditUser(null);
-    setAdminPassword("");
-    setIsVerified(false);
-    setEditEmail("");
-  };
-
-  const closePasswordDialog = () => {
-    setPasswordUser(null);
-    setAdminPassword("");
-    setIsVerified(false);
-    setResetPassword("");
-  };
 
   return (
     <div className="space-y-6">
@@ -170,7 +114,7 @@ export default function UsersTab() {
             Admin Accounts
             {isLoading && <Loader2 className="inline h-4 w-4 animate-spin ml-2" />}
           </h2>
-          <p className="text-sm text-muted-foreground">Manage admin authentication accounts, emails, and passwords</p>
+          <p className="text-sm text-muted-foreground">Manage admin authentication accounts and passwords</p>
         </div>
 
         <Dialog open={createOpen} onOpenChange={setCreateOpen}>
@@ -188,7 +132,7 @@ export default function UsersTab() {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                createMutation.mutate();
+                createMutation.mutate({ email: newEmail, password: newPassword });
               }}
               className="space-y-4"
             >
@@ -224,168 +168,58 @@ export default function UsersTab() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  {/* Edit Email - requires password verification */}
-                  <Dialog
-                    open={editUser?.id === u.id}
-                    onOpenChange={(open) => {
-                      if (open) {
-                        setEditUser(u);
-                        setEditEmail(u.email);
-                        setAdminPassword("");
-                        setIsVerified(false);
-                      } else {
-                        closeEditDialog();
-                      }
-                    }}
-                  >
-                    <DialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="gap-1.5">
-                        <Pencil className="h-3.5 w-3.5" />
-                        Email
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Update Email</DialogTitle>
-                        <DialogDescription>
-                          {!isVerified ? "Enter your admin password to proceed." : `Change email for ${u.email}`}
-                        </DialogDescription>
-                      </DialogHeader>
-
-                      {!isVerified ? (
-                        <form
-                          onSubmit={async (e) => {
-                            e.preventDefault();
-                            await verifyPassword();
-                          }}
-                          className="space-y-4"
-                        >
-                          <div className="space-y-2">
-                            <Label>Your Admin Password</Label>
-                            <Input
-                              type="password"
-                              value={adminPassword}
-                              onChange={(e) => setAdminPassword(e.target.value)}
-                              required
-                              placeholder="Enter your password to verify"
-                            />
-                          </div>
-                          <Button type="submit" className="w-full gap-2" disabled={verifying}>
-                            {verifying ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}
-                            Verify Identity
-                          </Button>
-                        </form>
-                      ) : (
-                        <form
-                          onSubmit={(e) => {
-                            e.preventDefault();
-                            updateEmailMutation.mutate({ user_id: u.id, email: editEmail });
-                          }}
-                          className="space-y-4"
-                        >
-                          <div className="space-y-2">
-                            <Label>New Email</Label>
-                            <Input type="email" value={editEmail} onChange={(e) => setEditEmail(e.target.value)} required />
-                          </div>
-                          <Button type="submit" className="w-full" disabled={updateEmailMutation.isPending}>
-                            {updateEmailMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                            Update Email
-                          </Button>
-                        </form>
-                      )}
-                    </DialogContent>
-                  </Dialog>
-
-                  {/* Reset Password - requires password verification */}
-                  <Dialog
-                    open={passwordUser?.id === u.id}
-                    onOpenChange={(open) => {
-                      if (open) {
-                        setPasswordUser(u);
-                        setResetPassword("");
-                        setAdminPassword("");
-                        setIsVerified(false);
-                      } else {
-                        closePasswordDialog();
-                      }
-                    }}
-                  >
+                {u.id === user?.id && (
+                  <Dialog open={passwordOpen} onOpenChange={setPasswordOpen}>
                     <DialogTrigger asChild>
                       <Button variant="outline" size="sm" className="gap-1.5">
                         <Key className="h-3.5 w-3.5" />
-                        Password
+                        Change Password
                       </Button>
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
-                        <DialogTitle>Reset Password for {u.email}</DialogTitle>
-                        <DialogDescription>
-                          {!isVerified ? "Enter your admin password to proceed." : "Set a new password for this account."}
-                        </DialogDescription>
+                        <DialogTitle>Change Password</DialogTitle>
+                        <DialogDescription>Set a new password for your account.</DialogDescription>
                       </DialogHeader>
-
-                      {!isVerified ? (
-                        <form
-                          onSubmit={async (e) => {
-                            e.preventDefault();
-                            await verifyPassword();
-                          }}
-                          className="space-y-4"
-                        >
-                          <div className="space-y-2">
-                            <Label>Your Admin Password</Label>
-                            <Input
-                              type="password"
-                              value={adminPassword}
-                              onChange={(e) => setAdminPassword(e.target.value)}
-                              required
-                              placeholder="Enter your password to verify"
-                            />
-                          </div>
-                          <Button type="submit" className="w-full gap-2" disabled={verifying}>
-                            {verifying ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}
-                            Verify Identity
-                          </Button>
-                        </form>
-                      ) : (
-                        <form
-                          onSubmit={(e) => {
-                            e.preventDefault();
-                            updatePasswordMutation.mutate({ user_id: u.id, password: resetPassword });
-                          }}
-                          className="space-y-4"
-                        >
-                          <div className="space-y-2">
-                            <Label>New Password</Label>
-                            <Input type="password" value={resetPassword} onChange={(e) => setResetPassword(e.target.value)} required minLength={6} />
-                          </div>
-                          <Button type="submit" className="w-full" disabled={updatePasswordMutation.isPending}>
-                            {updatePasswordMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                            Reset Password
-                          </Button>
-                        </form>
-                      )}
+                      <form
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          if (resetPassword !== confirmPassword) {
+                            toast.error("Passwords do not match");
+                            return;
+                          }
+                          updatePasswordMutation.mutate(resetPassword);
+                        }}
+                        className="space-y-4"
+                      >
+                        <div className="space-y-2">
+                          <Label>New Password</Label>
+                          <Input
+                            type="password"
+                            value={resetPassword}
+                            onChange={(e) => setResetPassword(e.target.value)}
+                            required
+                            minLength={6}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Confirm Password</Label>
+                          <Input
+                            type="password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            required
+                            minLength={6}
+                          />
+                        </div>
+                        <Button type="submit" className="w-full" disabled={updatePasswordMutation.isPending}>
+                          {updatePasswordMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                          Update Password
+                        </Button>
+                      </form>
                     </DialogContent>
                   </Dialog>
-
-                  {/* Delete - only show for non-self accounts */}
-                  {u.email !== user?.email && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive hover:text-destructive"
-                      onClick={() => {
-                        if (confirm(`Delete admin ${u.email}? This cannot be undone.`)) {
-                          deleteMutation.mutate(u.id);
-                        }
-                      }}
-                      disabled={deleteMutation.isPending}
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                  )}
-                </div>
+                )}
               </div>
             </CardContent>
           </Card>
