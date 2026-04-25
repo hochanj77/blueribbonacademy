@@ -78,9 +78,10 @@ export default function Portal() {
 
       if (isStudentId) {
         // Look up student email by student ID, then sign in
-        const { data: lookup, error: lookupErr } = await supabase.rpc('get_student_email_for_login', {
+        const { data: lookupData, error: lookupErr } = await (supabase as any).rpc('get_student_email_for_login', {
           p_student_number: loginIdentifier.trim(),
         });
+        const lookup = lookupData as { found?: boolean; email?: string } | null;
 
         if (lookupErr || !lookup?.found) {
           setError("Invalid credentials.");
@@ -131,10 +132,11 @@ export default function Portal() {
     setIsSubmitting(true);
     try {
       // Step 1: Verify student exists and is pending
-      const { data: verification, error: verifyErr } = await supabase.rpc('verify_student_for_activation', {
+      const { data: verificationData, error: verifyErr } = await (supabase as any).rpc('verify_student_for_activation', {
         p_student_number: activateStudentId.trim(),
         p_last_name: activateLastName.trim(),
       });
+      const verification = verificationData as { valid?: boolean; email?: string; first_name?: string; last_name?: string; student_id?: string } | null;
 
       if (verifyErr || !verification?.valid) {
         const msg = "Unable to activate. Please check your information or contact Blue Ribbon Academy administration.";
@@ -166,11 +168,12 @@ export default function Portal() {
       }
 
       // Step 3: Link student record to auth user
-      const { data: linkResult, error: linkErr } = await supabase.rpc('link_student_account', {
+      const { data: linkResultData, error: linkErr } = await (supabase as any).rpc('link_student_account', {
         p_student_id: verification.student_id,
         p_user_id: signUpData.user.id,
         p_email: finalEmail,
       });
+      const linkResult = linkResultData as { success?: boolean; error?: string } | null;
 
       if (linkErr || !linkResult?.success) {
         const msg = linkResult?.error || "Failed to activate account. Please try again.";
