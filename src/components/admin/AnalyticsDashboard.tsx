@@ -235,11 +235,11 @@ export default function AnalyticsDashboard() {
     queryKey: ['analytics-all-events'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('analytics_events')
+        .from('analytics_events' as any)
         .select('event_type, page, referrer, user_agent, metadata, created_at')
         .gte('created_at', sixtyDaysAgo);
       if (error) throw error;
-      return data || [];
+      return (data || []) as unknown as AnalyticsEvent[];
     },
   });
 
