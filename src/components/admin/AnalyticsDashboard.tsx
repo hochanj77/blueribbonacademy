@@ -239,7 +239,7 @@ export default function AnalyticsDashboard() {
         .select('event_type, page, referrer, user_agent, metadata, created_at')
         .gte('created_at', sixtyDaysAgo);
       if (error) throw error;
-      return (data || []) as AnalyticsEvent[];
+      return (data || []) as unknown as AnalyticsEvent[];
     },
   });
 
