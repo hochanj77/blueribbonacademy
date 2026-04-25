@@ -140,6 +140,7 @@ export type Database = {
           recurring: boolean | null
           start_time: string
           title: string
+          tutor_id: string | null
           updated_at: string | null
         }
         Insert: {
@@ -153,6 +154,7 @@ export type Database = {
           recurring?: boolean | null
           start_time: string
           title: string
+          tutor_id?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -166,6 +168,7 @@ export type Database = {
           recurring?: boolean | null
           start_time?: string
           title?: string
+          tutor_id?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -174,6 +177,13 @@ export type Database = {
             columns: ["course_id"]
             isOneToOne: false
             referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_schedules_tutor_id_fkey"
+            columns: ["tutor_id"]
+            isOneToOne: false
+            referencedRelation: "tutors"
             referencedColumns: ["id"]
           },
         ]
@@ -286,6 +296,7 @@ export type Database = {
           created_at: string | null
           id: string
           student_id: string
+          tutor_id: string | null
           updated_at: string | null
         }
         Insert: {
@@ -293,6 +304,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           student_id: string
+          tutor_id?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -300,6 +312,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           student_id?: string
+          tutor_id?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -308,6 +321,13 @@ export type Database = {
             columns: ["student_id"]
             isOneToOne: false
             referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "progress_notes_tutor_id_fkey"
+            columns: ["tutor_id"]
+            isOneToOne: false
+            referencedRelation: "tutors"
             referencedColumns: ["id"]
           },
         ]
@@ -537,6 +557,7 @@ export type Database = {
           school: string | null
           status: string
           student_number: string | null
+          tutor_id: string | null
           updated_at: string | null
           user_id: string | null
         }
@@ -559,6 +580,7 @@ export type Database = {
           school?: string | null
           status?: string
           student_number?: string | null
+          tutor_id?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
@@ -581,6 +603,7 @@ export type Database = {
           school?: string | null
           status?: string
           student_number?: string | null
+          tutor_id?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
@@ -592,7 +615,53 @@ export type Database = {
             referencedRelation: "students"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "students_tutor_id_fkey"
+            columns: ["tutor_id"]
+            isOneToOne: false
+            referencedRelation: "tutors"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      tutors: {
+        Row: {
+          active: boolean | null
+          bio: string | null
+          created_at: string | null
+          email: string | null
+          id: string
+          name: string
+          phone: string | null
+          specializations: string[] | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          bio?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          name: string
+          phone?: string | null
+          specializations?: string[] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          bio?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          name?: string
+          phone?: string | null
+          specializations?: string[] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
