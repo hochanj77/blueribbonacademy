@@ -47,7 +47,7 @@ export function useAnalytics() {
   const track = useCallback(async (event_type: EventType, options?: TrackOptions) => {
     try {
       const source = getReferrerSource();
-      await supabase.from('analytics_events').insert({
+      await (supabase as any).from('analytics_events').insert({
         event_type,
         page: options?.page || window.location.pathname,
         referrer: document.referrer || null,
