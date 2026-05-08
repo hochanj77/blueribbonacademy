@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import AnnouncementsTab from './AnnouncementsTab';
-import ScheduleContentEditor from './ScheduleContentEditor';
+import ResourcesTab from './ResourcesTab';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -35,127 +35,23 @@ const contentSchema: Record<string, {
         label: 'Hero Banner',
         description: 'The main banner visitors see when they land on the homepage.',
         fields: [
-          { label: 'Hero Background Image', key: 'hero_image', type: 'image', hint: 'Upload a new hero background image (recommended: 1920x1080 or larger)' },
+          { label: 'Hero Background Image', key: 'hero_image', type: 'image', hint: 'Recommended: 1920x1080 or larger' },
           { label: 'Headline', key: 'headline', type: 'text', defaultValue: 'Where Every Student Can Shine.' },
           { label: 'Subheading', key: 'subheading', type: 'textarea', defaultValue: 'We believe all students have the right to receive a good education. With over 20 years of experience, we strive to help students develop character alongside academic prowess every step of the way.' },
-          { label: 'Primary Button Text', key: 'cta_primary_text', type: 'text', defaultValue: 'View Programs' },
-          { label: 'Primary Button Link', key: 'cta_primary_link', type: 'url', defaultValue: '/college-consulting' },
+          { label: 'Primary Button Text', key: 'cta_primary_text', type: 'text', defaultValue: 'Get Started' },
+          { label: 'Primary Button Link', key: 'cta_primary_link', type: 'url', defaultValue: '/contact' },
           { label: 'Secondary Button Text', key: 'cta_secondary_text', type: 'text', defaultValue: 'Download Course Catalog' },
           { label: 'Secondary Button Link', key: 'cta_secondary_link', type: 'url', defaultValue: '/catalog' },
-        ],
-      },
-      cta_section: {
-        label: 'Bottom Call-to-Action',
-        description: 'The "Ready to Start?" section at the bottom of the homepage.',
-        fields: [
-          { label: 'Headline', key: 'headline', type: 'text', defaultValue: 'Ready to Start Your Journey?' },
-          { label: 'Subheading', key: 'subheading', type: 'textarea', defaultValue: 'Contact us today and learn how Blue Ribbon Academy can help you achieve your academic goals.' },
-          { label: 'Button Text', key: 'button_text', type: 'text', defaultValue: 'Contact Us' },
-          { label: 'Button Link', key: 'button_link', type: 'url', defaultValue: '/contact' },
-        ],
-      },
-    },
-  },
-  about: {
-    label: 'About Us',
-    sections: {
-      welcome: {
-        label: 'Welcome Section',
-        description: 'The main intro section on the About page.',
-        fields: [
-          { label: 'Headline', key: 'headline', type: 'text', defaultValue: 'Welcome to Blue Ribbon Academy' },
-          { label: 'Intro Statement', key: 'intro', type: 'text', defaultValue: 'We believe all students have the right to receive a good education.' },
-          { label: 'Body Text', key: 'body', type: 'textarea', defaultValue: "With over 20 years of experience, we've learned that good education is impossible without sharing life together with the students. We do not perceive our students merely as attendants of our academy but more as disciples we nurture through our lives. We make sure to treat all students with much care with this mission in mind." },
-        ],
-      },
-    },
-  },
-  consulting: {
-    label: 'College Consulting',
-    sections: {
-      hero: {
-        label: 'Page Header',
-        description: 'The hero banner on the College Consulting page.',
-        fields: [
-          { label: 'Title', key: 'headline', type: 'text', defaultValue: 'College' },
-          { label: 'Accent Word', key: 'accent', type: 'text', defaultValue: 'Consulting' },
-          { label: 'Subtitle', key: 'subheading', type: 'textarea', defaultValue: 'Strategic guidance for 9th–12th graders to maximize college acceptance potential.' },
-        ],
-      },
-      grade9_intro: {
-        label: 'Grades 9-11 Section',
-        description: 'Section header for underclassmen consulting services.',
-        fields: [
-          { label: 'Section Label', key: 'label', type: 'text', defaultValue: 'Underclassmen' },
-          { label: 'Heading', key: 'heading', type: 'text', defaultValue: 'Grades 9-11' },
-          { label: 'Description', key: 'description', type: 'textarea', defaultValue: 'Build a strong foundation and position yourself competitively before senior year.' },
-        ],
-      },
-      grade12_intro: {
-        label: 'Grade 12 Section',
-        description: 'Section header for senior year consulting services.',
-        fields: [
-          { label: 'Section Label', key: 'label', type: 'text', defaultValue: 'Seniors' },
-          { label: 'Heading', key: 'heading', type: 'text', defaultValue: '12th Grade' },
-          { label: 'Description', key: 'description', type: 'textarea', defaultValue: 'Comprehensive support through every stage of the college application process.' },
-        ],
-      },
-      cta: {
-        label: 'Bottom Call-to-Action',
-        description: 'CTA section at the bottom of the College Consulting page.',
-        fields: [
-          { label: 'Headline', key: 'headline', type: 'text', defaultValue: 'Ready to Plan Your Future?' },
-          { label: 'Subheading', key: 'subheading', type: 'textarea', defaultValue: 'Schedule a consultation to discuss your goals and build a personalized roadmap to your dream school.' },
-          { label: 'Button Text', key: 'button_text', type: 'text', defaultValue: 'Schedule Consultation' },
-          { label: 'Button Link', key: 'button_link', type: 'url', defaultValue: '/contact' },
-        ],
-      },
-    },
-  },
-  testimonials: {
-    label: 'Testimonials',
-    sections: {
-      hero: {
-        label: 'Page Header',
-        description: 'The hero banner on the Testimonials page.',
-        fields: [
-          { label: 'Title', key: 'headline', type: 'text', defaultValue: 'Student' },
-          { label: 'Accent Word', key: 'accent', type: 'text', defaultValue: 'Testimonials' },
-          { label: 'Subtitle', key: 'subheading', type: 'textarea', defaultValue: 'At Blue Ribbon, we aim to provide the best learning experience for our students to ensure their academic success. See what our students have had to say about us!' },
-        ],
-      },
-      cta: {
-        label: 'Bottom Call-to-Action',
-        description: 'CTA section at the bottom of the Testimonials page.',
-        fields: [
-          { label: 'Headline', key: 'headline', type: 'text', defaultValue: 'Join Our Success Stories' },
-          { label: 'Subheading', key: 'subheading', type: 'textarea', defaultValue: 'Start your journey with Blue Ribbon Academy today.' },
-          { label: 'Button Text', key: 'button_text', type: 'text', defaultValue: 'Get Started' },
-          { label: 'Button Link', key: 'button_link', type: 'url', defaultValue: '/contact' },
-        ],
-      },
-    },
-  },
-  schedule: {
-    label: 'Schedule Hero',
-    sections: {
-      hero: {
-        label: 'Page Header',
-        description: 'The hero banner on the Schedule page.',
-        fields: [
-          { label: 'Title', key: 'headline', type: 'text', defaultValue: 'Class' },
-          { label: 'Accent Word', key: 'accent', type: 'text', defaultValue: 'Schedule' },
-          { label: 'Subtitle', key: 'subheading', type: 'textarea', defaultValue: 'Find the right class and time that fits your schedule. Contact us for availability.' },
         ],
       },
     },
   },
   global: {
-    label: 'Global Settings',
+    label: 'Contact & Social',
     sections: {
       contact_info: {
         label: 'Contact Information',
-        description: 'Used on the Contact page, Footer, and anywhere contact info appears.',
+        description: 'Shown on the Contact page, Footer, and anywhere contact info appears.',
         fields: [
           { label: 'Address Line 1', key: 'address_line1', type: 'text', defaultValue: '41 Union Ave FL2' },
           { label: 'Address Line 2', key: 'address_line2', type: 'text', defaultValue: 'Cresskill, NJ 07626' },
@@ -222,21 +118,19 @@ const SiteContentTab = () => {
           </div>
           <div>
             <CardTitle>Website Content Editor</CardTitle>
-            <CardDescription>
-              Edit text, contact info, and social media across your site. Changes take effect immediately.
-            </CardDescription>
+            <CardDescription>Edit your site content. Changes take effect immediately.</CardDescription>
           </div>
         </div>
       </CardHeader>
       <CardContent>
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-6 flex-wrap">
+          <TabsList className="mb-6">
             {pageKeys.map((page) => (
               <TabsTrigger key={page} value={page}>
                 {contentSchema[page].label}
               </TabsTrigger>
             ))}
-            <TabsTrigger value="schedule_classes">Schedule Classes</TabsTrigger>
+            <TabsTrigger value="catalog">Course Catalog</TabsTrigger>
             <TabsTrigger value="announcements">Announcements</TabsTrigger>
           </TabsList>
 
@@ -255,8 +149,8 @@ const SiteContentTab = () => {
               ))}
             </TabsContent>
           ))}
-          <TabsContent value="schedule_classes">
-            <ScheduleContentEditor />
+          <TabsContent value="catalog">
+            <ResourcesTab />
           </TabsContent>
           <TabsContent value="announcements">
             <AnnouncementsTab />
@@ -291,6 +185,7 @@ const SectionEditor = ({ page, sectionKey, section, existingContent, userId, que
     return initial;
   });
   const [saved, setSaved] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const saveMutation = useMutation({
     mutationFn: async (content: Record<string, string>) => {
@@ -318,8 +213,6 @@ const SectionEditor = ({ page, sectionKey, section, existingContent, userId, que
   });
 
   const handleSave = () => saveMutation.mutate(formData);
-
-  const [uploading, setUploading] = useState(false);
 
   const updateField = (key: string, value: string) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
