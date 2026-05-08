@@ -150,7 +150,12 @@ const SiteContentTab = () => {
             </TabsContent>
           ))}
           <TabsContent value="catalog">
-            <ResourcesTab />
+            <ResourcesTab
+              catalogContent={contentByPage['global']?.['catalog']
+                ? { id: contentByPage['global']['catalog'].id, content: contentByPage['global']['catalog'].content }
+                : null}
+              userId={user?.id}
+            />
           </TabsContent>
           <TabsContent value="announcements">
             <AnnouncementsTab />
