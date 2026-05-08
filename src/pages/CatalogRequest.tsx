@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ArrowRight } from "lucide-react";
 import PageHero from "@/components/PageHero";
 import { useInView } from "@/hooks/useInView";
+import { useSiteContent } from "@/hooks/useSiteContent";
 import { cn } from "@/lib/utils";
 
 const languageOptions = [
@@ -42,6 +43,8 @@ export default function CatalogRequest() {
   });
 
   const formSection = useInView();
+  const { data: catalogData } = useSiteContent("global", "catalog");
+  const catalogUrl = catalogData?.content?.catalog_url || "";
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -71,7 +74,12 @@ export default function CatalogRequest() {
       toast.error("Something went wrong. Please try again later.");
       return;
     }
-    toast.success("Request submitted! We'll send the course catalog to your email shortly.");
+    if (catalogUrl) {
+      window.open(catalogUrl, "_blank", "noopener,noreferrer");
+      toast.success("Thanks! Your catalog download is opening in a new tab.");
+    } else {
+      toast.success("Request submitted! We'll email the course catalog to you shortly.");
+    }
     setFormData({ studentName: "", phone: "", email: "", preferredLanguage: "", preferredLocation: "", message: "" });
     setAcceptedTerms(false);
   };
